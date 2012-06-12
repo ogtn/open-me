@@ -1,7 +1,25 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2012
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "messyExample", "Projects\messyExample\messyExample.vcxproj", "{A0549C66-446B-41A5-A46D-3F2CE1479480}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "OpenMe", "Projects\OpenMe\OpenMe.vcxproj", "{932B1045-2DC0-497E-916D-3AF1F8C040AC}"
+EndProject
 Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		Release|Win32 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{932B1045-2DC0-497E-916D-3AF1F8C040AC}.Debug|Win32.ActiveCfg = Static Debug|Win32
+		{932B1045-2DC0-497E-916D-3AF1F8C040AC}.Debug|Win32.Build.0 = Static Debug|Win32
+		{932B1045-2DC0-497E-916D-3AF1F8C040AC}.Release|Win32.ActiveCfg = Static Release|Win32
+		{932B1045-2DC0-497E-916D-3AF1F8C040AC}.Release|Win32.Build.0 = Static Release|Win32
+		{A0549C66-446B-41A5-A46D-3F2CE1479480}.Debug|Win32.ActiveCfg = Debug|Win32
+		{A0549C66-446B-41A5-A46D-3F2CE1479480}.Debug|Win32.Build.0 = Debug|Win32
+		{A0549C66-446B-41A5-A46D-3F2CE1479480}.Release|Win32.ActiveCfg = Release|Win32
+		{A0549C66-446B-41A5-A46D-3F2CE1479480}.Release|Win32.Build.0 = Release|Win32
+	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
