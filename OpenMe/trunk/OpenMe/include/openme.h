@@ -21,7 +21,11 @@
 
 
 // engine core functions
+
+// Initialize the library, and open a window of the given size
 int ome_Init(int width, int height);
+
+// Quit properly the library
 void ome_Quit(void);
 void ome_SwapBuffer(void);
 int ome_isWindowOpened(void);

@@ -23,7 +23,7 @@ int main(void)
     ome_Init(640, 480);
 
     // clear color and transparency
-    glClearColor(0.2f, 0.2f, 0.2f, 1);
+    glClearColor(0.1f, 0.1f, 0.1f, 1);
     glEnable(GL_BGR_EXT);
     glEnable(GL_ALPHA_TEST);
     glEnable(GL_BLEND);
@@ -49,13 +49,31 @@ int main(void)
     while(ome_isWindowOpened())
     {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        glRotated(1, 0, 0, 1);
     
-        glColor4f(1, 1, 1, 0.2f);
         glBegin(GL_QUADS);
+
+        // bottom plan
+        glColor4f(1, 0, 0, 0.5f);
+        glVertex3i(-1, -1, -1);
+        glVertex3i(1, -1, -1);
+        glVertex3i(1, 1, -1);
+        glVertex3i(-1, 1, -1);
+
+        // middle plan
+        glColor4f(0, 1, 0, 0.5f);
         glVertex2i(-1, -1);
         glVertex2i(1, -1);
         glVertex2i(1, 1);
         glVertex2i(-1, 1);
+
+        // top plan
+        glColor4f(0, 0, 1, 0.5f);
+        glVertex3i(-1, -1, 1);
+        glVertex3i(1, -1, 1);
+        glVertex3i(1, 1, 1);
+        glVertex3i(-1, 1, 1);
+        
         glEnd();
 
         frames++;
