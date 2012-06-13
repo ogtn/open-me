@@ -13,12 +13,16 @@
   <ItemGroup>
     <ClCompile Include="..\..\OpenMe\src\engine.c" />
     <ClCompile Include="..\..\OpenMe\src\logger.c" />
+    <ClCompile Include="..\..\OpenMe\src\matrix.c" />
+    <ClCompile Include="..\..\OpenMe\src\vector.c" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\OpenMe\include\constants.h" />
     <ClInclude Include="..\..\OpenMe\include\engine.h" />
     <ClInclude Include="..\..\OpenMe\include\logger.h" />
+    <ClInclude Include="..\..\OpenMe\include\matrix.h" />
     <ClInclude Include="..\..\OpenMe\include\openme.h" />
+    <ClInclude Include="..\..\OpenMe\include\vector.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCTargetsPath Condition="'$(VCTargetsPath11)' != '' and '$(VSVersion)' == '' and '$(VisualStudioVersion)' == ''">$(VCTargetsPath11)</VCTargetsPath>

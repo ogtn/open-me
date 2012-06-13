@@ -77,6 +77,8 @@ void omeEngineClearAllBuffers(void)
 
 int omeEngineStart(void)
 {
+    int major, minor, rev;
+
     // avoid double start
     if(engine.state == OME_ENGINE_STATE_STARTED)
     {
@@ -100,7 +102,15 @@ int omeEngineStart(void)
     engine.FPSUpdateTime = omeEngineGetTime();
     engine.lastFrameStart = omeEngineGetTime();
     engine.state = OME_ENGINE_STATE_STARTED;
+    
+    // a few prints
     omeLoggerLog("Engine successfully started\n");
+    omeLoggerLog("%d processors available\n", glfwGetNumberOfProcessors());
+    glfwGetVersion(&major, &minor, &rev);
+    omeLoggerLog("GLFW version: %d.%d.%d\n", major, minor, rev);
+    glfwGetGLVersion(&major, &minor, &rev);
+    omeLoggerLog("OpenGL version: %d.%d.%d\n", major, minor, rev);
+    // TODO: glfwGetVideoModes() and glfwGetDesktopMode()
 
     return OME_SUCCESS;
 }
