@@ -12,9 +12,12 @@
 #define H_OPENME
 
 
-#include "constants.h"
-#include "engine.h"
-#include <GL/glfw.h>
+// constants
+#define OME_FAILURE         -1
+#define OME_SUCCESS         0
+
+#define OME_TRUE            1
+#define OME_FALSE           0
 
 
 #endif // H_OPENME

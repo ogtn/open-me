@@ -11,9 +11,13 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\OpenMe\src\openme.c" />
+    <ClCompile Include="..\..\OpenMe\src\engine.c" />
+    <ClCompile Include="..\..\OpenMe\src\logger.c" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\OpenMe\include\constants.h" />
+    <ClInclude Include="..\..\OpenMe\include\engine.h" />
+    <ClInclude Include="..\..\OpenMe\include\logger.h" />
     <ClInclude Include="..\..\OpenMe\include\openme.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">

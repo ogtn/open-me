@@ -11,7 +11,6 @@
 #include <openme.h>
 #include <stdlib.h>
 #include <stdio.h>
-#include <GL/glfw.h>
 
 
 int main(void)
@@ -20,7 +19,8 @@ int main(void)
     int frames = 0;
 
     // opening window
-    ome_Init(640, 480);
+    omeEngineStart();
+    omeEngineOpenWindow(640, 480, 0);
 
     // clear color and transparency
     glClearColor(0.1f, 0.1f, 0.1f, 1);
@@ -46,7 +46,7 @@ int main(void)
     
     startTime = glfwGetTime();
 
-    while(ome_isWindowOpened())
+    while(omeEngineIsWindowOpened())
     {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         glRotated(1, 0, 0, 1);
@@ -78,13 +78,13 @@ int main(void)
 
         frames++;
 
-        ome_SwapBuffer();
+        omeEngineSwapBuffer();
     }
 
     totalTime = glfwGetTime() - startTime;
     printf("%d frames rendered in %.3fs\n", frames, totalTime);
     printf("average frame: %fs (%.2f FPS)\n", totalTime / frames, frames / totalTime);
-    ome_Quit();
+    omeEngineStop();
 
     return EXIT_SUCCESS;
 }
