@@ -10,6 +10,13 @@
 
 #include "vector.h"
 #include <math.h>
+#include <string.h>
+
+
+void omeVectorCopy(omeVector *dst, omeVector *src)
+{
+    memcpy(dst, src, sizeof(omeVector));    
+}
 
 
 float omeVectorLength(omeVector *v)

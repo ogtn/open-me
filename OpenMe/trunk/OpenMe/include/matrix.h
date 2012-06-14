@@ -25,20 +25,19 @@ typedef union omeMatrix
 } omeMatrix;
 
 
+void omeMatrixCopy(omeMatrix *dst, omeMatrix *src);
 void omeMatrixMakeIdentity(omeMatrix *m);
 void omeMatrixMakeOrtho(omeMatrix *m, float left, float right, float bottom, float top, float zNear, float zFar);
 void omeMatrixMakePerspective(omeMatrix *m, float angle, float ratio, float near, float far);
 void omeMatrixMakeLookAt(omeMatrix *m, omeVector *pos, omeVector *target, omeVector *up);
 void omeMatrixTranslate(omeMatrix *m, omeVector *v);
 void omeMatrixScale(omeMatrix *m, omeVector *v);
-void omeMatrixRotate(omeMatrix *m, omeVector *axis, float theta);
-//void omeMatrixRotate(omeMatrix *m, omeVector *v);
-//void omeMatrixTranspose(omeMatrix *m, omeVector *v);
-//void omeMatrixTranslate(omeMatrix *m, omeVector *v);
-//void omeMatrixLoad(omeMatrix *m);
-//void omeMatrixLoadTransp(omeMatrix *m);
+void omeMatrixRotateAxis(omeMatrix *m, omeVector *axis, float theta);
+void omeMatrixRotateAngles(omeMatrix *m, omeVector *v);
+void omeMatrixTranspose(omeMatrix *m);
+void omeMatrixLoad(omeMatrix *m, int transpose);
 void omeMatrixMultMatrix(omeMatrix *m, omeMatrix *m2, omeMatrix *res);
-void omeMatrixMultVector(omeMatrix *m, omeVector *v, omeVector *res);
+//void omeMatrixMultVector(omeMatrix *m, omeVector *v, omeVector *res);
 //void omeMatrixSendAsUniform(omeMatrix *m, omeShaderProgram *sp, char *name);
 
 

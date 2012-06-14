@@ -25,6 +25,7 @@ typedef union omeVector
 } omeVector;
 
 
+void omeVectorCopy(omeVector *dst, omeVector *src);
 float omeVectorLength(omeVector *v);
 void omeVectorNormalize(omeVector *v);
 void omeVectorAddVector(omeVector *v, omeVector *v2, omeVector *res);

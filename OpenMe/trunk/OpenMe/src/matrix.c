@@ -12,6 +12,7 @@
 #include "constants.h"
 #include <string.h>
 #include <math.h>
+#include <GL/glfw.h>
 
 
 static const float identity[16] = {
@@ -21,9 +22,15 @@ static const float identity[16] = {
     0, 0, 0, 1};
 
 
+void omeMatrixCopy(omeMatrix *dst, omeMatrix *src)
+{
+    memcpy(dst, src, sizeof(omeMatrix));
+}
+
+
 void omeMatrixMakeIdentity(omeMatrix *m)
 {
-    memcpy(m, identity, sizeof(identity));
+    memcpy(m, identity, sizeof(omeMatrix));
 }
 
 
@@ -49,7 +56,7 @@ void omeMatrixMakePerspective(omeMatrix *m, float angle, float ratio, float near
     omeMatrixMakeIdentity(m);
 
     angle *= (float)OME_PI / 180;
-    f = 1 / tan(angle / 2);
+    f = 1 / tanf(angle / 2);
 
     m->data[0][0] = f / ratio;
     m->data[1][1] = f;
@@ -120,8 +127,8 @@ void omeMatrixScale(omeMatrix *m, omeVector *v)
     omeMatrixMultMatrix(m, &m2, m);
 }
 
-/*
-void omeMatrixRotate(omeMatrix *m, omeVector *axis, float theta)
+
+void omeMatrixRotateAxis(omeMatrix *m, omeVector *axis, float theta)
 {
     omeVector v;
     omeMatrix m2;
@@ -131,31 +138,73 @@ void omeMatrixRotate(omeMatrix *m, omeVector *axis, float theta)
     ct = cosf(theta);
     st = sinf(theta);
        
-    memcpy(&v, axis, sizeof(omeVector)); // TODO: omeCopy() macro??
+    omeVectorCopy(&v, axis);
     omeVectorNormalize(&v);
-    m.makeIdentity();
+    omeMatrixMakeIdentity(&m2);
     
-    m.data[0][0] = v.x * v.x * (1 - ct) + ct;
-    m.data[0][1] = v.x * v.y * (1 - ct) - v.z * st;
-    m.data[0][2] = v.x * v.z * (1 - ct) + v.y * st;
+    m2.data[0][0] = v.x * v.x * (1 - ct) + ct;
+    m2.data[0][1] = v.x * v.y * (1 - ct) - v.z * st;
+    m2.data[0][2] = v.x * v.z * (1 - ct) + v.y * st;
     
-    m.data[1][0] = v.x * v.y * (1 - ct) + v.z * st;
-    m.data[1][1] = v.y * v.y * (1 - ct) + ct;
-    m.data[1][2] = v.y * v.z * (1 - ct) - v.x * st;
+    m2.data[1][0] = v.x * v.y * (1 - ct) + v.z * st;
+    m2.data[1][1] = v.y * v.y * (1 - ct) + ct;
+    m2.data[1][2] = v.y * v.z * (1 - ct) - v.x * st;
     
-    m.data[2][0] = v.x * v.z * (1 - ct) - v.y * st;
-    m.data[2][1] = v.y * v.z * (1 - ct) + v.x * st;
-    m.data[2][2] = v.z * v.z * (1 - ct) + ct;
+    m2.data[2][0] = v.x * v.z * (1 - ct) - v.y * st;
+    m2.data[2][1] = v.y * v.z * (1 - ct) + v.x * st;
+    m2.data[2][2] = v.z * v.z * (1 - ct) + ct;
     
-    return *this = *this * m;
+    omeMatrixMultMatrix(m, &m2, m);
 }
-*/
 
-//void omeMatrixRotate(omeMatrix *m, omeVector *v);
-//void omeMatrixTranspose(omeMatrix *m, omeVector *v);
-//void omeMatrixTranslate(omeMatrix *m, omeVector *v);
-//void omeMatrixLoad(omeMatrix *m);
-//void omeMatrixLoadTransp(omeMatrix *m);
+
+void omeMatrixRotateAngles(omeMatrix *m, omeVector *v)
+{
+    // TODO: find a less awful way to implement this...
+    static omeVector vx = {1, 0, 0};
+    static omeVector vy = {0, 1, 0};
+    static omeVector vz = {0, 0, 1};
+    omeMatrix mx, my, mz;
+
+    omeMatrixCopy(&mx, m);
+    omeMatrixCopy(&my, m);
+    omeMatrixCopy(&mz, m);
+
+    omeMatrixRotateAxis(&mx, &vx, v->x);
+    omeMatrixRotateAxis(&my, &vy, v->y);
+    omeMatrixRotateAxis(&mz, &vz, v->z);
+
+    omeMatrixMultMatrix(m, &mx, m);
+    omeMatrixMultMatrix(m, &my, m);
+    omeMatrixMultMatrix(m, &mz, m);
+}
+
+
+void omeMatrixTranspose(omeMatrix *m)
+{
+    int i, j;
+    omeMatrix m2;
+
+    omeMatrixCopy(&m2, m);
+    
+    for(i = 0; i < 4; i++)
+        for(j = 0; j < 4; j++)
+            m->data[i][j] = m2.data[j][i];
+}
+
+
+void omeMatrixLoad(omeMatrix *m, int transpose)
+{
+    omeMatrix m2;
+
+    if(transpose)
+    {
+        omeMatrixCopy(&m2, m);
+        omeMatrixTranspose(&m2);
+    }
+    else
+        glLoadMatrixf(m2.tab);
+}
 
 
 void omeMatrixMultMatrix(omeMatrix *m, omeMatrix *m2, omeMatrix *res)

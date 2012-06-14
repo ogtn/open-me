@@ -25,4 +25,5 @@
 #define degToRad(angle)     ((angle) * OME_PI / 180)
 #define radToDeg(angle)     ((angle) / OME_PI * 180)
 
+
 #endif // H_OPENME
