@@ -16,6 +16,7 @@
 #include "vector.h"
 
 
+// TODO: use GLfloat instead of float?
 // TODO: use sed to generate the double versions for omeMatrix and omeVector
 // or a macro version of thoses files, through something like DECLARE_MATRIX(double, d)
 typedef union omeMatrix
@@ -39,6 +40,7 @@ void omeMatrixLoad(omeMatrix *m, int transpose);
 void omeMatrixMultMatrix(omeMatrix *m, omeMatrix *m2, omeMatrix *res);
 //void omeMatrixMultVector(omeMatrix *m, omeVector *v, omeVector *res);
 //void omeMatrixSendAsUniform(omeMatrix *m, omeShaderProgram *sp, char *name);
+void omeMatrixPrint(omeMatrix *m);
 
 
 #endif //OME_MATRIX_H

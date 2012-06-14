@@ -13,18 +13,41 @@
 #include <stdio.h>
 
 
+// TODO: useful for debugging, put that one in something like utils.c
+void printError(void)
+{
+    GLenum error = glGetError();
+
+    switch(error)
+    {
+    case GL_NO_ERROR: puts("GL_NO_ERROR"); break;
+    case GL_INVALID_ENUM: puts("GL_INVALID_ENUM"); break;
+    case GL_INVALID_VALUE: puts("GL_INVALID_VALUE"); break;
+    case GL_INVALID_OPERATION: puts("GL_INVALID_OPERATION"); break;
+    case GL_STACK_OVERFLOW: puts("GL_STACK_OVERFLOW"); break;
+    case GL_STACK_UNDERFLOW: puts("GL_STACK_UNDERFLOW"); break;
+    case GL_OUT_OF_MEMORY: puts("GL_OUT_OF_MEMORY"); break;
+    default: puts("unknown error :("); break;
+    }
+}
+
+
 int main(void)
 {
     double startTime, totalTime;
     int frames = 0;
+    omeVector pos =     {2.f, 2.f, 2.f};
+    omeVector target =  {0.f, 0.f, 0.f};
+    omeVector up =      {0.f, 0.f, 1.f};
+    omeCamera *camera = omeCameraAlloc(OME_CAMERA_TYPE_PERPECTIVE);
 
     // opening window
     omeEngineStart();
     omeEngineOpenWindow(640, 480, 0);
 
     // clear color and transparency
-    glClearColor(0.1f, 0.1f, 0.1f, 1);
-    glEnable(GL_BGR_EXT);
+    //glClearColor(0.1f, 0.1f, 0.1f, 1);
+    //glEnable(GL_BGR_EXT); // doesn't seem supported on my laptop :/
     glEnable(GL_ALPHA_TEST);
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -32,25 +55,24 @@ int main(void)
     //glAlphaFunc(GL_GREATER, 0.1); // maybe not very usefull...
     //glEnable(GL_DEPTH_TEST); // wtf?? break transarency?
 
-    // matrix settings
-    glMatrixMode(GL_PROJECTION);
-    glLoadIdentity();
-    gluPerspective(65.0f, 640.f/480.f, 0.01f, 100.0f );
-    glMatrixMode(GL_MODELVIEW);
-    glLoadIdentity();
+    // projection matrix settings
+    omeCameraSetPerspective(camera, 65.f, 640.f / 480.f, 0.01f, 100.f);
+    omeCameraSetLookAt(camera, &pos, &target, &up);
+    omeCameraUpdate(camera);
 
-    // camera settings
-    gluLookAt(2.0f, 2.0f, 2.0f,         // Eye-position
-                   0.0f, 0.0f, 0.0f,    // View-point
-                   0.0f, 0.0f, 1.0f);   // Up-vector
-    
     startTime = glfwGetTime();
 
-    while(omeEngineIsWindowOpened())
+    while(omeEngineIsWindowOpened() && !glfwGetKey(GLFW_KEY_ESC))
     {
+        omeVector vec = {0, 0, 1};
+
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         glRotated(1, 0, 0, 1);
-    
+        // TODO: fix the omeMatrixRotateAngles() function
+        //glGetFloatv(GL_MODELVIEW_MATRIX, matrix.tab);
+        //omeMatrixRotateAngles(&matrix, &vec);
+        //omeMatrixLoad(&matrix, OME_TRUE);
+
         glBegin(GL_QUADS);
 
         // bottom plan
@@ -73,11 +95,12 @@ int main(void)
         glVertex3i(1, -1, 1);
         glVertex3i(1, 1, 1);
         glVertex3i(-1, 1, 1);
-        
+
         glEnd();
 
         frames++;
 
+        // TODO: get rid of that stupid thing, which shouldn't be part of the engine
         omeEngineSwapBuffer();
     }
 

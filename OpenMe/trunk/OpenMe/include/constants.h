@@ -8,8 +8,8 @@
 //  http://sam.zoy.org/projects/COPYING.WTFPL for more details.
 
 
-#ifndef H_OPENME
-#define H_OPENME
+#ifndef OME_CONSTANTS_H
+#define OME_CONSTANTS_H
 
 
 // constants
@@ -26,4 +26,4 @@
 #define radToDeg(angle)     ((angle) / OME_PI * 180)
 
 
-#endif // H_OPENME
+#endif // OME_CONSTANTS_H

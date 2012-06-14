@@ -8,13 +8,15 @@
 //  http://sam.zoy.org/projects/COPYING.WTFPL for more details.
 
 
-#ifndef H_OPENME
-#define H_OPENME
+#ifndef OME_OPENME_H
+#define OME_OPENME_H
 
 
 #include "constants.h"
 #include "engine.h"
+#include "matrix.h"
+#include "camera.h"
 #include <GL/glfw.h>
 
 
-#endif // H_OPENME
+#endif // OME_OPENME_H

@@ -12,6 +12,7 @@
 #include "constants.h"
 #include <string.h>
 #include <math.h>
+#include <stdio.h>
 #include <GL/glfw.h>
 
 
@@ -55,7 +56,7 @@ void omeMatrixMakePerspective(omeMatrix *m, float angle, float ratio, float near
 
     omeMatrixMakeIdentity(m);
 
-    angle *= (float)OME_PI / 180;
+    angle = degToRad(angle);
     f = 1 / tanf(angle / 2);
 
     m->data[0][0] = f / ratio;
@@ -79,11 +80,11 @@ void omeMatrixMakeLookAt(omeMatrix *m, omeVector *pos, omeVector *target, omeVec
 
     // side vector
     omeVectorNormalize(up);
-    omeVectorMultVector(&forward, up, &side);
-    omeVectorNormalize(&side);
+    omeVectorCross(&forward, up, &side);
 
     // corrected up vector
-    omeVectorMultVector(&side, &forward, &newUP);
+    omeVectorNormalize(&side);
+    omeVectorCross(&side, &forward, &newUP);
 
     m->data[0][0] = side.x;
     m->data[0][1] = side.y;
@@ -202,8 +203,8 @@ void omeMatrixLoad(omeMatrix *m, int transpose)
         omeMatrixCopy(&m2, m);
         omeMatrixTranspose(&m2);
     }
-    else
-        glLoadMatrixf(m2.tab);
+    
+    glLoadMatrixf(m2.tab);
 }
 
 
@@ -224,5 +225,22 @@ void omeMatrixMultMatrix(omeMatrix *m, omeMatrix *m2, omeMatrix *res)
 }
 
 
+//TODO: implement those functions...
 //void omeMatrixMultVector(omeMatrix *m, omeVector *v, omeVector *res);
 //void omeMatrixSendAsUniform(omeMatrix *m, omeShaderProgram *sp, char *name);
+
+
+void omeMatrixPrint(omeMatrix *m)
+{
+    int i, j;
+
+    for(i = 0; i < 4; i++)
+    {
+        for(j = 0; j < 4; j++)
+            printf("%.2f ", m->data[i][j]);
+
+        printf("\n");
+    }
+
+    printf("\n");
+}

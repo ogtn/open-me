@@ -11,12 +11,14 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\OpenMe\src\camera.c" />
     <ClCompile Include="..\..\OpenMe\src\engine.c" />
     <ClCompile Include="..\..\OpenMe\src\logger.c" />
     <ClCompile Include="..\..\OpenMe\src\matrix.c" />
     <ClCompile Include="..\..\OpenMe\src\vector.c" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\OpenMe\include\camera.h" />
     <ClInclude Include="..\..\OpenMe\include\constants.h" />
     <ClInclude Include="..\..\OpenMe\include\engine.h" />
     <ClInclude Include="..\..\OpenMe\include\logger.h" />
@@ -80,7 +82,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
     <Lib>
-      <AdditionalDependencies>GLFW_dbg.lib;opengl32.lib;glu32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>GLFW_dbg.lib;opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Static Release|Win32'">
