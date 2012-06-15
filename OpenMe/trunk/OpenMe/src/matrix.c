@@ -13,7 +13,7 @@
 #include <string.h>
 #include <math.h>
 #include <stdio.h>
-#include <GL/glfw.h>
+#include <GL/glew.h>
 
 
 static const float identity[16] = {

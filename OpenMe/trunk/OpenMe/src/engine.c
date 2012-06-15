@@ -11,10 +11,15 @@
 #include "engine.h"
 #include "constants.h"
 #include "logger.h"
-#include <GL\glfw.h>
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
+#include <GL\glew.h>
+#ifdef _MSC_VER
+#include <sys/timeb.h>
+#else
+#include <sys/time.h>
+#endif
 
 
 static omeEngine engine;
@@ -22,7 +27,15 @@ static omeEngine engine;
 
 double omeEngineGetTime(void)
 {
-    return glfwGetTime();
+#ifdef _MSC_VER
+    struct _timeb timebuffer;
+    _ftime64_s(&timebuffer);
+    return timebuffer.time + timebuffer.millitm * 1.0e-3;
+#else
+    struct timeval tv;
+    gettimeofday(&tv, NULL);
+    return tv.tv_sec + tv.tv_usec * 1.0e-6;
+#endif
 }
 
 
@@ -38,7 +51,7 @@ double omeEngineGetFrameDuration(void)
 }
 
 
-void omeEngineSwapBuffer(void)
+void omeEngineUpdate(void)
 {
     double now = omeEngineGetTime();
 
@@ -55,11 +68,6 @@ void omeEngineSwapBuffer(void)
         engine.FPS = engine.frames / engine.FPSUpdateTime;
         engine.frames = 0;
     }
-
-    // TODO: limit fps here?
-
-    // buffers swapping
-    glfwSwapBuffers();
 }
 
 
@@ -90,61 +98,27 @@ int omeEngineStart(void)
     memset(&engine, 0, sizeof(omeEngine));
     omeLoggerStart();
 
-    // start glfw
-    if(!glfwInit())
-    {
-        engine.state = OME_ENGINE_STATE_DEFECT;
-        omeLoggerLog("omeEngineStart() failed: failed to initialize GLFW\n");
-        return OME_FAILURE;
-    }
+    //clear color and transparency
+    //glClearColor(0.1f, 0.1f, 0.1f, 1);
+    //glEnable(GL_BGR_EXT); // doesn't seem supported on my laptop :/
+    glEnable(GL_ALPHA_TEST);
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    //glEnable(GL_TEXTURE_2D); // for later...
+    //glAlphaFunc(GL_GREATER, 0.1); // maybe not very usefull...
+    //glEnable(GL_DEPTH_TEST); // wtf?? break transarency?
 
     // initialize the engine
     engine.FPSUpdateTime = omeEngineGetTime();
     engine.lastFrameStart = omeEngineGetTime();
     engine.state = OME_ENGINE_STATE_STARTED;
     
-    // a few prints
-    omeLoggerLog("Engine successfully started\n");
-    omeLoggerLog("%d processors available\n", glfwGetNumberOfProcessors());
-    glfwGetVersion(&major, &minor, &rev);
-    omeLoggerLog("GLFW version: %d.%d.%d\n", major, minor, rev);
-    glfwGetGLVersion(&major, &minor, &rev);
-    omeLoggerLog("OpenGL version: %d.%d.%d\n", major, minor, rev);
-    // TODO: glfwGetVideoModes() and glfwGetDesktopMode()
-
     return OME_SUCCESS;
-}
-
-
-int omeEngineOpenWindow(int width, int height, int fullScreen)
-{
-    // TODO: allow user to select the bits for each buffer, through another function maybe
-    if(!glfwOpenWindow(width, height, 8, 8, 8, 8, 0, 0, fullScreen ? GLFW_FULLSCREEN : GLFW_WINDOW))
-    {
-        omeLoggerLog("Failed to open an OpenGL window\n");
-        return OME_FAILURE;
-    }
-
-    omeLoggerLog("Window successfully opened");
-    omeLoggerLog("OpenGL %d.%d context ready\n", 
-        glfwGetWindowParam(GLFW_OPENGL_VERSION_MAJOR),
-        glfwGetWindowParam(GLFW_OPENGL_VERSION_MINOR));
-
-    return OME_SUCCESS;
-}
-
-
-int omeEngineIsWindowOpened(void)
-{
-    return glfwGetWindowParam(GLFW_OPENED) ? OME_TRUE : OME_FALSE;
 }
 
 
 void omeEngineStop(void)
 {
-    glfwCloseWindow();
-    glfwTerminate();
-
     omeLoggerLog("Engine stopped, status = %s\n", engine.state == OME_ENGINE_STATE_DEFECT ? "KO" : "OK");
     omeLoggerStop();
     engine.state = OME_ENGINE_STATE_STOPPED;

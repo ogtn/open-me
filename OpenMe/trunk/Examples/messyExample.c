@@ -11,9 +11,10 @@
 #include <openme.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include <GL/glfw.h>
 
 
-// TODO: useful for debugging, put that one in something like utils.c
+// TODO: useful for debugging, put that one in something like utils.c or error.c?
 void printError(void)
 {
     GLenum error = glGetError();
@@ -34,35 +35,27 @@ void printError(void)
 
 int main(void)
 {
-    double startTime, totalTime;
-    int frames = 0;
     omeVector pos =     {2.f, 2.f, 2.f};
     omeVector target =  {0.f, 0.f, 0.f};
     omeVector up =      {0.f, 0.f, 1.f};
     omeCamera *camera = omeCameraAlloc(OME_CAMERA_TYPE_PERPECTIVE);
 
-    // opening window
-    omeEngineStart();
-    omeEngineOpenWindow(640, 480, 0);
+    // initialize glfw
+    if(!glfwInit())
+        return EXIT_FAILURE;
 
-    // clear color and transparency
-    //glClearColor(0.1f, 0.1f, 0.1f, 1);
-    //glEnable(GL_BGR_EXT); // doesn't seem supported on my laptop :/
-    glEnable(GL_ALPHA_TEST);
-    glEnable(GL_BLEND);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    //glEnable(GL_TEXTURE_2D); // for later...
-    //glAlphaFunc(GL_GREATER, 0.1); // maybe not very usefull...
-    //glEnable(GL_DEPTH_TEST); // wtf?? break transarency?
+    // opening window
+    if(!glfwOpenWindow(640, 480, 8, 8, 8, 8, 0, 0, GLFW_WINDOW))
+        return EXIT_FAILURE;
+
+    omeEngineStart();
 
     // projection matrix settings
     omeCameraSetPerspective(camera, 65.f, 640.f / 480.f, 0.01f, 100.f);
     omeCameraSetLookAt(camera, &pos, &target, &up);
     omeCameraUpdate(camera);
 
-    startTime = glfwGetTime();
-
-    while(omeEngineIsWindowOpened() && !glfwGetKey(GLFW_KEY_ESC))
+    while(glfwGetWindowParam(GLFW_OPENED) && !glfwGetKey(GLFW_KEY_ESC))
     {
         omeVector vec = {0, 0, 1};
 
@@ -98,15 +91,12 @@ int main(void)
 
         glEnd();
 
-        frames++;
-
-        // TODO: get rid of that stupid thing, which shouldn't be part of the engine
-        omeEngineSwapBuffer();
+        // TODO: limit fps here?
+        omeEngineUpdate();
+        glfwSwapBuffers();
     }
 
-    totalTime = glfwGetTime() - startTime;
-    printf("%d frames rendered in %.3fs\n", frames, totalTime);
-    printf("average frame: %fs (%.2f FPS)\n", totalTime / frames, frames / totalTime);
+    omeCameraFree(&camera);
     omeEngineStop();
 
     return EXIT_SUCCESS;

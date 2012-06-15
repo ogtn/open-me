@@ -39,14 +39,10 @@ typedef struct omeEngine
 int omeEngineStart(void);
 void omeEngineStop(void);
 
-int omeEngineOpenWindow(int width, int height, int fullScreen);
-int omeEngineIsWindowOpened(void);
-
 double omeEngineGetTime(void);
 double omeEngineGetFPS(void);
 double omeEngineGetFrameDuration(void);
-
-void omeEngineSwapBuffer(void);
+void omeEngineUpdate(void);
 void omeEngineClearBuffers(int flags);
 void omeEngineClearAllBuffers(void);
 

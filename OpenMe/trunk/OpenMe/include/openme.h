@@ -16,7 +16,6 @@
 #include "engine.h"
 #include "matrix.h"
 #include "camera.h"
-#include <GL/glfw.h>
 
 
 #endif // OME_OPENME_H

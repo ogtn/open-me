@@ -13,7 +13,7 @@
 #include "constants.h"
 #include <stdlib.h>
 #include <string.h>
-#include <GL/glfw.h>
+#include <GL/glew.h>
 
 
 omeCamera *omeCameraAlloc(omeCameraType type)
