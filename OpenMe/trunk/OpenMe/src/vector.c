@@ -13,7 +13,7 @@
 #include <string.h>
 
 
-void omeVectorCopy(omeVector *dst, omeVector *src)
+void omeVectorCopy(omeVector *dst, const omeVector *src)
 {
     memcpy(dst, src, sizeof(omeVector));    
 }

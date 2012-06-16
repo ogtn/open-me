@@ -10,26 +10,36 @@
 
 #include "logger.h"
 #include "camera.h"
-#include "constants.h"
+#include "utils.h"
 #include <stdlib.h>
 #include <string.h>
 #include <GL/glew.h>
 
 
-omeCamera *omeCameraAlloc(omeCameraType type)
+
+static const omeVector defaultPosition = {1, 1, 1};
+static const omeVector defaultTarget = {0, 0, 0};
+static const omeVector defaultUp = {0, 0, 1};
+
+
+omeCamera *omeCameraCreate(omeCameraType type)
 {
-    omeCamera *res = calloc(1, sizeof(omeCamera));
+    omeCamera *c = calloc(1, sizeof(omeCamera));
 
-    res->type = type;
-    res->state = OME_CAMERA_STATE_OUTDATED;
+    c->type = type;
+    c->state = OME_CAMERA_STATE_OUTDATED;
+    omeVectorCopy(&c->pos, &defaultPosition);
+    omeVectorCopy(&c->target, &defaultTarget);
+    omeVectorCopy(&c->up, &defaultUp);
 
-    return res;
+    return c;
 }
 
 
-void omeCameraFree(omeCamera **c)
+void omeCameraDestroy(omeCamera **c)
 {
     memset(*c, 0, sizeof(omeCamera));
+    free(*c);
     *c = NULL;
 }
 
@@ -80,6 +90,32 @@ void omeCameraSetLookAt(omeCamera *c, omeVector *pos, omeVector *target, omeVect
     omeVectorCopy(&c->pos, pos);
     omeVectorCopy(&c->target, target);
     omeVectorCopy(&c->up, up);
+}
+
+
+void omeCameraSetPosition(omeCamera *c, omeVector *pos)
+{
+    if(c->type != OME_CAMERA_TYPE_PERPECTIVE)
+    {
+        omeLoggerLog("this is not a perspective camera");
+        return;
+    }
+
+    c->state = OME_CAMERA_STATE_OUTDATED;
+    omeVectorCopy(&c->pos, pos);
+}
+
+
+void omeCameraSetTarget(omeCamera *c, omeVector *target)
+{
+    if(c->type != OME_CAMERA_TYPE_PERPECTIVE)
+    {
+        omeLoggerLog("this is not a perspective camera");
+        return;
+    }
+
+    c->state = OME_CAMERA_STATE_OUTDATED;
+    omeVectorCopy(&c->target, target);
 }
 
 

@@ -9,7 +9,7 @@
 
 
 #include "engine.h"
-#include "constants.h"
+#include "utils.h"
 #include "logger.h"
 #include <stdlib.h>
 #include <string.h>
@@ -85,8 +85,6 @@ void omeEngineClearAllBuffers(void)
 
 int omeEngineStart(void)
 {
-    int major, minor, rev;
-
     // avoid double start
     if(engine.state == OME_ENGINE_STATE_STARTED)
     {

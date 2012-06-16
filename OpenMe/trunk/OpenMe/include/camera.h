@@ -63,11 +63,13 @@ typedef struct omeCamera
 } omeCamera;
 
 
-omeCamera *omeCameraAlloc(omeCameraType type);
-void omeCameraFree(omeCamera **c);
+omeCamera *omeCameraCreate(omeCameraType type);
+void omeCameraDestroy(omeCamera **c);
 void omeCameraSetOrtho(omeCamera *c, float left, float right, float bottom, float top, float near, float far);
 void omeCameraSetPerspective(omeCamera *c, float fov, float ratio, float near, float far);
 void omeCameraSetLookAt(omeCamera *c, omeVector *pos, omeVector *target, omeVector *up);
+void omeCameraSetPosition(omeCamera *c, omeVector *pos);
+void omeCameraSetTarget(omeCamera *c, omeVector *target);
 void omeCameraUpdate(omeCamera *c);
 
 

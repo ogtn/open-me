@@ -11,15 +11,20 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\OpenMe\src\buffer.c" />
     <ClCompile Include="..\..\OpenMe\src\camera.c" />
     <ClCompile Include="..\..\OpenMe\src\engine.c" />
     <ClCompile Include="..\..\OpenMe\src\logger.c" />
     <ClCompile Include="..\..\OpenMe\src\matrix.c" />
+    <ClCompile Include="..\..\OpenMe\src\mesh.c" />
+    <ClCompile Include="..\..\OpenMe\src\utils.c" />
     <ClCompile Include="..\..\OpenMe\src\vector.c" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\OpenMe\include\buffer.h" />
     <ClInclude Include="..\..\OpenMe\include\camera.h" />
-    <ClInclude Include="..\..\OpenMe\include\constants.h" />
+    <ClInclude Include="..\..\OpenMe\include\mesh.h" />
+    <ClInclude Include="..\..\OpenMe\include\utils.h" />
     <ClInclude Include="..\..\OpenMe\include\engine.h" />
     <ClInclude Include="..\..\OpenMe\include\logger.h" />
     <ClInclude Include="..\..\OpenMe\include\matrix.h" />
@@ -76,6 +81,7 @@
       <PreprocessorDefinitions>WIN32;_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <DisableSpecificWarnings>4201;%(DisableSpecificWarnings)</DisableSpecificWarnings>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>

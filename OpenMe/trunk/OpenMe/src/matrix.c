@@ -9,7 +9,7 @@
 
 
 #include "matrix.h"
-#include "constants.h"
+#include "utils.h"
 #include <string.h>
 #include <math.h>
 #include <stdio.h>
@@ -56,7 +56,7 @@ void omeMatrixMakePerspective(omeMatrix *m, float angle, float ratio, float near
 
     omeMatrixMakeIdentity(m);
 
-    angle = degToRad(angle);
+    angle = degToRadf(angle);
     f = 1 / tanf(angle / 2);
 
     m->data[0][0] = f / ratio;
@@ -135,7 +135,7 @@ void omeMatrixRotateAxis(omeMatrix *m, omeVector *axis, float theta)
     omeMatrix m2;
     float ct, st;
 
-    theta = degToRad(theta);
+    theta = degToRadf(theta);
     ct = cosf(theta);
     st = sinf(theta);
        

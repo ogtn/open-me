@@ -14,50 +14,52 @@
 #include <GL/glfw.h>
 
 
-// TODO: useful for debugging, put that one in something like utils.c or error.c?
-void printError(void)
-{
-    GLenum error = glGetError();
-
-    switch(error)
-    {
-    case GL_NO_ERROR: puts("GL_NO_ERROR"); break;
-    case GL_INVALID_ENUM: puts("GL_INVALID_ENUM"); break;
-    case GL_INVALID_VALUE: puts("GL_INVALID_VALUE"); break;
-    case GL_INVALID_OPERATION: puts("GL_INVALID_OPERATION"); break;
-    case GL_STACK_OVERFLOW: puts("GL_STACK_OVERFLOW"); break;
-    case GL_STACK_UNDERFLOW: puts("GL_STACK_UNDERFLOW"); break;
-    case GL_OUT_OF_MEMORY: puts("GL_OUT_OF_MEMORY"); break;
-    default: puts("unknown error :("); break;
-    }
-}
-
-
 int main(void)
 {
-    omeVector pos =     {2.f, 2.f, 2.f};
-    omeVector target =  {0.f, 0.f, 0.f};
-    omeVector up =      {0.f, 0.f, 1.f};
-    omeCamera *camera = omeCameraAlloc(OME_CAMERA_TYPE_PERPECTIVE);
+    omeBuffer *buffer;
+    omeCamera *camera;
+    omeVector pos = {2.f, 2.f, 2.f};
+    int positions[] = {
+        -1, -1, -1,
+        1, -1, -1,
+        1, 1, -1,
+        1, 1, -1,
+        -1, 1, -1,
+        -1, -1, -1,
 
-    // initialize glfw
-    if(!glfwInit())
-        return EXIT_FAILURE;
+        -1, -1, 0,
+        1, -1, 0,
+        1, 1, 0,
+        1, 1, 0,
+        -1, 1, 0,
+        -1, -1, 0,
 
-    // opening window
-    if(!glfwOpenWindow(640, 480, 8, 8, 8, 8, 0, 0, GLFW_WINDOW))
+        -1, -1, 1,
+        1, -1, 1,
+        1, 1, 1,
+        1, 1, 1,
+        -1, 1, 1,
+        -1, -1, 1};
+
+    // get OpenGL context
+    if(!glfwInit() || !glfwOpenWindow(640, 480, 8, 8, 8, 8, 0, 0, GLFW_WINDOW))
         return EXIT_FAILURE;
 
     omeEngineStart();
 
-    // projection matrix settings
+    // camera settings
+    camera = omeCameraCreate(OME_CAMERA_TYPE_PERPECTIVE);
     omeCameraSetPerspective(camera, 65.f, 640.f / 480.f, 0.01f, 100.f);
-    omeCameraSetLookAt(camera, &pos, &target, &up);
+    omeCameraSetPosition(camera, &pos);
     omeCameraUpdate(camera);
 
+    // buffer test
+    buffer = omeBufferCreate(54, 1);
+    omeBufferAddAttrib(buffer, 3, OME_INT, 0, OME_BUFFER_TYPE_POSITION, positions);
+    
     while(glfwGetWindowParam(GLFW_OPENED) && !glfwGetKey(GLFW_KEY_ESC))
     {
-        omeVector vec = {0, 0, 1};
+        int i;
 
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         glRotated(1, 0, 0, 1);
@@ -66,37 +68,23 @@ int main(void)
         //omeMatrixRotateAngles(&matrix, &vec);
         //omeMatrixLoad(&matrix, OME_TRUE);
 
-        glBegin(GL_QUADS);
+        glBegin(GL_TRIANGLES);
 
-        // bottom plan
-        glColor4f(1, 0, 0, 0.5f);
-        glVertex3i(-1, -1, -1);
-        glVertex3i(1, -1, -1);
-        glVertex3i(1, 1, -1);
-        glVertex3i(-1, 1, -1);
-
-        // middle plan
-        glColor4f(0, 1, 0, 0.5f);
-        glVertex2i(-1, -1);
-        glVertex2i(1, -1);
-        glVertex2i(1, 1);
-        glVertex2i(-1, 1);
-
-        // top plan
-        glColor4f(0, 0, 1, 0.5f);
-        glVertex3i(-1, -1, 1);
-        glVertex3i(1, -1, 1);
-        glVertex3i(1, 1, 1);
-        glVertex3i(-1, 1, 1);
+        for(i = 0; i < 54; i += 3)
+        {
+            glColor3f((positions[i] + 1) * 0.5f, (positions[i + 1] + 1) * 0.5f, (positions[i + 2] + 1) * 0.5f);
+            glVertex3i(positions[i], positions[i + 1], positions[i + 2]);
+        }
 
         glEnd();
 
         // TODO: limit fps here?
         omeEngineUpdate();
+        glfwSleep(0.001);
         glfwSwapBuffers();
     }
 
-    omeCameraFree(&camera);
+    omeCameraDestroy(&camera);
     omeEngineStop();
 
     return EXIT_SUCCESS;

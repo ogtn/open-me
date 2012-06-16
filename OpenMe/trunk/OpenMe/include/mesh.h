@@ -8,15 +8,17 @@
 //  http://sam.zoy.org/projects/COPYING.WTFPL for more details.
 
 
-#ifndef OME_OPENME_H
-#define OME_OPENME_H
+#ifndef OME_MESH_H
+#define OME_MESH_H
 
 
-#include "utils.h"
-#include "engine.h"
-#include "matrix.h"
-#include "camera.h"
 #include "buffer.h"
 
 
-#endif // OME_OPENME_H
+typedef struct omeMesh
+{
+    omeBuffer *buffers;
+} omeMesh;
+
+
+#endif // OME_MESH_H
