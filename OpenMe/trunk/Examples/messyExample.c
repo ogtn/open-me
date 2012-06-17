@@ -19,7 +19,8 @@ int main(void)
     omeBuffer *buffer;
     omeCamera *camera;
     omeVector pos = {2.f, 2.f, 2.f};
-    int positions[] = {
+    omeMesh *mesh;
+    float positions[] = {
         -1, -1, -1,
         1, -1, -1,
         1, 1, -1,
@@ -53,21 +54,29 @@ int main(void)
     omeCameraSetPosition(camera, &pos);
     omeCameraUpdate(camera);
 
-    // buffer test
-    buffer = omeBufferCreate(54, 1);
-    omeBufferAddAttrib(buffer, 3, OME_INT, 0, OME_BUFFER_TYPE_POSITION, positions);
-    
+    // mesh test
+    mesh = omeMeshCreate(1);
+    buffer = omeMeshAddBuffer(mesh, 18, 2);
+    omeBufferAddAttrib(buffer, 3, OME_FLOAT, 0, OME_BUFFER_TYPE_POSITION, positions);
+    omeBufferAddAttrib(buffer, 3, OME_FLOAT, 0, OME_BUFFER_TYPE_COLOR, positions);
+
     while(glfwGetWindowParam(GLFW_OPENED) && !glfwGetKey(GLFW_KEY_ESC))
     {
         int i;
+        omeVector vec = {0, 0, 1};
+        omeMatrix matrix;
 
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        glRotated(1, 0, 0, 1);
-        // TODO: fix the omeMatrixRotateAngles() function
-        //glGetFloatv(GL_MODELVIEW_MATRIX, matrix.tab);
-        //omeMatrixRotateAngles(&matrix, &vec);
-        //omeMatrixLoad(&matrix, OME_TRUE);
 
+        // ugly rotation :D
+        glGetFloatv(GL_MODELVIEW_MATRIX, matrix.tab);
+        omeMatrixTranspose(&matrix);
+        omeMatrixRotateAxis(&matrix, &vec, 1);
+        omeMatrixLoad(&matrix, OME_TRUE);
+        
+        omeMeshRender(mesh);
+
+        /*
         glBegin(GL_TRIANGLES);
 
         for(i = 0; i < 54; i += 3)
@@ -77,6 +86,7 @@ int main(void)
         }
 
         glEnd();
+        */
 
         // TODO: limit fps here?
         omeEngineUpdate();
@@ -84,6 +94,7 @@ int main(void)
         glfwSwapBuffers();
     }
 
+    omeMeshDestroy(&mesh);
     omeCameraDestroy(&camera);
     omeEngineStop();
 

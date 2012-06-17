@@ -12,13 +12,42 @@
 #define OME_MESH_H
 
 
-#include "buffer.h"
+#include "utils.h"
+
+
+// forward declaration
+typedef struct omeBuffer omeBuffer;
+
+
+// TODO: find a better way to name those things
+typedef enum omeRenderType
+{
+    OME_IMMEDIATE,
+    OME_VERTEX_ARRAY,
+    OME_VERTEX_BUFFER_OBJECT
+} omeRenderType;
 
 
 typedef struct omeMesh
 {
-    omeBuffer *buffers;
+    int nbBuffers;
+    int bufferCpt;
+    int nbFinalizedBuffers;
+    omeBuffer **buffers;
+    omeBool finalized;
+    omeRenderType  renderType;
+    //omeEntity entity;
 } omeMesh;
+
+
+omeMesh *omeMeshCreate(int nbBuffers);
+void omeMeshDestroy(omeMesh **m);
+omeBuffer *omeMeshAddBuffer(omeMesh *m, int nbVertices, int nbAttributes);
+void omeMeshFinalize(omeMesh *m);
+void omeMeshBufferFinalized(omeMesh *m);
+void omeMeshRender(omeMesh *m);
+void omeMeshRenderImmediate(omeMesh *m);
+void omeMeshRenderVA(omeMesh *m);
 
 
 #endif // OME_MESH_H

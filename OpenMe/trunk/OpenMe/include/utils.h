@@ -51,9 +51,14 @@ typedef enum omeType
 #define radToDegf(angle)    ((angle) / OME_PIF * 180)
 
 
-// functions
+// macros and functions
+#define OME_BUFFER_OFFSET(i) ((char *)NULL + i)
 int omeSizeOf(omeType type);
 char *omeGetGLError(void);
+
+
+// other stuff...
+#define OME_NAME_MAXLEN     256  
 
 
 #endif // OME_UTILS_H

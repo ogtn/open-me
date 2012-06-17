@@ -17,6 +17,15 @@
 #include "matrix.h"
 #include "camera.h"
 #include "buffer.h"
+#include "mesh.h"
+
+
+//TODO: avoid memset() calls in *Destroy functions in release
+//TODO: test *alloc() return in debug mode, through "overloading"?
+//TODO: add an omeBool field in structures, so they can know if they are dynamic ok not and avoid calling free()??? Not sure if stupid....
+//TODO: add extern C in every header?
+//TODO: make sure all static stuffs are const, to allow multithreading
+//TODO: use glewIsSupported() to adapt the render to the hardware's capabilities
 
 
 #endif // OME_OPENME_H

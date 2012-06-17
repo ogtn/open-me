@@ -15,6 +15,10 @@
 #include "utils.h"
 
 
+// forward declaration
+typedef struct omeMesh omeMesh;
+
+
 typedef enum omeBufferType
 {
     OME_BUFFER_TYPE_POSITION,
@@ -36,7 +40,7 @@ typedef enum omeBufferType
 //TODO: should be private. Internal use only
 typedef struct omeVertexAttrib
 {
-    int nbElement;
+    int nbElements;
     int size;
     char *data;
     int updateHint;
@@ -55,17 +59,17 @@ typedef struct omeBuffer
     int vertexSize;
     int indexCpt;
     omeVertexAttrib attributes[OME_MAX_ATTRIB];  //TODO: try dynamic solution instead?
-    char *data[OME_MAX_ATTRIB];                  //TODO: try dynamic solution instead?
     omeBool interleaved;
     omeBool indexed;
     omeBool padded;
     omeBool finalized;
+    omeMesh *mesh;
 } omeBuffer;
 
 
-omeBuffer *omeBufferCreate(int nbVertices, int nbAttributes);
+omeBuffer *omeBufferCreate(int nbVertices, int nbAttributes, omeMesh *m);
 void omeBufferDestroy(omeBuffer **b);
-int omeBufferAddAttrib(omeBuffer *b, int nbElement, omeType type, int updateHint, omeBufferType bufferType, void *data);
+int omeBufferAddAttrib(omeBuffer *b, int nbElements, omeType type, int updateHint, omeBufferType bufferType, void *data);
 void omeBufferFinalize(omeBuffer *b);
 void omeBufferUpdateAttrib(omeBuffer *b, int attribIndex, void *data);
 

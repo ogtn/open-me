@@ -115,6 +115,7 @@ void omeMatrixTranslate(omeMatrix *m, omeVector *v)
 }
 
 
+// TODO: fix this function...
 void omeMatrixScale(omeMatrix *m, omeVector *v)
 {
     omeMatrix m2;
@@ -129,6 +130,7 @@ void omeMatrixScale(omeMatrix *m, omeVector *v)
 }
 
 
+// TODO: fix this function...
 void omeMatrixRotateAxis(omeMatrix *m, omeVector *axis, float theta)
 {
     omeVector v;
@@ -211,17 +213,27 @@ void omeMatrixLoad(omeMatrix *m, int transpose)
 void omeMatrixMultMatrix(omeMatrix *m, omeMatrix *m2, omeMatrix *res)
 {
     int i, j, k;
+    omeMatrix tmp;
+    omeMatrix *m3 = res;
+
+    // self affectation
+    if(m == res)
+        m3 = &tmp;
 
     for(i = 0; i < 4; i++)
     {
         for(j = 0; j < 4; j++)
         {
-            res->data[i][j] = 0;
+            m3->data[i][j] = 0;
 
             for(k = 0; k < 4; k++)
-                res->data[i][j] += m->data[i][k] * m2->data[k][j];
+                m3->data[i][j] += m->data[i][k] * m2->data[k][j];
         }
     }
+
+    // self affectation
+    if(m == res)
+        omeMatrixCopy(res, m3);
 }
 
 

@@ -14,6 +14,7 @@
     <ClCompile Include="..\..\OpenMe\src\buffer.c" />
     <ClCompile Include="..\..\OpenMe\src\camera.c" />
     <ClCompile Include="..\..\OpenMe\src\engine.c" />
+    <ClCompile Include="..\..\OpenMe\src\entity.c" />
     <ClCompile Include="..\..\OpenMe\src\logger.c" />
     <ClCompile Include="..\..\OpenMe\src\matrix.c" />
     <ClCompile Include="..\..\OpenMe\src\mesh.c" />
@@ -23,6 +24,7 @@
   <ItemGroup>
     <ClInclude Include="..\..\OpenMe\include\buffer.h" />
     <ClInclude Include="..\..\OpenMe\include\camera.h" />
+    <ClInclude Include="..\..\OpenMe\include\entity.h" />
     <ClInclude Include="..\..\OpenMe\include\mesh.h" />
     <ClInclude Include="..\..\OpenMe\include\utils.h" />
     <ClInclude Include="..\..\OpenMe\include\engine.h" />
@@ -81,7 +83,7 @@
       <PreprocessorDefinitions>WIN32;_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
-      <DisableSpecificWarnings>4201;%(DisableSpecificWarnings)</DisableSpecificWarnings>
+      <DisableSpecificWarnings>4201;4996;%(DisableSpecificWarnings)</DisableSpecificWarnings>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>

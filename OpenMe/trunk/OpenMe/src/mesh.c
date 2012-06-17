@@ -9,3 +9,225 @@
 
 
 #include "mesh.h"
+#include "buffer.h"
+#include "logger.h"
+#include <stdlib.h>
+#include <string.h>
+#include <GL/glew.h>
+
+
+omeMesh *omeMeshCreate(int nbBuffers)
+{
+    omeMesh *m = calloc(1, sizeof(omeMesh));
+
+    m->nbBuffers = nbBuffers;
+    m->buffers = calloc(nbBuffers, sizeof(omeBuffer*));
+    m->renderType = OME_VERTEX_ARRAY;
+
+    return m;
+}
+
+
+void omeMeshDestroy(omeMesh **m)
+{
+    int i;
+
+    //TODO: anything to add here??
+    //for(i = 0; i < (*m)->nbBuffers; i++)
+    //    omeBufferDelReference(...);
+
+    memset(*m, 0, sizeof(omeMesh));
+    free(*m);
+    *m = NULL;
+}
+
+
+//TODO: would omeMeshGetBuffer(bufferIndex...) be better? (on first get, automatically allocate, after ignore parameters)
+omeBuffer *omeMeshAddBuffer(omeMesh *m, int nbVertices, int nbAttributes)
+{
+    omeBuffer *b;
+
+    if(m->bufferCpt >= m->nbBuffers)
+    {
+        omeLoggerLog("All buffers have already been added");
+        return NULL;
+    }
+
+    b = m->buffers[m->bufferCpt] = omeBufferCreate(nbVertices, nbAttributes, m);
+    m->bufferCpt++;
+
+    return b;
+}
+
+
+void omeMeshFinalize(omeMesh *m)
+{
+    m->finalized = OME_TRUE;
+}
+
+
+void omeMeshBufferFinalized(omeMesh *m)
+{
+    if(m->nbFinalizedBuffers >= m->nbBuffers)
+    {
+        omeLoggerLog("All buffers are already finalized\n");
+        return;
+    }
+
+    m->nbFinalizedBuffers++;
+
+    if(m->nbFinalizedBuffers == m->nbBuffers)
+        omeMeshFinalize(m);
+}
+
+
+void omeMeshRender(omeMesh *m)
+{
+    switch(m->renderType)
+    {
+    case OME_IMMEDIATE:
+        omeMeshRenderImmediate(m); 
+        break;
+    case OME_VERTEX_ARRAY:
+        omeMeshRenderVA(m);
+        break;
+    default:
+        omeLoggerLog("Not implemented yet\n");
+    }
+}
+
+
+void omeMeshRenderImmediate(omeMesh *m)
+{
+    int i, j, k;
+
+    for(i = 0; i < m->nbBuffers; i++)
+    {
+        omeBuffer *b = m->buffers[i];
+
+        glBegin(GL_TRIANGLES);
+
+        for(j = 0; j < b->nbVertices; j++)
+        {
+            for(k = b->nbAttributes - 1; k >= 0; k--)
+            {
+                omeVertexAttrib *attr = &b->attributes[j];
+
+                switch (attr->bufferType)
+                {
+                case OME_BUFFER_TYPE_POSITION:
+                    glVertex3fv((void*)&attr->data[j * omeSizeOf(attr->type)]);
+                    break;
+                case OME_BUFFER_TYPE_COLOR:
+                    glColor3fv((void*)&attr->data[j * omeSizeOf(attr->type)]);
+                    break;
+                default:
+                    omeLoggerLog("render of desired bufferType not implemented yet\n");
+                    break;
+                }
+            }
+        }
+
+        glEnd();
+    }
+}
+
+
+void omeMeshRenderImmediate_old(omeMesh *m)
+{
+    int i, j, k;
+
+    for(i = 0; i < m->nbBuffers; i++)
+    {
+        omeBuffer *b = m->buffers[i];
+
+        glBegin(GL_TRIANGLES);
+
+        for(j = b->nbAttributes - 1; j >= 0; j--)
+        {
+            omeVertexAttrib *attr = &b->attributes[j];
+            void *ptr;
+
+            switch (attr->bufferType)
+            {
+            case OME_BUFFER_TYPE_POSITION:
+                for(k = 0; k < (b->nbVertices * attr->nbElements); k += attr->nbElements)
+                {
+                    //glColor3fv((void*)&attr->data[k * omeSizeOf(attr->type)]);
+                    ptr = &attr->data[k * omeSizeOf(attr->type)];
+                    glVertex3fv((void*)&attr->data[k * omeSizeOf(attr->type)]);
+                }
+                break;
+            case OME_BUFFER_TYPE_COLOR:
+                for(k = 0; k < (b->nbVertices * attr->nbElements); k += attr->nbElements)
+                {
+                    ptr = &attr->data[k * omeSizeOf(attr->type)];
+                    glColor3fv((void*)&attr->data[k * omeSizeOf(attr->type)]);
+                }
+                break;
+            default:
+                omeLoggerLog("render of desired bufferType not implemented yet\n");
+                break;
+            }
+        }
+
+        glEnd();
+    }
+}
+
+
+void omeMeshRenderVA(omeMesh *m)
+{
+    typedef void (__stdcall *glPointerFunc)(GLint, GLenum, GLsizei, const GLvoid*);
+    glPointerFunc pointerFunc;
+
+    /*
+    GL_COLOR_ARRAY
+    GL_EDGE_FLAG_ARRAY
+    GL_FOG_COORD_ARRAY
+    GL_INDEX_ARRAY
+    GL_NORMAL_ARRAY
+    GL_SECONDARY_COLOR_ARRAY
+    GL_TEXTURE_COORD_ARRAY
+    GL_VERTEX_ARRAY
+    */
+
+    int i, j;
+
+    for(i = 0; i < m->nbBuffers; i++)
+    {
+        omeBuffer *b = m->buffers[i];
+        GLenum arrayType;
+
+        for(j = b->nbAttributes - 1; j >= 0; j--)
+        {
+            omeVertexAttrib *attr = &b->attributes[j];
+            
+            
+            if(attr->bufferType == OME_BUFFER_TYPE_POSITION)
+            {
+                arrayType = GL_VERTEX_ARRAY;
+                pointerFunc = glVertexPointer;
+            }
+            else if(attr->bufferType == OME_BUFFER_TYPE_COLOR)
+            {
+                arrayType = GL_COLOR_ARRAY;
+                pointerFunc = glColorPointer;
+            }
+            else
+            {
+                omeLoggerLog("Not implemented yet\n");
+                return; //TODO: find a way to not skip the rest (goto??)
+            }
+
+            glEnableClientState(arrayType);
+
+            pointerFunc(attr->nbElements, GL_FLOAT, 0, attr->data);        
+        }
+
+        glDrawArrays(GL_TRIANGLES, 0, b->nbVertices);
+
+        for(j = b->nbAttributes - 1; j >= 0; j--)
+            glDisableClientState(arrayType);
+    }
+}

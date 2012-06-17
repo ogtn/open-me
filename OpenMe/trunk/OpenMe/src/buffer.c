@@ -8,14 +8,14 @@
 //  http://sam.zoy.org/projects/COPYING.WTFPL for more details.
 
 
-
 #include "buffer.h"
 #include "logger.h"
+#include "mesh.h"
 #include <stdlib.h>
 #include <string.h>
 
 
-omeBuffer *omeBufferCreate(int nbVertices, int nbAttributes)
+omeBuffer *omeBufferCreate(int nbVertices, int nbAttributes, omeMesh *m)
 {
     omeBuffer *b = calloc(1, sizeof(omeBuffer));
 
@@ -26,6 +26,7 @@ omeBuffer *omeBufferCreate(int nbVertices, int nbAttributes)
 
     b->nbVertices = nbVertices;
     b->nbAttributes = nbAttributes;
+    b->mesh = m;
 
     return b;
 }
@@ -36,8 +37,6 @@ void omeBufferDestroy(omeBuffer **b)
     int i = 0;
 
     //TODO: figure out what else do we need to free here...
-    while((*b)->data[i] && i < OME_MAX_ATTRIB)
-        free((*b)->data[i++]);
 
     memset(*b, 0, sizeof(omeBuffer));
     free(*b);
@@ -45,13 +44,13 @@ void omeBufferDestroy(omeBuffer **b)
 }
 
 
-int omeBufferAddAttrib(omeBuffer *b, int nbElement, omeType type, int updateHint, omeBufferType bufferType, void *data)
+int omeBufferAddAttrib(omeBuffer *b, int nbElements, omeType type, int updateHint, omeBufferType bufferType, void *data)
 {
     omeVertexAttrib *attrib;
     
     if(b->indexCpt >= b->nbAttributes)
     {
-        omeLoggerLog("All buffers have already been added");
+        omeLoggerLog("All attributes have already been added");
         return -1;
     }
 
@@ -64,17 +63,17 @@ int omeBufferAddAttrib(omeBuffer *b, int nbElement, omeType type, int updateHint
     }
 
     attrib = &b->attributes[b->indexCpt];
-    attrib->nbElement = nbElement;
+    attrib->nbElements = nbElements;
     attrib->type = type;
     attrib->updateHint = updateHint;
     attrib->bufferType = bufferType;
     attrib->data = data;
-    attrib->size = b->nbVertices * nbElement * omeSizeOf(type);
+    attrib->size = b->nbVertices * nbElements * omeSizeOf(type);
 
     b->vertexSize += omeSizeOf(type);
     b->indexCpt++;
 
-    if(b->indexCpt != b->nbAttributes)
+    if(b->indexCpt == b->nbAttributes)
         omeBufferFinalize(b);
 
     return b->indexCpt;
@@ -99,16 +98,10 @@ void omeBufferFinalize(omeBuffer *b)
         return;
     }
 
-    //TODO: take the hints and the options into account
-    b->data[0] = malloc(b->vertexSize * b->nbVertices);
-    ptr = b->data[0];
+    //TODO: take the hints and the options into account somewhere around here
 
-     for(i = 0; i < b->nbAttributes; i++)
-     {
-         memcpy(ptr, b->attributes[i].data, b->attributes[i].size);
-         ptr += b->attributes[i].size;
-         b->attributes[i].data = NULL;
-     }
+    if(b->mesh != NULL)
+        omeMeshBufferFinalized(b->mesh);
 
      b->finalized = OME_TRUE;
 }
