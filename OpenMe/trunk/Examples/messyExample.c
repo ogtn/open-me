@@ -1,4 +1,4 @@
-//  ome: Open Minimalistic Engine
+﻿//  ome: Open Minimalistic Engine
 //
 //  Copyright: (c) 2012 Olivier Guittonneau <OpenMEngine@gmail.com>
 //
@@ -16,31 +16,16 @@
 
 int main(void)
 {
+    int i;
     omeBuffer *buffer;
     omeCamera *camera;
     omeVector pos = {2.f, 2.f, 2.f};
     omeMesh *mesh;
-    float positions[] = {
-        -1, -1, -1,
-        1, -1, -1,
-        1, 1, -1,
-        1, 1, -1,
-        -1, 1, -1,
-        -1, -1, -1,
-
-        -1, -1, 0,
-        1, -1, 0,
-        1, 1, 0,
-        1, 1, 0,
-        -1, 1, 0,
-        -1, -1, 0,
-
-        -1, -1, 1,
-        1, -1, 1,
-        1, 1, 1,
-        1, 1, 1,
-        -1, 1, 1,
-        -1, -1, 1};
+    float vertices[][18] = {
+        {-1, -1, -1, 1, -1, -1, 1, 1, -1, 1, 1, -1, -1, 1, -1, -1, -1, -1}, 
+        {-1, -1, 0, 1, -1, 0, 1, 1, 0, 1, 1, 0, -1, 1, 0, -1, -1, 0},
+        {-1, -1, 1, 1, -1, 1, 1, 1, 1, 1, 1, 1, -1, 1, 1, -1, -1, 1}};
+    omePolygonType polygonTypes[] = {OME_TRIANGLES​, OME_LINE_LOOP​, OME_POINTS​};
 
     // get OpenGL context
     if(!glfwInit() || !glfwOpenWindow(640, 480, 8, 8, 8, 8, 0, 0, GLFW_WINDOW))
@@ -55,14 +40,17 @@ int main(void)
     omeCameraUpdate(camera);
 
     // mesh test
-    mesh = omeMeshCreate(1);
-    buffer = omeMeshAddBuffer(mesh, 18, 2);
-    omeBufferAddAttrib(buffer, 3, OME_FLOAT, 0, OME_BUFFER_TYPE_POSITION, positions);
-    omeBufferAddAttrib(buffer, 3, OME_FLOAT, 0, OME_BUFFER_TYPE_COLOR, positions);
+    mesh = omeMeshCreate(3);
+
+    for(i = 0; i < 3; i++)
+    {
+        buffer = omeMeshAddBuffer(mesh, 6, 2, polygonTypes[i]);
+        omeBufferAddAttrib(buffer, 3, OME_FLOAT, 0, OME_BUFFER_TYPE_POSITION, &vertices[i]);
+        omeBufferAddAttrib(buffer, 3, OME_FLOAT, 0, OME_BUFFER_TYPE_COLOR, &vertices[i]);
+    }
 
     while(glfwGetWindowParam(GLFW_OPENED) && !glfwGetKey(GLFW_KEY_ESC))
     {
-        int i;
         omeVector vec = {0, 0, 1};
         omeMatrix matrix;
 
@@ -73,20 +61,8 @@ int main(void)
         omeMatrixTranspose(&matrix);
         omeMatrixRotateAxis(&matrix, &vec, 1);
         omeMatrixLoad(&matrix, OME_TRUE);
-        
+
         omeMeshRender(mesh);
-
-        /*
-        glBegin(GL_TRIANGLES);
-
-        for(i = 0; i < 54; i += 3)
-        {
-            glColor3f((positions[i] + 1) * 0.5f, (positions[i + 1] + 1) * 0.5f, (positions[i + 2] + 1) * 0.5f);
-            glVertex3i(positions[i], positions[i + 1], positions[i + 2]);
-        }
-
-        glEnd();
-        */
 
         // TODO: limit fps here?
         omeEngineUpdate();

@@ -1,4 +1,4 @@
-//  ome: Open Minimalistic Engine
+﻿//  ome: Open Minimalistic Engine
 //
 //  Copyright: (c) 2012 Olivier Guittonneau <OpenMEngine@gmail.com>
 //
@@ -43,7 +43,7 @@ void omeMeshDestroy(omeMesh **m)
 
 
 //TODO: would omeMeshGetBuffer(bufferIndex...) be better? (on first get, automatically allocate, after ignore parameters)
-omeBuffer *omeMeshAddBuffer(omeMesh *m, int nbVertices, int nbAttributes)
+omeBuffer *omeMeshAddBuffer(omeMesh *m, int nbVertices, int nbAttributes, omePolygonType polygonType)
 {
     omeBuffer *b;
 
@@ -53,7 +53,7 @@ omeBuffer *omeMeshAddBuffer(omeMesh *m, int nbVertices, int nbAttributes)
         return NULL;
     }
 
-    b = m->buffers[m->bufferCpt] = omeBufferCreate(nbVertices, nbAttributes, m);
+    b = m->buffers[m->bufferCpt] = omeBufferCreate(nbVertices, nbAttributes, polygonType, m);
     m->bufferCpt++;
 
     return b;
@@ -178,56 +178,8 @@ void omeMeshRenderImmediate_old(omeMesh *m)
 
 void omeMeshRenderVA(omeMesh *m)
 {
-    typedef void (__stdcall *glPointerFunc)(GLint, GLenum, GLsizei, const GLvoid*);
-    glPointerFunc pointerFunc;
-
-    /*
-    GL_COLOR_ARRAY
-    GL_EDGE_FLAG_ARRAY
-    GL_FOG_COORD_ARRAY
-    GL_INDEX_ARRAY
-    GL_NORMAL_ARRAY
-    GL_SECONDARY_COLOR_ARRAY
-    GL_TEXTURE_COORD_ARRAY
-    GL_VERTEX_ARRAY
-    */
-
-    int i, j;
+    int i;
 
     for(i = 0; i < m->nbBuffers; i++)
-    {
-        omeBuffer *b = m->buffers[i];
-        GLenum arrayType;
-
-        for(j = b->nbAttributes - 1; j >= 0; j--)
-        {
-            omeVertexAttrib *attr = &b->attributes[j];
-            
-            
-            if(attr->bufferType == OME_BUFFER_TYPE_POSITION)
-            {
-                arrayType = GL_VERTEX_ARRAY;
-                pointerFunc = glVertexPointer;
-            }
-            else if(attr->bufferType == OME_BUFFER_TYPE_COLOR)
-            {
-                arrayType = GL_COLOR_ARRAY;
-                pointerFunc = glColorPointer;
-            }
-            else
-            {
-                omeLoggerLog("Not implemented yet\n");
-                return; //TODO: find a way to not skip the rest (goto??)
-            }
-
-            glEnableClientState(arrayType);
-
-            pointerFunc(attr->nbElements, GL_FLOAT, 0, attr->data);        
-        }
-
-        glDrawArrays(GL_TRIANGLES, 0, b->nbVertices);
-
-        for(j = b->nbAttributes - 1; j >= 0; j--)
-            glDisableClientState(arrayType);
-    }
+        omeBufferRenderVA(m->buffers[i]);
 }

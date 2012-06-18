@@ -1,4 +1,4 @@
-//  ome: Open Minimalistic Engine
+﻿//  ome: Open Minimalistic Engine
 //
 //  Copyright: (c) 2012 Olivier Guittonneau <OpenMEngine@gmail.com>
 //
@@ -17,6 +17,7 @@
 
 // forward declaration
 typedef struct omeBuffer omeBuffer;
+typedef enum omePolygonType omePolygonType;
 
 
 // TODO: find a better way to name those things
@@ -42,7 +43,7 @@ typedef struct omeMesh
 
 omeMesh *omeMeshCreate(int nbBuffers);
 void omeMeshDestroy(omeMesh **m);
-omeBuffer *omeMeshAddBuffer(omeMesh *m, int nbVertices, int nbAttributes);
+omeBuffer *omeMeshAddBuffer(omeMesh *m, int nbVertices, int nbAttributes, omePolygonType polygonType);
 void omeMeshFinalize(omeMesh *m);
 void omeMeshBufferFinalized(omeMesh *m);
 void omeMeshRender(omeMesh *m);

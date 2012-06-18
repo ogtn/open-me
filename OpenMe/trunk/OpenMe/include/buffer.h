@@ -1,4 +1,4 @@
-//  ome: Open Minimalistic Engine
+﻿//  ome: Open Minimalistic Engine
 //
 //  Copyright: (c) 2012 Olivier Guittonneau <OpenMEngine@gmail.com>
 //
@@ -37,6 +37,23 @@ typedef enum omeBufferType
 } omeBufferType;
 
 
+typedef enum omePolygonType
+{
+    OME_POINTS​,
+    OME_LINE_STRIP​,
+    OME_LINE_LOOP​,
+    OME_LINES​,
+    OME_LINE_STRIP_ADJACENCY​,
+    OME_LINES_ADJACENCY​,
+    OME_TRIANGLE_STRIP​,
+    OME_TRIANGLE_FAN​,
+    OME_TRIANGLES​,
+    OME_TRIANGLE_STRIP_ADJACENCY​,
+    OME_TRIANGLES_ADJACENCY​,
+    OME_PATCHES
+} omePolygonType;
+
+
 //TODO: should be private. Internal use only
 typedef struct omeVertexAttrib
 {
@@ -64,14 +81,16 @@ typedef struct omeBuffer
     omeBool padded;
     omeBool finalized;
     omeMesh *mesh;
+    omePolygonType polygonType;
 } omeBuffer;
 
 
-omeBuffer *omeBufferCreate(int nbVertices, int nbAttributes, omeMesh *m);
+omeBuffer *omeBufferCreate(int nbVertices, int nbAttributes, omePolygonType polygonType, omeMesh *m);
 void omeBufferDestroy(omeBuffer **b);
 int omeBufferAddAttrib(omeBuffer *b, int nbElements, omeType type, int updateHint, omeBufferType bufferType, void *data);
 void omeBufferFinalize(omeBuffer *b);
 void omeBufferUpdateAttrib(omeBuffer *b, int attribIndex, void *data);
+void omeBufferRenderVA(omeBuffer *b);
 
 
 #endif // OME_BUFFER_H

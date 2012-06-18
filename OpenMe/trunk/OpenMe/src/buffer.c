@@ -1,4 +1,4 @@
-//  ome: Open Minimalistic Engine
+﻿//  ome: Open Minimalistic Engine
 //
 //  Copyright: (c) 2012 Olivier Guittonneau <OpenMEngine@gmail.com>
 //
@@ -13,9 +13,33 @@
 #include "mesh.h"
 #include <stdlib.h>
 #include <string.h>
+#include <GL/glew.h>
 
 
-omeBuffer *omeBufferCreate(int nbVertices, int nbAttributes, omeMesh *m)
+GLenum omePolygonTypeToGL(omePolygonType polygonType)
+{
+    switch(polygonType)
+    {
+    case OME_POINTS​: return GL_POINTS;
+    case OME_LINE_STRIP​: return GL_LINE_STRIP;
+    case OME_LINE_LOOP​: return GL_LINE_LOOP;
+    case OME_LINES​: return GL_LINES;
+    case OME_LINE_STRIP_ADJACENCY​: return GL_LINE_STRIP_ADJACENCY;
+    case OME_LINES_ADJACENCY​: return GL_LINES_ADJACENCY;
+    case OME_TRIANGLE_STRIP​: return GL_TRIANGLE_STRIP;
+    case OME_TRIANGLE_FAN​: return GL_TRIANGLE_FAN;
+    case OME_TRIANGLES​: return GL_TRIANGLES;
+    case OME_TRIANGLE_STRIP_ADJACENCY​: return GL_TRIANGLE_STRIP_ADJACENCY;
+    case OME_TRIANGLES_ADJACENCY​: return GL_TRIANGLES_ADJACENCY;
+    case OME_PATCHES: return GL_PATCHES;
+    default: omeLoggerLog("Invalid polygon type");
+    }
+
+    return GL_POINTS;
+}
+
+
+omeBuffer *omeBufferCreate(int nbVertices, int nbAttributes, omePolygonType polygonType, omeMesh *m)
 {
     omeBuffer *b = calloc(1, sizeof(omeBuffer));
 
@@ -26,6 +50,7 @@ omeBuffer *omeBufferCreate(int nbVertices, int nbAttributes, omeMesh *m)
 
     b->nbVertices = nbVertices;
     b->nbAttributes = nbAttributes;
+    b->polygonType = polygonType;
     b->mesh = m;
 
     return b;
@@ -47,7 +72,7 @@ void omeBufferDestroy(omeBuffer **b)
 int omeBufferAddAttrib(omeBuffer *b, int nbElements, omeType type, int updateHint, omeBufferType bufferType, void *data)
 {
     omeVertexAttrib *attrib;
-    
+
     if(b->indexCpt >= b->nbAttributes)
     {
         omeLoggerLog("All attributes have already been added");
@@ -91,7 +116,7 @@ void omeBufferFinalize(omeBuffer *b)
         omeLoggerLog("Can't finalize, attributes are missing");
         return;
     }
-    
+
     if(b->finalized)
     {
         omeLoggerLog("Allready finalized");
@@ -103,11 +128,57 @@ void omeBufferFinalize(omeBuffer *b)
     if(b->mesh != NULL)
         omeMeshBufferFinalized(b->mesh);
 
-     b->finalized = OME_TRUE;
+    b->finalized = OME_TRUE;
 }
 
 
 void omeBufferUpdateAttrib(omeBuffer *b, int attribIndex, void *data)
 {
     //TODO: implement that :)
+}
+
+
+void omeBufferRenderVA(omeBuffer *b)
+{
+     /*
+    GL_COLOR_ARRAY
+    GL_EDGE_FLAG_ARRAY
+    GL_FOG_COORD_ARRAY
+    GL_INDEX_ARRAY
+    GL_NORMAL_ARRAY
+    GL_SECONDARY_COLOR_ARRAY
+    GL_TEXTURE_COORD_ARRAY
+    GL_VERTEX_ARRAY
+    */
+
+    GLenum arrayType = GL_VERTEX_ARRAY;
+    int i;
+
+    for(i = b->nbAttributes - 1; i >= 0; i--)
+    {
+        omeVertexAttrib *attr = &b->attributes[i];
+
+        if(attr->bufferType == OME_BUFFER_TYPE_POSITION)
+        {
+            arrayType = GL_VERTEX_ARRAY;
+            glEnableClientState(arrayType);
+            glVertexPointer(attr->nbElements, GL_FLOAT, 0, attr->data);
+        }
+        else if(attr->bufferType == OME_BUFFER_TYPE_COLOR)
+        {
+            arrayType = GL_COLOR_ARRAY;
+            glEnableClientState(arrayType);
+            glColorPointer(attr->nbElements, GL_FLOAT, 0, attr->data);
+        }
+        else
+        {
+            omeLoggerLog("Not implemented yet\n");
+            return; //TODO: find a way to not skip the rest (goto??)
+        }
+    }
+
+    glDrawArrays(omePolygonTypeToGL(b->polygonType), 0, b->nbVertices);
+
+    for(i = b->nbAttributes - 1; i >= 0; i--)
+        glDisableClientState(arrayType);
 }
