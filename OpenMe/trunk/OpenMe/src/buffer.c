@@ -105,6 +105,28 @@ int omeBufferAddAttrib(omeBuffer *b, int nbElements, omeType type, int updateHin
 }
 
 
+int omeBufferAddIndexes(omeBuffer *b, omeType type, int updateHint, void *data)
+{
+    omeVertexAttrib *attrib;
+
+    if(b->indexed == OME_FALSE)
+    {
+        omeLoggerLog("This mesh is not indexed");
+        return -1;
+    }
+
+    attrib = &b->indexes;
+    attrib->nbElements = 1;
+    attrib->type = type;
+    attrib->updateHint = updateHint;
+    attrib->bufferType = OME_BUFFER_TYPE_INDEX;
+    attrib->data = data;
+    attrib->size = b->nbVertices * omeSizeOf(type);
+
+    return b->nbAttributes;
+}
+
+
 void omeBufferFinalize(omeBuffer *b)
 {
     int i;
@@ -177,8 +199,25 @@ void omeBufferRenderVA(omeBuffer *b)
         }
     }
 
-    glDrawArrays(omePolygonTypeToGL(b->polygonType), 0, b->nbVertices);
+    if(b->indexed)
+    {
+        if(b->indexes.type != OME_UBYTE)
+        {
+            omeLoggerLog("Not implemented yet\n");
+            return;
+        }
+
+        glDrawElements(omePolygonTypeToGL(b->polygonType), b->nbVertices, GL_UNSIGNED_BYTE, b->indexes.data);
+    }
+    else
+        glDrawArrays(omePolygonTypeToGL(b->polygonType), 0, b->nbVertices);
 
     for(i = b->nbAttributes - 1; i >= 0; i--)
         glDisableClientState(arrayType);
+}
+
+
+void omeBufferSetIndexed(omeBuffer *b, omeBool value)
+{
+    b->indexed = value;
 }

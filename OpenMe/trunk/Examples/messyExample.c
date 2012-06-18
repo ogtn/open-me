@@ -19,12 +19,14 @@ int main(void)
     int i;
     omeBuffer *buffer;
     omeCamera *camera;
-    omeVector pos = {2.f, 2.f, 2.f};
+    omeVector pos = {3.f, 3.f, 3.f};
     omeMesh *mesh;
     float vertices[][18] = {
         {-1, -1, -1, 1, -1, -1, 1, 1, -1, 1, 1, -1, -1, 1, -1, -1, -1, -1}, 
         {-1, -1, 0, 1, -1, 0, 1, 1, 0, 1, 1, 0, -1, 1, 0, -1, -1, 0},
         {-1, -1, 1, 1, -1, 1, 1, 1, 1, 1, 1, 1, -1, 1, 1, -1, -1, 1}};
+    float vertices2[] = {-1, -1, 2, 1, -1, 2, -1, 1, 2, 1, 1, 2};
+    unsigned char indexes[] = {0, 1, 2, 1, 2, 3};
     omePolygonType polygonTypes[] = {OME_TRIANGLES​, OME_LINE_LOOP​, OME_POINTS​};
 
     // get OpenGL context
@@ -40,14 +42,22 @@ int main(void)
     omeCameraUpdate(camera);
 
     // mesh test
-    mesh = omeMeshCreate(3);
+    mesh = omeMeshCreate(4);
 
+    // 3 squares, with different colors and polygon types
     for(i = 0; i < 3; i++)
     {
         buffer = omeMeshAddBuffer(mesh, 6, 2, polygonTypes[i]);
         omeBufferAddAttrib(buffer, 3, OME_FLOAT, 0, OME_BUFFER_TYPE_POSITION, &vertices[i]);
         omeBufferAddAttrib(buffer, 3, OME_FLOAT, 0, OME_BUFFER_TYPE_COLOR, &vertices[i]);
     }
+
+    // 1 last square,  using indexes
+    buffer = omeMeshAddBuffer(mesh, 6, 2, OME_TRIANGLES​);
+    omeBufferSetIndexed(buffer, OME_TRUE);
+    omeBufferAddIndexes(buffer, OME_UBYTE, 0, indexes);
+    omeBufferAddAttrib(buffer, 3, OME_FLOAT, 0, OME_BUFFER_TYPE_POSITION, vertices2);
+    omeBufferAddAttrib(buffer, 3, OME_FLOAT, 0, OME_BUFFER_TYPE_COLOR, vertices2);
 
     while(glfwGetWindowParam(GLFW_OPENED) && !glfwGetKey(GLFW_KEY_ESC))
     {

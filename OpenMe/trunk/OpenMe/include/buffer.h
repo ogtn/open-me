@@ -76,21 +76,25 @@ typedef struct omeBuffer
     int vertexSize;
     int indexCpt;
     omeVertexAttrib attributes[OME_MAX_ATTRIB];  //TODO: try dynamic solution instead?
+    omeVertexAttrib indexes;
     omeBool interleaved;
     omeBool indexed;
     omeBool padded;
     omeBool finalized;
     omeMesh *mesh;
     omePolygonType polygonType;
+    //GLuint VBO;
 } omeBuffer;
 
 
 omeBuffer *omeBufferCreate(int nbVertices, int nbAttributes, omePolygonType polygonType, omeMesh *m);
 void omeBufferDestroy(omeBuffer **b);
 int omeBufferAddAttrib(omeBuffer *b, int nbElements, omeType type, int updateHint, omeBufferType bufferType, void *data);
+int omeBufferAddIndexes(omeBuffer *b, omeType type, int updateHint, void *data);
 void omeBufferFinalize(omeBuffer *b);
 void omeBufferUpdateAttrib(omeBuffer *b, int attribIndex, void *data);
 void omeBufferRenderVA(omeBuffer *b);
+void omeBufferSetIndexed(omeBuffer *b, omeBool value);
 
 
 #endif // OME_BUFFER_H
