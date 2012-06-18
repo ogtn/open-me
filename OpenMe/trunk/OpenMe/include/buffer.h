@@ -13,6 +13,7 @@
 
 
 #include "utils.h"
+#include <GL/glew.h>
 
 
 // forward declaration
@@ -75,26 +76,29 @@ typedef struct omeBuffer
     int nbAttributes;
     int vertexSize;
     int indexCpt;
+    int size;
     omeVertexAttrib attributes[OME_MAX_ATTRIB];  //TODO: try dynamic solution instead?
-    omeVertexAttrib indexes;
+    omeVertexAttrib indices;
     omeBool interleaved;
     omeBool indexed;
     omeBool padded;
     omeBool finalized;
     omeMesh *mesh;
     omePolygonType polygonType;
-    //GLuint VBO;
+    GLuint VBO;
+    omeBool VBOReady;
 } omeBuffer;
 
 
 omeBuffer *omeBufferCreate(int nbVertices, int nbAttributes, omePolygonType polygonType, omeMesh *m);
 void omeBufferDestroy(omeBuffer **b);
 int omeBufferAddAttrib(omeBuffer *b, int nbElements, omeType type, int updateHint, omeBufferType bufferType, void *data);
-int omeBufferAddIndexes(omeBuffer *b, omeType type, int updateHint, void *data);
+int omeBufferAddIndices(omeBuffer *b, omeType type, int updateHint, void *data);
 void omeBufferFinalize(omeBuffer *b);
 void omeBufferUpdateAttrib(omeBuffer *b, int attribIndex, void *data);
 void omeBufferRenderVA(omeBuffer *b);
-void omeBufferSetIndexed(omeBuffer *b, omeBool value);
+void omeBufferRenderVBO(omeBuffer *b);
+void omeBufferUseIndices(omeBuffer *b);
 
 
 #endif // OME_BUFFER_H

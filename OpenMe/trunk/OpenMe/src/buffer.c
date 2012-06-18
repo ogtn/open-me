@@ -79,7 +79,7 @@ int omeBufferAddAttrib(omeBuffer *b, int nbElements, omeType type, int updateHin
         return -1;
     }
 
-    // TODO: play with indexes to automatize that, or add a special function for position??? (check opengl 4.2 documentation)
+    // TODO: play with indices to automatize that, or add a special function for position??? (check opengl 4.2 documentation)
     if((b->indexCpt == 0 && bufferType != OME_BUFFER_TYPE_POSITION) ||
         (bufferType == OME_BUFFER_TYPE_POSITION && b->indexCpt != 0))
     {
@@ -105,7 +105,7 @@ int omeBufferAddAttrib(omeBuffer *b, int nbElements, omeType type, int updateHin
 }
 
 
-int omeBufferAddIndexes(omeBuffer *b, omeType type, int updateHint, void *data)
+int omeBufferAddIndices(omeBuffer *b, omeType type, int updateHint, void *data)
 {
     omeVertexAttrib *attrib;
 
@@ -115,7 +115,7 @@ int omeBufferAddIndexes(omeBuffer *b, omeType type, int updateHint, void *data)
         return -1;
     }
 
-    attrib = &b->indexes;
+    attrib = &b->indices;
     attrib->nbElements = 1;
     attrib->type = type;
     attrib->updateHint = updateHint;
@@ -201,13 +201,13 @@ void omeBufferRenderVA(omeBuffer *b)
 
     if(b->indexed)
     {
-        if(b->indexes.type != OME_UBYTE)
+        if(b->indices.type != OME_UBYTE)
         {
             omeLoggerLog("Not implemented yet\n");
             return;
         }
 
-        glDrawElements(omePolygonTypeToGL(b->polygonType), b->nbVertices, GL_UNSIGNED_BYTE, b->indexes.data);
+        glDrawElements(omePolygonTypeToGL(b->polygonType), b->nbVertices, GL_UNSIGNED_BYTE, b->indices.data);
     }
     else
         glDrawArrays(omePolygonTypeToGL(b->polygonType), 0, b->nbVertices);
@@ -217,7 +217,76 @@ void omeBufferRenderVA(omeBuffer *b)
 }
 
 
-void omeBufferSetIndexed(omeBuffer *b, omeBool value)
+void omeBufferRenderVBO(omeBuffer *b)
 {
-    b->indexed = value;
+    GLenum arrayType = GL_VERTEX_ARRAY;
+    int i;
+
+    if(b->VBOReady == OME_FALSE)
+    {
+        int vertexSize = 0;
+
+        glGenBuffers(1, &b->VBO);
+        glBindBuffer(GL_ARRAY_BUFFER, b->VBO);
+
+        //TODO: use hints here for the last parameter
+        glBufferData(GL_ARRAY_BUFFER, b->vertexSize * b->nbVertices, NULL, GL_STATIC_DRAW);
+
+         for(i = 0; i < b->nbAttributes; i++)
+         {
+             omeVertexAttrib *attr = &b->attributes[i];
+
+             glBufferSubData(GL_ARRAY_BUFFER, vertexSize * b->nbVertices, b->nbVertices * attr->size * omeSizeOf(attr->type), attr->data);
+             vertexSize += b->nbVertices * omeSizeOf(attr->type);
+         }
+
+         b->VBOReady = OME_TRUE;
+    }
+
+    glBindBuffer(GL_ARRAY_BUFFER, b->VBO);
+
+    for(i = b->nbAttributes - 1; i >= 0; i--)
+    {
+        omeVertexAttrib *attr = &b->attributes[i];
+
+        if(attr->bufferType == OME_BUFFER_TYPE_POSITION)
+        {
+            arrayType = GL_VERTEX_ARRAY;
+            glEnableClientState(arrayType);
+            glVertexPointer(attr->nbElements, GL_FLOAT, 0, attr->data);
+        }
+        else if(attr->bufferType == OME_BUFFER_TYPE_COLOR)
+        {
+            arrayType = GL_COLOR_ARRAY;
+            glEnableClientState(arrayType);
+            glColorPointer(attr->nbElements, GL_FLOAT, 0, attr->data);
+        }
+        else
+        {
+            omeLoggerLog("Not implemented yet\n");
+            return; //TODO: find a way to not skip the rest (goto??)
+        }
+    }
+
+    if(b->indexed)
+    {
+        if(b->indices.type != OME_UBYTE)
+        {
+            omeLoggerLog("Not implemented yet\n");
+            return;
+        }
+
+        glDrawElements(omePolygonTypeToGL(b->polygonType), b->nbVertices, GL_UNSIGNED_BYTE, b->indices.data);
+    }
+    else
+        glDrawArrays(omePolygonTypeToGL(b->polygonType), 0, b->nbVertices);
+
+    for(i = b->nbAttributes - 1; i >= 0; i--)
+        glDisableClientState(arrayType);
+}
+
+
+void omeBufferUseIndices(omeBuffer *b)
+{
+    b->indexed = OME_TRUE;
 }
