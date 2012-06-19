@@ -18,6 +18,7 @@
 #include "camera.h"
 #include "buffer.h"
 #include "mesh.h"
+#include "OBJLoader.h"
 
 
 //TODO: avoid memset() calls in *Destroy functions in release

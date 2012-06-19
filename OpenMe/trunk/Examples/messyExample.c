@@ -21,6 +21,7 @@ int main(void)
     omeCamera *camera;
     omeVector pos = {3.f, 3.f, 3.f};
     omeMesh *mesh;
+    omeMesh *chamfer;
     float vertices[][18] = {
         {-1, -1, -1, 1, -1, -1, 1, 1, -1, 1, 1, -1, -1, 1, -1, -1, -1, -1}, 
         {-1, -1, 0, 1, -1, 0, 1, 1, 0, 1, 1, 0, -1, 1, 0, -1, -1, 0},
@@ -59,6 +60,9 @@ int main(void)
     omeBufferAddAttrib(buffer, 3, OME_FLOAT, 0, OME_BUFFER_TYPE_POSITION, vertices2);
     omeBufferAddAttrib(buffer, 3, OME_FLOAT, 0, OME_BUFFER_TYPE_COLOR, vertices2);
 
+    // obj loading test
+    chamfer = omeLoadOBJFromFile(L"data/chamfer.obj");
+
     while(glfwGetWindowParam(GLFW_OPENED) && !glfwGetKey(GLFW_KEY_ESC))
     {
         omeVector vec = {0, 0, 1};
@@ -73,6 +77,7 @@ int main(void)
         omeMatrixLoad(&matrix, OME_TRUE);
 
         omeMeshRender(mesh);
+        //omeMeshRender(chamfer);
 
         // TODO: limit fps here?
         omeEngineUpdate();
