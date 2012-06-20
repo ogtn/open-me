@@ -216,7 +216,7 @@ void omeBufferRenderVA(omeBuffer *b)
         glDisableClientState(arrayType);
 }
 
-
+/*
 void omeBufferRenderVBO(omeBuffer *b)
 {
     GLenum arrayType = GL_VERTEX_ARRAY;
@@ -284,7 +284,7 @@ void omeBufferRenderVBO(omeBuffer *b)
     for(i = b->nbAttributes - 1; i >= 0; i--)
         glDisableClientState(arrayType);
 }
-
+*/
 
 void omeBufferUseIndices(omeBuffer *b)
 {

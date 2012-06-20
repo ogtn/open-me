@@ -19,9 +19,9 @@ int main(void)
     int i;
     omeBuffer *buffer;
     omeCamera *camera;
-    omeVector pos = {3.f, 3.f, 3.f};
+    omeVector pos = {80.f, 80.f, 80.f};
     omeMesh *mesh;
-    omeMesh *chamfer;
+    omeMesh *objMesh;
     float vertices[][18] = {
         {-1, -1, -1, 1, -1, -1, 1, 1, -1, 1, 1, -1, -1, 1, -1, -1, -1, -1}, 
         {-1, -1, 0, 1, -1, 0, 1, 1, 0, 1, 1, 0, -1, 1, 0, -1, -1, 0},
@@ -38,7 +38,7 @@ int main(void)
 
     // camera settings
     camera = omeCameraCreate(OME_CAMERA_TYPE_PERPECTIVE);
-    omeCameraSetPerspective(camera, 65.f, 640.f / 480.f, 0.01f, 100.f);
+    omeCameraSetPerspective(camera, 70.f, 640.f / 480.f, 0.01f, 1000.f);
     omeCameraSetPosition(camera, &pos);
     omeCameraUpdate(camera);
 
@@ -61,7 +61,7 @@ int main(void)
     omeBufferAddAttrib(buffer, 3, OME_FLOAT, 0, OME_BUFFER_TYPE_COLOR, vertices2);
 
     // obj loading test
-    chamfer = omeLoadOBJFromFile(L"data/chamfer.obj");
+    objMesh = omeLoadOBJFromFile(L"data/chamfer.obj");
 
     while(glfwGetWindowParam(GLFW_OPENED) && !glfwGetKey(GLFW_KEY_ESC))
     {
@@ -77,7 +77,8 @@ int main(void)
         omeMatrixLoad(&matrix, OME_TRUE);
 
         omeMeshRender(mesh);
-        //omeMeshRender(chamfer);
+        glColor3f(1, 1, 1);
+        omeMeshRender(objMesh);
 
         // TODO: limit fps here?
         omeEngineUpdate();
@@ -86,6 +87,7 @@ int main(void)
     }
 
     omeMeshDestroy(&mesh);
+    omeMeshDestroy(&objMesh);
     omeCameraDestroy(&camera);
     omeEngineStop();
 

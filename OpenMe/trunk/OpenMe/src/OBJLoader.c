@@ -104,6 +104,12 @@ omeMesh *omeLoadOBJFromFile(wchar_t *fileName)
                 &b, &dummy, &dummy,
                 &c, &dummy, &dummy);
 
+            // those fuckin' OBJ indices start at 1...
+            // TODO: add an empty space in the array instead
+            a--;
+            b--;
+            c--;
+
             omeVectorCopy(&positions[currentPosition++], &tmpPositions[a]);
             omeVectorCopy(&positions[currentPosition++], &tmpPositions[b]);
             omeVectorCopy(&positions[currentPosition++], &tmpPositions[c]);
@@ -111,7 +117,7 @@ omeMesh *omeLoadOBJFromFile(wchar_t *fileName)
     }
 
     fclose(file);
-    free(tmpPositions);
+    //free(tmpPositions);
 
     mesh = omeMeshCreate(1);
     buffer = omeMeshAddBuffer(mesh, nbFaces * 3, 1, OME_TRIANGLES​);
