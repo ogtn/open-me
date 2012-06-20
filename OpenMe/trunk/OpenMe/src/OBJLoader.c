@@ -120,7 +120,7 @@ omeMesh *omeLoadOBJFromFile(wchar_t *fileName)
     //free(tmpPositions);
 
     mesh = omeMeshCreate(1);
-    buffer = omeMeshAddBuffer(mesh, nbFaces * 3, 1, OME_TRIANGLES​);
+    buffer = omeMeshAddBuffer(mesh, nbFaces * 3, 1, OME_POINTS​);
     omeBufferAddAttrib(buffer, 3, OME_FLOAT, 0, OME_BUFFER_TYPE_POSITION, positions);
 
     return mesh;

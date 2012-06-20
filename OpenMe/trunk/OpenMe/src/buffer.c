@@ -173,23 +173,21 @@ void omeBufferRenderVA(omeBuffer *b)
     GL_VERTEX_ARRAY
     */
 
-    GLenum arrayType = GL_VERTEX_ARRAY;
     int i;
+    omeVertexAttrib *attr = NULL;
 
-    for(i = b->nbAttributes - 1; i >= 0; i--)
+    for(i = 0; i < b->nbAttributes; i++)
     {
-        omeVertexAttrib *attr = &b->attributes[i];
+        attr = &b->attributes[i];
 
         if(attr->bufferType == OME_BUFFER_TYPE_POSITION)
         {
-            arrayType = GL_VERTEX_ARRAY;
-            glEnableClientState(arrayType);
+            glEnableClientState(GL_VERTEX_ARRAY);
             glVertexPointer(attr->nbElements, GL_FLOAT, 0, attr->data);
         }
         else if(attr->bufferType == OME_BUFFER_TYPE_COLOR)
         {
-            arrayType = GL_COLOR_ARRAY;
-            glEnableClientState(arrayType);
+            glEnableClientState(GL_COLOR_ARRAY);
             glColorPointer(attr->nbElements, GL_FLOAT, 0, attr->data);
         }
         else
@@ -212,8 +210,15 @@ void omeBufferRenderVA(omeBuffer *b)
     else
         glDrawArrays(omePolygonTypeToGL(b->polygonType), 0, b->nbVertices);
 
-    for(i = b->nbAttributes - 1; i >= 0; i--)
-        glDisableClientState(arrayType);
+    for(i = 0; i < b->nbAttributes; i++)
+    {
+        attr = &b->attributes[i];
+
+        if(attr->bufferType == OME_BUFFER_TYPE_POSITION)
+            glDisableClientState(GL_VERTEX_ARRAY);
+        else if(attr->bufferType == OME_BUFFER_TYPE_COLOR)
+            glDisableClientState(GL_COLOR_ARRAY);
+    }
 }
 
 /*

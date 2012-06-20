@@ -19,9 +19,11 @@ int main(void)
     int i;
     omeBuffer *buffer;
     omeCamera *camera;
-    omeVector pos = {80.f, 80.f, 80.f};
+    omeVector pos = {150.f, 150.f, 150.f};
+    omeVector vec = {0, 0, 1};
     omeMesh *mesh;
     omeMesh *objMesh;
+    omeMatrix matrix;
     float vertices[][18] = {
         {-1, -1, -1, 1, -1, -1, 1, 1, -1, 1, 1, -1, -1, 1, -1, -1, -1, -1}, 
         {-1, -1, 0, 1, -1, 0, 1, 1, 0, 1, 1, 0, -1, 1, 0, -1, -1, 0},
@@ -29,16 +31,18 @@ int main(void)
     float vertices2[] = {-1, -1, 2, 1, -1, 2, -1, 1, 2, 1, 1, 2};
     unsigned char indices[] = {0, 1, 2, 1, 2, 3};
     omePolygonType polygonTypes[] = {OME_TRIANGLES​, OME_LINE_LOOP​, OME_POINTS​};
+    int width = 640;//1280;
+    int height = 480;//800;
 
     // get OpenGL context
-    if(!glfwInit() || !glfwOpenWindow(640, 480, 8, 8, 8, 8, 0, 0, GLFW_WINDOW))
+    if(!glfwInit() || !glfwOpenWindow(width, height, 8, 8, 8, 8, 0, 0, GLFW_FULLSCREEN))
         return EXIT_FAILURE;
 
     omeEngineStart();
 
     // camera settings
     camera = omeCameraCreate(OME_CAMERA_TYPE_PERPECTIVE);
-    omeCameraSetPerspective(camera, 70.f, 640.f / 480.f, 0.01f, 1000.f);
+    omeCameraSetPerspective(camera, 70.f, width / (float)height, 0.01f, 1000.f);
     omeCameraSetPosition(camera, &pos);
     omeCameraUpdate(camera);
 
@@ -63,11 +67,14 @@ int main(void)
     // obj loading test
     objMesh = omeLoadOBJFromFile(L"data/chamfer.obj");
 
+    // ugly rotation :D
+    glGetFloatv(GL_MODELVIEW_MATRIX, matrix.tab);
+    omeMatrixTranspose(&matrix);
+    omeMatrixRotateAxis(&matrix, &vec, 1);
+    //omeMatrixLoad(&matrix, OME_TRUE);
+
     while(glfwGetWindowParam(GLFW_OPENED) && !glfwGetKey(GLFW_KEY_ESC))
     {
-        omeVector vec = {0, 0, 1};
-        omeMatrix matrix;
-
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         // ugly rotation :D
@@ -76,7 +83,7 @@ int main(void)
         omeMatrixRotateAxis(&matrix, &vec, 1);
         omeMatrixLoad(&matrix, OME_TRUE);
 
-        omeMeshRender(mesh);
+        //omeMeshRender(mesh);
         glColor3f(1, 1, 1);
         omeMeshRender(objMesh);
 
