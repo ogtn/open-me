@@ -19,7 +19,7 @@ int main(void)
     int i;
     omeBuffer *buffer;
     omeCamera *camera;
-    omeVector pos = {150.f, 150.f, 150.f};
+    omeVector pos = {10.f, 10.f, 10.f};
     omeVector vec = {0, 0, 1};
     omeMesh *mesh;
     omeMesh *objMesh;
@@ -35,7 +35,7 @@ int main(void)
     int height = 480;//800;
 
     // get OpenGL context
-    if(!glfwInit() || !glfwOpenWindow(width, height, 8, 8, 8, 8, 0, 0, GLFW_FULLSCREEN))
+    if(!glfwInit() || !glfwOpenWindow(width, height, 8, 8, 8, 8, 0, 0, GLFW_WINDOW))
         return EXIT_FAILURE;
 
     omeEngineStart();
@@ -64,8 +64,25 @@ int main(void)
     omeBufferAddAttrib(buffer, 3, OME_FLOAT, 0, OME_BUFFER_TYPE_POSITION, vertices2);
     omeBufferAddAttrib(buffer, 3, OME_FLOAT, 0, OME_BUFFER_TYPE_COLOR, vertices2);
 
+    //omeSaveOmeMeshToFile("data/plans.omeMesh", mesh);
+    //mesh = omeLoadOmeMeshFromFile("data/plans.omeMesh");
+
     // obj loading test
-    objMesh = omeLoadOBJFromFile(L"data/chamfer.obj");
+    {
+        double t;
+        
+        t = glfwGetTime();
+        objMesh = omeLoadOBJFromFile("data/bunny69k.obj");
+        printf("obj loading time: %.3fs\n", glfwGetTime() - t);
+
+        t = glfwGetTime();
+        omeSaveOmeMeshToFile("data/bunny69k.omeMesh", objMesh);
+        printf("omeMesh saving time: %.3fs\n", glfwGetTime() - t);
+
+        t = glfwGetTime();
+        objMesh = omeLoadOmeMeshFromFile("data/bunny69k.omeMesh");
+        printf("omeMesh loading time: %.3fs\n", glfwGetTime() - t);
+    }
 
     // ugly rotation :D
     glGetFloatv(GL_MODELVIEW_MATRIX, matrix.tab);
@@ -83,7 +100,7 @@ int main(void)
         omeMatrixRotateAxis(&matrix, &vec, 1);
         omeMatrixLoad(&matrix, OME_TRUE);
 
-        //omeMeshRender(mesh);
+        omeMeshRender(mesh);
         glColor3f(1, 1, 1);
         omeMeshRender(objMesh);
 
