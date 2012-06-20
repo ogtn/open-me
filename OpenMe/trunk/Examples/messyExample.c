@@ -30,7 +30,7 @@ int main(void)
         {-1, -1, 1, 1, -1, 1, 1, 1, 1, 1, 1, 1, -1, 1, 1, -1, -1, 1}};
     float vertices2[] = {-1, -1, 2, 1, -1, 2, -1, 1, 2, 1, 1, 2};
     unsigned char indices[] = {0, 1, 2, 1, 2, 3};
-    omePolygonType polygonTypes[] = {OME_TRIANGLES​, OME_LINE_LOOP​, OME_POINTS​};
+    omePolygonType polygonTypes[] = {OME_TRIANGLES, OME_LINE_LOOP, OME_POINTS};
     int width = 640;//1280;
     int height = 480;//800;
 
@@ -58,7 +58,7 @@ int main(void)
     }
 
     // 1 last square,  using indices
-    buffer = omeMeshAddBuffer(mesh, 6, 2, OME_TRIANGLES​);
+    buffer = omeMeshAddBuffer(mesh, 6, 2, OME_TRIANGLES);
     omeBufferUseIndices(buffer);
     omeBufferAddIndices(buffer, OME_UBYTE, 0, indices);
     omeBufferAddAttrib(buffer, 3, OME_FLOAT, 0, OME_BUFFER_TYPE_POSITION, vertices2);

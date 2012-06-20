@@ -14,7 +14,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
-#include <GL\glew.h>
+#include <GL/glew.h>
 #ifdef _MSC_VER
 #include <sys/timeb.h>
 #else
