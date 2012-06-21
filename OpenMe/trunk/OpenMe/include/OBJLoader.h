@@ -20,4 +20,5 @@ omeMesh *omeLoadOBJFromFile(char *fileName);
 void omeSaveOmeMeshToFile(char *filename, omeMesh *m);
 omeMesh *omeLoadOmeMeshFromFile(char *filename);
 
+
 #endif // OME_OBJ_LOADER_H

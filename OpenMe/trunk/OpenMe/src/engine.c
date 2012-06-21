@@ -96,6 +96,12 @@ int omeEngineStart(void)
     memset(&engine, 0, sizeof(omeEngine));
     omeLoggerStart();
 
+    if(glewInit() != GLEW_OK)
+    {
+        omeLoggerLog("Failed to load glew, you're screwed\n\n");
+        return OME_FAILURE;
+    }
+
     //clear color and transparency
     //glClearColor(0.1f, 0.1f, 0.1f, 1);
     //glEnable(GL_BGR_EXT); // doesn't seem supported on my laptop :/

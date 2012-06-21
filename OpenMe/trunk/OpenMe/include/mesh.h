@@ -49,6 +49,7 @@ void omeMeshBufferFinalized(omeMesh *m);
 void omeMeshRender(omeMesh *m);
 void omeMeshRenderImmediate(omeMesh *m);
 void omeMeshRenderVA(omeMesh *m);
+void omeMeshRenderVBO(omeMesh *m);
 
 
 #endif // OME_MESH_H

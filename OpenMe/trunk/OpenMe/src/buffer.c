@@ -71,7 +71,7 @@ void omeBufferDestroy(omeBuffer **b)
 
 int omeBufferAddAttrib(omeBuffer *b, int nbElements, omeType type, int updateHint, omeBufferType bufferType, void *data)
 {
-    omeVertexAttrib *attrib;
+    omeVertexAttrib *attr;
 
     if(b->indexCpt >= b->nbAttributes)
     {
@@ -87,15 +87,16 @@ int omeBufferAddAttrib(omeBuffer *b, int nbElements, omeType type, int updateHin
         return -1;
     }
 
-    attrib = &b->attributes[b->indexCpt];
-    attrib->nbElements = nbElements;
-    attrib->type = type;
-    attrib->updateHint = updateHint;
-    attrib->bufferType = bufferType;
-    attrib->data = data;
-    attrib->size = b->nbVertices * nbElements * omeSizeOf(type);
+    attr = &b->attributes[b->indexCpt];
+    attr->nbElements = nbElements;
+    attr->type = type;
+    attr->updateHint = updateHint;
+    attr->bufferType = bufferType;
+    attr->data = data;
+    attr->size = b->nbVertices * nbElements * omeSizeOf(type);
 
-    b->vertexSize += omeSizeOf(type);
+    b->vertexSize += omeSizeOf(type) * nbElements;
+    b->size += attr->size;
     b->indexCpt++;
 
     if(b->indexCpt == b->nbAttributes)
@@ -107,7 +108,7 @@ int omeBufferAddAttrib(omeBuffer *b, int nbElements, omeType type, int updateHin
 
 int omeBufferAddIndices(omeBuffer *b, omeType type, int updateHint, void *data)
 {
-    omeVertexAttrib *attrib;
+    omeVertexAttrib *attr;
 
     if(b->indexed == OME_FALSE)
     {
@@ -115,13 +116,13 @@ int omeBufferAddIndices(omeBuffer *b, omeType type, int updateHint, void *data)
         return -1;
     }
 
-    attrib = &b->indices;
-    attrib->nbElements = 1;
-    attrib->type = type;
-    attrib->updateHint = updateHint;
-    attrib->bufferType = OME_BUFFER_TYPE_INDEX;
-    attrib->data = data;
-    attrib->size = b->nbVertices * omeSizeOf(type);
+    attr = &b->indices;
+    attr->nbElements = 1;
+    attr->type = type;
+    attr->updateHint = updateHint;
+    attr->bufferType = OME_BUFFER_TYPE_INDEX;
+    attr->data = data;
+    attr->size = b->nbVertices * omeSizeOf(type);
 
     return b->nbAttributes;
 }
@@ -221,56 +222,58 @@ void omeBufferRenderVA(omeBuffer *b)
     }
 }
 
-/*
+
 void omeBufferRenderVBO(omeBuffer *b)
 {
-    GLenum arrayType = GL_VERTEX_ARRAY;
     int i;
+    int offset = 0;
+    omeVertexAttrib *attr;
 
+    // if needed, create VBO and send all vertex attributes
     if(b->VBOReady == OME_FALSE)
     {
-        int vertexSize = 0;
-
         glGenBuffers(1, &b->VBO);
         glBindBuffer(GL_ARRAY_BUFFER, b->VBO);
 
         //TODO: use hints here for the last parameter
-        glBufferData(GL_ARRAY_BUFFER, b->vertexSize * b->nbVertices, NULL, GL_STATIC_DRAW);
+        glBufferData(GL_ARRAY_BUFFER, b->size, NULL, GL_STATIC_DRAW);
+        offset = 0;
 
          for(i = 0; i < b->nbAttributes; i++)
          {
-             omeVertexAttrib *attr = &b->attributes[i];
+             attr = &b->attributes[i];
 
-             glBufferSubData(GL_ARRAY_BUFFER, vertexSize * b->nbVertices, b->nbVertices * attr->size * omeSizeOf(attr->type), attr->data);
-             vertexSize += b->nbVertices * omeSizeOf(attr->type);
+             glBufferSubData(GL_ARRAY_BUFFER, offset, attr->size, attr->data);         
+             offset += attr->size;
          }
 
          b->VBOReady = OME_TRUE;
     }
 
     glBindBuffer(GL_ARRAY_BUFFER, b->VBO);
+    offset = 0;
 
-    for(i = b->nbAttributes - 1; i >= 0; i--)
+    for(i = 0; i < b->nbAttributes ; i++)
     {
-        omeVertexAttrib *attr = &b->attributes[i];
+        attr = &b->attributes[i];
 
         if(attr->bufferType == OME_BUFFER_TYPE_POSITION)
         {
-            arrayType = GL_VERTEX_ARRAY;
-            glEnableClientState(arrayType);
-            glVertexPointer(attr->nbElements, GL_FLOAT, 0, attr->data);
+            glEnableClientState(GL_VERTEX_ARRAY);
+            glVertexPointer(attr->nbElements, GL_FLOAT, 0, OME_BUFFER_OFFSET(offset));
         }
         else if(attr->bufferType == OME_BUFFER_TYPE_COLOR)
         {
-            arrayType = GL_COLOR_ARRAY;
-            glEnableClientState(arrayType);
-            glColorPointer(attr->nbElements, GL_FLOAT, 0, attr->data);
+            glEnableClientState(GL_COLOR_ARRAY);
+            glColorPointer(attr->nbElements, GL_FLOAT, 0, OME_BUFFER_OFFSET(offset));
         }
         else
         {
             omeLoggerLog("Not implemented yet\n");
             return; //TODO: find a way to not skip the rest (goto??)
         }
+
+        offset += attr->size;
     }
 
     if(b->indexed)
@@ -286,10 +289,17 @@ void omeBufferRenderVBO(omeBuffer *b)
     else
         glDrawArrays(omePolygonTypeToGL(b->polygonType), 0, b->nbVertices);
 
-    for(i = b->nbAttributes - 1; i >= 0; i--)
-        glDisableClientState(arrayType);
+    for(i =  0; i < b->nbAttributes; i++)
+    {
+        attr = &b->attributes[i];
+
+        if(attr->bufferType == OME_BUFFER_TYPE_POSITION)
+            glDisableClientState(GL_VERTEX_ARRAY);
+        else if(attr->bufferType == OME_BUFFER_TYPE_COLOR)
+            glDisableClientState(GL_COLOR_ARRAY);
+    }
 }
-*/
+
 
 void omeBufferUseIndices(omeBuffer *b)
 {

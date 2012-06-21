@@ -22,7 +22,7 @@ omeMesh *omeMeshCreate(int nbBuffers)
 
     m->nbBuffers = nbBuffers;
     m->buffers = calloc(nbBuffers, sizeof(omeBuffer*));
-    m->renderType = OME_VERTEX_ARRAY;
+    m->renderType = OME_VERTEX_BUFFER_OBJECT;
 
     return m;
 }
@@ -83,6 +83,12 @@ void omeMeshBufferFinalized(omeMesh *m)
 
 void omeMeshRender(omeMesh *m)
 {
+    if(m->finalized == OME_FALSE)
+    {
+        omeLoggerLog("Can't render a non finalized mesh\n");
+        return;
+    }
+
     switch(m->renderType)
     {
     case OME_IMMEDIATE:
@@ -90,6 +96,9 @@ void omeMeshRender(omeMesh *m)
         break;
     case OME_VERTEX_ARRAY:
         omeMeshRenderVA(m);
+        break;
+    case OME_VERTEX_BUFFER_OBJECT:
+        omeMeshRenderVBO(m);
         break;
     default:
         omeLoggerLog("Not implemented yet\n");
@@ -182,4 +191,13 @@ void omeMeshRenderVA(omeMesh *m)
 
     for(i = 0; i < m->nbBuffers; i++)
         omeBufferRenderVA(m->buffers[i]);
+}
+
+
+void omeMeshRenderVBO(omeMesh *m)
+{
+    int i;
+
+    for(i = 0; i < m->nbBuffers; i++)
+        omeBufferRenderVBO(m->buffers[i]);
 }

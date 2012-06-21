@@ -17,9 +17,10 @@
 int main(void)
 {
     int i;
+    double t;
     omeBuffer *buffer;
     omeCamera *camera;
-    omeVector pos = {10.f, 10.f, 10.f};
+    omeVector pos = {15.f, 15.f, 15.f};
     omeVector vec = {0, 0, 1};
     omeMesh *mesh;
     omeMesh *objMesh;
@@ -64,31 +65,21 @@ int main(void)
     omeBufferAddAttrib(buffer, 3, OME_FLOAT, 0, OME_BUFFER_TYPE_POSITION, vertices2);
     omeBufferAddAttrib(buffer, 3, OME_FLOAT, 0, OME_BUFFER_TYPE_COLOR, vertices2);
 
-    //omeSaveOmeMeshToFile("data/plans.omeMesh", mesh);
-    //mesh = omeLoadOmeMeshFromFile("data/plans.omeMesh");
+    omeSaveOmeMeshToFile("data/plans.omeMesh", mesh);
+    mesh = omeLoadOmeMeshFromFile("data/plans.omeMesh");
 
-    // obj loading test
-    {
-        double t;
-        
-        t = glfwGetTime();
-        objMesh = omeLoadOBJFromFile("data/bunny69k.obj");
-        printf("obj loading time: %.3fs\n", glfwGetTime() - t);
+    // obj loading test    
+    t = glfwGetTime();
+    //objMesh = omeLoadOBJFromFile("data/bunny69k.obj");
+    printf("obj loading time: %.6fs\n", glfwGetTime() - t);
 
-        t = glfwGetTime();
-        omeSaveOmeMeshToFile("data/bunny69k.omeMesh", objMesh);
-        printf("omeMesh saving time: %.3fs\n", glfwGetTime() - t);
+    t = glfwGetTime();
+    //omeSaveOmeMeshToFile("data/mesh1.omeMesh", objMesh);
+    printf("omeMesh saving time: %.6fs\n", glfwGetTime() - t);
 
-        t = glfwGetTime();
-        objMesh = omeLoadOmeMeshFromFile("data/bunny69k.omeMesh");
-        printf("omeMesh loading time: %.3fs\n", glfwGetTime() - t);
-    }
-
-    // ugly rotation :D
-    glGetFloatv(GL_MODELVIEW_MATRIX, matrix.tab);
-    omeMatrixTranspose(&matrix);
-    omeMatrixRotateAxis(&matrix, &vec, 1);
-    //omeMatrixLoad(&matrix, OME_TRUE);
+    t = glfwGetTime();
+    objMesh = omeLoadOmeMeshFromFile("data/mesh1.omeMesh");
+    printf("omeMesh loading time: %.6fs\n", glfwGetTime() - t);
 
     while(glfwGetWindowParam(GLFW_OPENED) && !glfwGetKey(GLFW_KEY_ESC))
     {
@@ -101,12 +92,11 @@ int main(void)
         omeMatrixLoad(&matrix, OME_TRUE);
 
         omeMeshRender(mesh);
-        glColor3f(1, 1, 1);
         omeMeshRender(objMesh);
 
         // TODO: limit fps here?
         omeEngineUpdate();
-        glfwSleep(0.001);
+        glfwSleep(0.002);
         glfwSwapBuffers();
     }
 
