@@ -12,11 +12,14 @@
 #define OME_OBJ_LOADER_H
 
 
+#include "utils.h"
+
+
 // forward declaration
 typedef struct omeMesh omeMesh;
 
 
-omeMesh *omeLoadOBJFromFile(char *fileName);
+omeMesh *omeLoadOBJFromFile(char *fileName, omeBool swapYZ);
 void omeSaveOmeMeshToFile(char *filename, omeMesh *m);
 omeMesh *omeLoadOmeMeshFromFile(char *filename);
 

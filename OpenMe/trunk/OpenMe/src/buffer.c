@@ -191,6 +191,11 @@ void omeBufferRenderVA(omeBuffer *b)
             glEnableClientState(GL_COLOR_ARRAY);
             glColorPointer(attr->nbElements, GL_FLOAT, 0, attr->data);
         }
+        else if(attr->bufferType == OME_BUFFER_TYPE_NORMAL)
+        {
+            glEnableClientState(GL_NORMAL_ARRAY);
+            glNormalPointer(GL_FLOAT, 0, attr->data);
+        }
         else
         {
             omeLoggerLog("Not implemented yet\n");
@@ -219,6 +224,8 @@ void omeBufferRenderVA(omeBuffer *b)
             glDisableClientState(GL_VERTEX_ARRAY);
         else if(attr->bufferType == OME_BUFFER_TYPE_COLOR)
             glDisableClientState(GL_COLOR_ARRAY);
+        else if(attr->bufferType == OME_BUFFER_TYPE_NORMAL)
+            glDisableClientState(GL_NORMAL_ARRAY);
     }
 }
 
@@ -267,6 +274,11 @@ void omeBufferRenderVBO(omeBuffer *b)
             glEnableClientState(GL_COLOR_ARRAY);
             glColorPointer(attr->nbElements, GL_FLOAT, 0, OME_BUFFER_OFFSET(offset));
         }
+        else if(attr->bufferType == OME_BUFFER_TYPE_NORMAL)
+        {
+            glEnableClientState(GL_NORMAL_ARRAY);
+            glNormalPointer(GL_FLOAT, 0, OME_BUFFER_OFFSET(offset));
+        }
         else
         {
             omeLoggerLog("Not implemented yet\n");
@@ -297,6 +309,8 @@ void omeBufferRenderVBO(omeBuffer *b)
             glDisableClientState(GL_VERTEX_ARRAY);
         else if(attr->bufferType == OME_BUFFER_TYPE_COLOR)
             glDisableClientState(GL_COLOR_ARRAY);
+        else if(attr->bufferType == OME_BUFFER_TYPE_NORMAL)
+            glDisableClientState(GL_NORMAL_ARRAY);
     }
 }
 

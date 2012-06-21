@@ -20,11 +20,13 @@ int main(void)
     double t;
     omeBuffer *buffer;
     omeCamera *camera;
-    omeVector pos = {15.f, 15.f, 15.f};
+    omeVector pos = {200.f, 200.f, 200.f};
+    omeVector target = {0.f, 0.f, 0.f};
     omeVector vec = {0, 0, 1};
     omeMesh *mesh;
     omeMesh *objMesh;
     omeMatrix matrix;
+    float angle = 0;
     float vertices[][18] = {
         {-1, -1, -1, 1, -1, -1, 1, 1, -1, 1, 1, -1, -1, 1, -1, -1, -1, -1}, 
         {-1, -1, 0, 1, -1, 0, 1, 1, 0, 1, 1, 0, -1, 1, 0, -1, -1, 0},
@@ -44,8 +46,6 @@ int main(void)
     // camera settings
     camera = omeCameraCreate(OME_CAMERA_TYPE_PERPECTIVE);
     omeCameraSetPerspective(camera, 70.f, width / (float)height, 0.01f, 1000.f);
-    omeCameraSetPosition(camera, &pos);
-    omeCameraUpdate(camera);
 
     // mesh test
     mesh = omeMeshCreate(4);
@@ -53,9 +53,10 @@ int main(void)
     // 3 squares, with different colors and polygon types
     for(i = 0; i < 3; i++)
     {
-        buffer = omeMeshAddBuffer(mesh, 6, 2, polygonTypes[i]);
+        buffer = omeMeshAddBuffer(mesh, 6, 3, polygonTypes[i]);
         omeBufferAddAttrib(buffer, 3, OME_FLOAT, 0, OME_BUFFER_TYPE_POSITION, &vertices[i]);
         omeBufferAddAttrib(buffer, 3, OME_FLOAT, 0, OME_BUFFER_TYPE_COLOR, &vertices[i]);
+        omeBufferAddAttrib(buffer, 3, OME_FLOAT, 0, OME_BUFFER_TYPE_NORMAL, &vertices[i]);
     }
 
     // 1 last square,  using indices
@@ -70,7 +71,7 @@ int main(void)
 
     // obj loading test    
     t = glfwGetTime();
-    //objMesh = omeLoadOBJFromFile("data/bunny69k.obj");
+    //objMesh = omeLoadOBJFromFile("data/bunny69k.obj", OME_TRUE);
     printf("obj loading time: %.6fs\n", glfwGetTime() - t);
 
     t = glfwGetTime();
@@ -81,16 +82,32 @@ int main(void)
     objMesh = omeLoadOmeMeshFromFile("data/mesh1.omeMesh");
     printf("omeMesh loading time: %.6fs\n", glfwGetTime() - t);
 
+    // deprecated stuff to test normals before using shaders
+    glEnable(GL_LIGHTING);
+    glEnable(GL_COLOR_MATERIAL);
+    glEnable(GL_LIGHT0);
+    glLightfv(GL_LIGHT0, GL_POSITION, pos.tab);
+
     while(glfwGetWindowParam(GLFW_OPENED) && !glfwGetKey(GLFW_KEY_ESC))
     {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        // ugly rotation :D
-        glGetFloatv(GL_MODELVIEW_MATRIX, matrix.tab);
-        omeMatrixTranspose(&matrix);
-        omeMatrixRotateAxis(&matrix, &vec, 1);
-        omeMatrixLoad(&matrix, OME_TRUE);
+        // move camera
+        omeCameraSetPosition(camera, &pos);
+        omeCameraSetTarget(camera, &target);
+        omeCameraUpdate(camera);
 
+        // ugly rotation :D
+        // TODO: use angles and sin, cos..
+        angle += omeEngineGetFrameDuration() * 50;
+        target.x += glfwGetKey(GLFW_KEY_LEFT) * omeEngineGetFrameDuration() * 50;
+        target.x -= glfwGetKey(GLFW_KEY_RIGHT) * omeEngineGetFrameDuration() * 50;
+        target.y += glfwGetKey(GLFW_KEY_UP) * omeEngineGetFrameDuration() * 50;
+        target.y -= glfwGetKey(GLFW_KEY_DOWN) * omeEngineGetFrameDuration() * 50;
+        target.z += glfwGetMouseWheel() * 10;
+        glfwSetMouseWheel(0);
+
+        // render
         omeMeshRender(mesh);
         omeMeshRender(objMesh);
 
@@ -100,6 +117,7 @@ int main(void)
         glfwSwapBuffers();
     }
 
+    // free all the memory!!!
     omeMeshDestroy(&mesh);
     omeMeshDestroy(&objMesh);
     omeCameraDestroy(&camera);
