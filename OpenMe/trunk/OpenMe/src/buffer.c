@@ -196,6 +196,11 @@ void omeBufferRenderVA(omeBuffer *b)
             glEnableClientState(GL_NORMAL_ARRAY);
             glNormalPointer(GL_FLOAT, 0, attr->data);
         }
+        else if(attr->bufferType == OME_BUFFER_TYPE_TEXCOORD_0)
+        {
+            glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+            glTexCoordPointer(attr->nbElements, GL_FLOAT, 0, attr->data);
+        }
         else
         {
             omeLoggerLog("Not implemented yet\n");
@@ -226,6 +231,8 @@ void omeBufferRenderVA(omeBuffer *b)
             glDisableClientState(GL_COLOR_ARRAY);
         else if(attr->bufferType == OME_BUFFER_TYPE_NORMAL)
             glDisableClientState(GL_NORMAL_ARRAY);
+        else if(attr->bufferType == OME_BUFFER_TYPE_TEXCOORD_0)
+            glDisableClientState(GL_TEXTURE_COORD_ARRAY);
     }
 }
 
@@ -279,6 +286,11 @@ void omeBufferRenderVBO(omeBuffer *b)
             glEnableClientState(GL_NORMAL_ARRAY);
             glNormalPointer(GL_FLOAT, 0, OME_BUFFER_OFFSET(offset));
         }
+        else if(attr->bufferType == OME_BUFFER_TYPE_TEXCOORD_0)
+        {
+            glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+            glTexCoordPointer(attr->nbElements, GL_FLOAT, 0, OME_BUFFER_OFFSET(offset));
+        }
         else
         {
             omeLoggerLog("Not implemented yet\n");
@@ -311,6 +323,8 @@ void omeBufferRenderVBO(omeBuffer *b)
             glDisableClientState(GL_COLOR_ARRAY);
         else if(attr->bufferType == OME_BUFFER_TYPE_NORMAL)
             glDisableClientState(GL_NORMAL_ARRAY);
+        else if(attr->bufferType == OME_BUFFER_TYPE_TEXCOORD_0)
+            glDisableClientState(GL_TEXTURE_COORD_ARRAY);
     }
 }
 

@@ -12,6 +12,59 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <GL/glfw.h>
+#include <IL/il.h>
+
+
+// quick and dirty test of texture coordinates
+void init_texture(wchar_t *fileName)
+{
+    GLuint id;
+    ILuint il_id;
+    int w, h;
+    GLenum format;
+
+    glEnable(GL_TEXTURE_2D);
+
+    // init
+    ilInit();
+    ilOriginFunc(IL_ORIGIN_LOWER_LEFT);
+    ilEnable(IL_ORIGIN_SET);
+
+    // create image
+    ilGenImages(1, &il_id);
+    ilBindImage(il_id);
+
+    if(ilLoadImage(fileName) == IL_FALSE)
+    {
+        ilDeleteImage(il_id);
+        //printf("unable to load: %s\n", fileName);
+        return;
+    }
+
+    if(ilConvertImage(IL_RGBA, IL_UNSIGNED_BYTE) == IL_FALSE)
+    {
+        ilDeleteImage(il_id);
+        //printf("Unable to convert: %s\n", fileName);
+        return;
+    }
+
+    w = ilGetInteger(IL_IMAGE_WIDTH);
+    h = ilGetInteger(IL_IMAGE_HEIGHT);
+    //format = ilGetInteger(IL_IMAGE_FORMAT);
+    format = GL_RGBA;
+
+    glGenTextures(1, &id);
+    glBindTexture(GL_TEXTURE_2D, id);
+
+    // send pixels to OpenGL
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0, format, GL_UNSIGNED_BYTE, ilGetData());
+
+    // set minifying and magnifying filters
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+    //ilDeleteImage(il_id);
+}
 
 
 int main(void)
@@ -20,7 +73,7 @@ int main(void)
     double t;
     omeBuffer *buffer;
     omeCamera *camera;
-    omeVector pos = {200.f, 200.f, 200.f};
+    omeVector pos = {2.f, 2.f, 2.f};
     omeVector target = {0.f, 0.f, 0.f};
     omeVector vec = {0, 0, 1};
     omeMesh *mesh;
@@ -71,11 +124,11 @@ int main(void)
 
     // obj loading test    
     t = glfwGetTime();
-    //objMesh = omeLoadOBJFromFile("data/bunny69k.obj", OME_TRUE);
+    objMesh = omeLoadOBJFromFile("data/cube-texture.obj", OME_TRUE);
     printf("obj loading time: %.6fs\n", glfwGetTime() - t);
 
     t = glfwGetTime();
-    //omeSaveOmeMeshToFile("data/mesh1.omeMesh", objMesh);
+    omeSaveOmeMeshToFile("data/mesh1.omeMesh", objMesh);
     printf("omeMesh saving time: %.6fs\n", glfwGetTime() - t);
 
     t = glfwGetTime();
@@ -87,6 +140,9 @@ int main(void)
     glEnable(GL_COLOR_MATERIAL);
     glEnable(GL_LIGHT0);
     glLightfv(GL_LIGHT0, GL_POSITION, pos.tab);
+
+    init_texture(L"data/bender.jpg");
+    glClearColor(0.8, 0.8, 0.8, 1);
 
     while(glfwGetWindowParam(GLFW_OPENED) && !glfwGetKey(GLFW_KEY_ESC))
     {
@@ -108,8 +164,15 @@ int main(void)
         glfwSetMouseWheel(0);
 
         // render
-        omeMeshRender(mesh);
+        //omeMeshRender(mesh);
         omeMeshRender(objMesh);
+
+        glBegin(GL_QUADS);
+        glVertex2i(1, 1);   glTexCoord2i(0, 0);
+        glVertex2i(1, -1);  glTexCoord2i(0, 1);
+        glVertex2i(-1, -1); glTexCoord2i(1, 1);
+        glVertex2i(-1, 1);  glTexCoord2i(1, 0);
+        glEnd();
 
         // TODO: limit fps here?
         omeEngineUpdate();

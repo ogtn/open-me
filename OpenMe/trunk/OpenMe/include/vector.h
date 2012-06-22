@@ -25,7 +25,20 @@ typedef union omeVector
 } omeVector;
 
 
+typedef union omeVector2
+{
+    struct
+    {
+        float x;
+        float y;
+    };
+
+    float tab[2];
+} omeVector2;
+
+
 void omeVectorCopy(omeVector *dst, const omeVector *src);
+void omeVector2Copy(omeVector2 *dst, const omeVector2 *src);
 float omeVectorLength(omeVector *v);
 void omeVectorNormalize(omeVector *v);
 void omeVectorAddVector(omeVector *v, omeVector *v2, omeVector *res);

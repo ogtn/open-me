@@ -19,6 +19,12 @@ void omeVectorCopy(omeVector *dst, const omeVector *src)
 }
 
 
+void omeVector2Copy(omeVector2 *dst, const omeVector2 *src)
+{
+    memcpy(dst, src, sizeof(omeVector2));
+}
+
+
 float omeVectorLength(omeVector *v)
 {
     return sqrtf(v->x * v->x + v->y * v->y + v->z * v->z);
