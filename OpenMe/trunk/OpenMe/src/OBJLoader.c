@@ -311,20 +311,22 @@ omeMesh *omeLoadOBJFromFile(char *fileName, omeBool swapYZ)
                 &v2, &vn2,
                 &v3, &vn3);
             else
+            {
                 sscanf(line, "f %d/%d/%d %d/%d/%d %d/%d/%d",
                 &v1, &vt1, &vn1,
                 &v2, &vt2, &vn2,
                 &v3, &vt3, &vn3);
 
+                // texture coordinates
+                omeVector2Copy(&texCoords[currentTexCoord++], &tmpTexCoords[vt1]);
+                omeVector2Copy(&texCoords[currentTexCoord++], &tmpTexCoords[vt2]);
+                omeVector2Copy(&texCoords[currentTexCoord++], &tmpTexCoords[vt3]);
+            }
+
             // positions
             omeVectorCopy(&positions[currentPosition++], &tmpPositions[v1]);
             omeVectorCopy(&positions[currentPosition++], &tmpPositions[v2]);
             omeVectorCopy(&positions[currentPosition++], &tmpPositions[v3]);
-
-            // texture coordinates
-            omeVector2Copy(&texCoords[currentTexCoord++], &tmpTexCoords[vt1]);
-            omeVector2Copy(&texCoords[currentTexCoord++], &tmpTexCoords[vt2]);
-            omeVector2Copy(&texCoords[currentTexCoord++], &tmpTexCoords[vt3]);
 
             // normals
             omeVectorCopy(&normals[currentNormal++], &tmpNormals[vn1]);
@@ -335,12 +337,13 @@ omeMesh *omeLoadOBJFromFile(char *fileName, omeBool swapYZ)
 
     fclose(file);
     free(tmpPositions);
+    free(tmpTexCoords);
     free(tmpNormals);
 
     mesh = omeMeshCreate(1);
-    buffer = omeMeshAddBuffer(mesh, nbFaces * 3, 2, OME_TRIANGLES);
+    buffer = omeMeshAddBuffer(mesh, nbFaces * 3, 3, OME_TRIANGLES);
     omeBufferAddAttrib(buffer, 3, OME_FLOAT, 0, OME_BUFFER_TYPE_POSITION, positions);
-    omeBufferAddAttrib(buffer, 2, OME_FLOAT, 0, OME_BUFFER_TYPE_TEXCOORD_0, tmpTexCoords);
+    omeBufferAddAttrib(buffer, 2, OME_FLOAT, 0, OME_BUFFER_TYPE_TEXCOORD_0, texCoords);
     omeBufferAddAttrib(buffer, 3, OME_FLOAT, 0, OME_BUFFER_TYPE_NORMAL, normals);
 
     return mesh;

@@ -141,7 +141,7 @@ int main(void)
     glEnable(GL_LIGHT0);
     glLightfv(GL_LIGHT0, GL_POSITION, pos.tab);
 
-    init_texture(L"data/bender.jpg");
+    init_texture(L"data/test.png");
     glClearColor(0.8, 0.8, 0.8, 1);
 
     while(glfwGetWindowParam(GLFW_OPENED) && !glfwGetKey(GLFW_KEY_ESC))
