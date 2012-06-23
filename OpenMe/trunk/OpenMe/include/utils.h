@@ -12,6 +12,11 @@
 #define OME_UTILS_H
 
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+
 // types
 typedef enum omeStatus
 {
@@ -59,6 +64,11 @@ char *omeGetGLError(void);
 
 // other stuff...
 #define OME_NAME_MAXLEN     256  
+
+
+#ifdef __cplusplus
+}
+#endif
 
 
 #endif // OME_UTILS_H

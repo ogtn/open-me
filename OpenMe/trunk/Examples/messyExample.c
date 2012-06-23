@@ -13,6 +13,7 @@
 #include <stdio.h>
 #include <GL/glfw.h>
 #include <IL/il.h>
+#include <math.h>
 
 
 // quick and dirty test of texture coordinates
@@ -63,7 +64,7 @@ void init_texture(wchar_t *fileName)
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
-    //ilDeleteImage(il_id);
+    ilDeleteImage(il_id);
 }
 
 
@@ -77,102 +78,104 @@ int main(void)
     omeVector target = {0.f, 0.f, 0.f};
     omeVector vec = {0, 0, 1};
     omeMesh *mesh;
-    omeMesh *objMesh;
     omeMatrix matrix;
     float angle = 0;
-    float vertices[][18] = {
-        {-1, -1, -1, 1, -1, -1, 1, 1, -1, 1, 1, -1, -1, 1, -1, -1, -1, -1}, 
-        {-1, -1, 0, 1, -1, 0, 1, 1, 0, 1, 1, 0, -1, 1, 0, -1, -1, 0},
-        {-1, -1, 1, 1, -1, 1, 1, 1, 1, 1, 1, 1, -1, 1, 1, -1, -1, 1}};
-    float vertices2[] = {-1, -1, 2, 1, -1, 2, -1, 1, 2, 1, 1, 2};
-    unsigned char indices[] = {0, 1, 2, 1, 2, 3};
-    omePolygonType polygonTypes[] = {OME_TRIANGLES, OME_LINE_LOOP, OME_POINTS};
     int width = 640;//1280;
     int height = 480;//800;
+    float theta = OME_PIF / 4;
+    float phi = OME_PIF / 4;
+    float angleStep;
+    float zoom = 5;
+    int wheelPos;
+    omeBool drag = OME_FALSE;
 
     // get OpenGL context
     if(!glfwInit() || !glfwOpenWindow(width, height, 8, 8, 8, 8, 0, 0, GLFW_WINDOW))
         return EXIT_FAILURE;
 
+    glfwSetMouseWheel(0);
     omeEngineStart();
 
     // camera settings
     camera = omeCameraCreate(OME_CAMERA_TYPE_PERPECTIVE);
     omeCameraSetPerspective(camera, 70.f, width / (float)height, 0.01f, 1000.f);
+    omeCameraSetTarget(camera, &target);
 
-    // mesh test
-    mesh = omeMeshCreate(4);
-
-    // 3 squares, with different colors and polygon types
-    for(i = 0; i < 3; i++)
-    {
-        buffer = omeMeshAddBuffer(mesh, 6, 3, polygonTypes[i]);
-        omeBufferAddAttrib(buffer, 3, OME_FLOAT, 0, OME_BUFFER_TYPE_POSITION, &vertices[i]);
-        omeBufferAddAttrib(buffer, 3, OME_FLOAT, 0, OME_BUFFER_TYPE_COLOR, &vertices[i]);
-        omeBufferAddAttrib(buffer, 3, OME_FLOAT, 0, OME_BUFFER_TYPE_NORMAL, &vertices[i]);
-    }
-
-    // 1 last square,  using indices
-    buffer = omeMeshAddBuffer(mesh, 6, 2, OME_TRIANGLES);
-    omeBufferUseIndices(buffer);
-    omeBufferAddIndices(buffer, OME_UBYTE, 0, indices);
-    omeBufferAddAttrib(buffer, 3, OME_FLOAT, 0, OME_BUFFER_TYPE_POSITION, vertices2);
-    omeBufferAddAttrib(buffer, 3, OME_FLOAT, 0, OME_BUFFER_TYPE_COLOR, vertices2);
-
-    omeSaveOmeMeshToFile("data/plans.omeMesh", mesh);
-    mesh = omeLoadOmeMeshFromFile("data/plans.omeMesh");
-
-    // obj loading test    
-    t = glfwGetTime();
-    objMesh = omeLoadOBJFromFile("data/cube-texture.obj", OME_TRUE);
-    printf("obj loading time: %.6fs\n", glfwGetTime() - t);
-
-    t = glfwGetTime();
-    omeSaveOmeMeshToFile("data/mesh1.omeMesh", objMesh);
-    printf("omeMesh saving time: %.6fs\n", glfwGetTime() - t);
-
-    t = glfwGetTime();
-    objMesh = omeLoadOmeMeshFromFile("data/mesh1.omeMesh");
-    printf("omeMesh loading time: %.6fs\n", glfwGetTime() - t);
+    // obj loading test
+    //mesh = omeLoadOBJFromFile("data/bunny69k.obj", OME_TRUE);
+    //omeMeshSave("data/mesh1.omeMesh", mesh);
+    mesh = omeMeshLoad("data/mesh1.omeMesh");
 
     // deprecated stuff to test normals before using shaders
+    //init_texture(L"data/test.png");
     glEnable(GL_LIGHTING);
     glEnable(GL_COLOR_MATERIAL);
     glEnable(GL_LIGHT0);
     glLightfv(GL_LIGHT0, GL_POSITION, pos.tab);
-
-    init_texture(L"data/test.png");
-    glClearColor(0.8, 0.8, 0.8, 1);
 
     while(glfwGetWindowParam(GLFW_OPENED) && !glfwGetKey(GLFW_KEY_ESC))
     {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         // move camera
-        omeCameraSetPosition(camera, &pos);
-        omeCameraSetTarget(camera, &target);
-        omeCameraUpdate(camera);
+        angleStep = 3 * omeEngineGetFrameDuration();
 
-        // ugly rotation :D
-        // TODO: use angles and sin, cos..
-        angle += omeEngineGetFrameDuration() * 50;
-        target.x += glfwGetKey(GLFW_KEY_LEFT) * omeEngineGetFrameDuration() * 50;
-        target.x -= glfwGetKey(GLFW_KEY_RIGHT) * omeEngineGetFrameDuration() * 50;
-        target.y += glfwGetKey(GLFW_KEY_UP) * omeEngineGetFrameDuration() * 50;
-        target.y -= glfwGetKey(GLFW_KEY_DOWN) * omeEngineGetFrameDuration() * 50;
-        target.z += glfwGetMouseWheel() * 10;
+        // angles update
+        if(glfwGetKey(GLFW_KEY_UP))
+            phi += angleStep;
+        else if(glfwGetKey(GLFW_KEY_DOWN))
+            phi -= angleStep;
+        if(glfwGetKey(GLFW_KEY_LEFT))
+            theta -= angleStep;
+        else if(glfwGetKey(GLFW_KEY_RIGHT))
+            theta += angleStep;
+
+        // angle update using mouse
+        if(glfwGetMouseButton(GLFW_MOUSE_BUTTON_LEFT))
+        {
+            int x, y;
+            static int lastX, lastY;
+
+            glfwGetMousePos(&x, &y);
+
+            if(!drag)
+                drag = OME_TRUE;
+            else
+            {
+                theta += (lastX - x) * 0.01f;
+                phi += (y - lastY) * 0.01f;
+            }
+
+            lastX = x;
+            lastY = y;
+        }
+        else
+            drag = OME_FALSE;
+
+        // avoid camera being upside down
+        if(phi > (OME_PIF / 2.f - 0.01f))
+            phi = OME_PIF / 2.f - 0.01f;
+
+        if(phi < (-OME_PIF / 2.f + 0.01f))
+            phi = -OME_PIF / 2.f + 0.01f;
+
+        // zoom update
+        zoom -= glfwGetMouseWheel();
         glfwSetMouseWheel(0);
 
-        // render
-        //omeMeshRender(mesh);
-        omeMeshRender(objMesh);
+        // avoid negative zoom
+        if(zoom < 0.1f)
+            zoom = 0.1f;
 
-        glBegin(GL_QUADS);
-        glVertex2i(1, 1);   glTexCoord2i(0, 0);
-        glVertex2i(1, -1);  glTexCoord2i(0, 1);
-        glVertex2i(-1, -1); glTexCoord2i(1, 1);
-        glVertex2i(-1, 1);  glTexCoord2i(1, 0);
-        glEnd();
+        pos.x = cos(phi) * cos(theta);
+        pos.y = cos(phi) * sin(theta);
+        pos.z = sin(phi);
+        omeVectorMultScal(&pos, zoom, &pos);
+        omeCameraSetPosition(camera, &pos);
+        omeCameraUpdate(camera);
+
+        // render
+        omeMeshRender(mesh);
 
         // TODO: limit fps here?
         omeEngineUpdate();
@@ -182,7 +185,6 @@ int main(void)
 
     // free all the memory!!!
     omeMeshDestroy(&mesh);
-    omeMeshDestroy(&objMesh);
     omeCameraDestroy(&camera);
     omeEngineStop();
 

@@ -12,6 +12,11 @@
 #define OME_OPENME_H
 
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+
 #include "utils.h"
 #include "engine.h"
 #include "matrix.h"
@@ -24,9 +29,13 @@
 //TODO: avoid memset() calls in *Destroy functions in release
 //TODO: test *alloc() return in debug mode, through "overloading"?
 //TODO: add an omeBool field in structures, so they can know if they are dynamic ok not and avoid calling free()??? Not sure if stupid....
-//TODO: add extern C in every header?
 //TODO: make sure all static stuffs are const, to allow multithreading
 //TODO: use glewIsSupported() to adapt the render to the hardware's capabilities
+
+
+#ifdef __cplusplus
+}
+#endif
 
 
 #endif // OME_OPENME_H

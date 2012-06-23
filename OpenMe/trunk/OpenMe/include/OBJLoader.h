@@ -12,6 +12,11 @@
 #define OME_OBJ_LOADER_H
 
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+
 #include "utils.h"
 
 
@@ -22,6 +27,11 @@ typedef struct omeMesh omeMesh;
 omeMesh *omeLoadOBJFromFile(char *fileName, omeBool swapYZ);
 void omeSaveOmeMeshToFile(char *filename, omeMesh *m);
 omeMesh *omeLoadOmeMeshFromFile(char *filename);
+
+
+#ifdef __cplusplus
+}
+#endif
 
 
 #endif // OME_OBJ_LOADER_H

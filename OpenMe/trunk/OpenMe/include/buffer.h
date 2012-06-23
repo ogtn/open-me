@@ -12,6 +12,11 @@
 #define OME_BUFFER_H
 
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+
 #include "utils.h"
 #include <GL/glew.h>
 
@@ -99,6 +104,11 @@ void omeBufferUpdateAttrib(omeBuffer *b, int attribIndex, void *data);
 void omeBufferRenderVA(omeBuffer *b);
 void omeBufferRenderVBO(omeBuffer *b);
 void omeBufferUseIndices(omeBuffer *b);
+
+
+#ifdef __cplusplus
+}
+#endif
 
 
 #endif // OME_BUFFER_H

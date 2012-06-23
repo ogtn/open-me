@@ -201,3 +201,132 @@ void omeMeshRenderVBO(omeMesh *m)
     for(i = 0; i < m->nbBuffers; i++)
         omeBufferRenderVBO(m->buffers[i]);
 }
+
+
+//TODO: add a version number, to avoid failure when loading an obsolete file (maybe a header?)
+void omeMeshSave(char *filename, omeMesh *m)
+{
+    int i, j;
+    FILE *file;
+    omeBuffer *buffer;
+    omeVertexAttrib *attr;
+
+    if(m->finalized == OME_FALSE)
+    {
+        omeLoggerLog("Can't save a non finalized mesh\n");
+        return;
+    }
+
+    file = fopen(filename, "wb+");
+
+    // mesh info
+    fwrite(&m->nbBuffers, sizeof m->nbBuffers, 1, file);
+
+    for(i = 0; i < m->nbBuffers; i++)
+    {
+        buffer = m->buffers[i];
+
+        // buffer info
+        fwrite(&buffer->nbVertices, sizeof buffer->nbVertices, 1, file);
+        fwrite(&buffer->nbAttributes, sizeof buffer->nbAttributes, 1, file);
+        fwrite(&buffer->polygonType, sizeof buffer->polygonType, 1, file);
+        fwrite(&buffer->indexed, sizeof buffer->indexed, 1, file);
+
+        if(buffer->indexed == OME_TRUE)
+        {
+            attr = &buffer->indices;
+
+            // attribute info
+            fwrite(&attr->nbElements, sizeof attr->nbElements, 1, file);
+            fwrite(&attr->type, sizeof attr->type, 1, file);
+            fwrite(&attr->bufferType, sizeof attr->bufferType, 1, file);
+
+            // attribute data
+            fwrite(attr->data, omeSizeOf(attr->type) * attr->nbElements, buffer->nbVertices, file);
+        }
+
+        for(j = 0; j < buffer->nbAttributes; j++)
+        {
+            attr = &buffer->attributes[j];
+
+            // attribute info
+            fwrite(&attr->nbElements, sizeof attr->nbElements, 1, file);
+            fwrite(&attr->type, sizeof attr->type, 1, file);
+            fwrite(&attr->bufferType, sizeof attr->bufferType, 1, file);
+
+            // attribute data
+            fwrite(attr->data, omeSizeOf(attr->type) * attr->nbElements, buffer->nbVertices, file);
+        }
+    }
+
+    fclose(file);
+}
+
+
+omeMesh *omeMeshLoad(char *filename)
+{
+    int i, j;
+    int nbBuffers;
+    FILE *file;
+    omeMesh *m;
+    omeBuffer *buffer;
+
+    file = fopen(filename, "rb");
+
+    // mesh info
+    fread(&nbBuffers, sizeof nbBuffers, 1, file);
+    m = omeMeshCreate(nbBuffers);
+
+    for(i = 0; i < m->nbBuffers; i++)
+    {
+        int nbVertices;
+        int nbAttributes;
+        omePolygonType polygonType;
+        omeBool indexed;
+        void *data;
+        int nbElements;
+        omeType type;
+        omeBufferType bufferType;
+
+        // buffer info
+        fread(&nbVertices, sizeof nbVertices, 1, file);
+        fread(&nbAttributes, sizeof nbAttributes, 1, file);
+        fread(&polygonType, sizeof polygonType, 1, file);
+        fread(&indexed, sizeof indexed, 1, file);
+
+        buffer = omeMeshAddBuffer(m, nbVertices, nbAttributes, polygonType);
+
+        if(indexed == OME_TRUE)
+        {
+            // attribute info
+            fread(&nbElements, sizeof nbElements, 1, file);
+            fread(&type, sizeof type, 1, file);
+            fread(&bufferType, sizeof bufferType, 1, file);
+
+            // attribute data
+            data = malloc(omeSizeOf(type) * nbElements * nbVertices);
+            fread(data, omeSizeOf(type) * nbElements, nbVertices, file);
+
+            omeBufferUseIndices(buffer);
+            omeBufferAddIndices(buffer, type, 0, data);
+        }
+
+        for(j = 0; j < buffer->nbAttributes; j++)
+        {
+            // attribute info
+            fread(&nbElements, sizeof nbElements, 1, file);
+            fread(&type, sizeof type, 1, file);
+            fread(&bufferType, sizeof bufferType, 1, file);
+
+            // attribute data
+            data = malloc(omeSizeOf(type) * nbElements * nbVertices);
+            fread(data, omeSizeOf(type) * nbElements, nbVertices, file);
+
+            omeBufferAddAttrib(buffer, nbElements, type, 0, bufferType, data);
+        }
+    }
+
+    fclose(file);
+
+    return m;
+}

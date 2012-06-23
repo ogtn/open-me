@@ -43,7 +43,8 @@ omeBuffer *omeBufferCreate(int nbVertices, int nbAttributes, omePolygonType poly
 {
     omeBuffer *b = calloc(1, sizeof(omeBuffer));
 
-    // default values TODO: add setters to modifiy them or even better -> self adapted solution based on a benchmark :D
+    // default values 
+    //TODO: add setters to modifiy them or even better -> self adapted solution based on a benchmark :D
     b->indexed = OME_FALSE;
     b->interleaved = OME_FALSE;
     b->padded = OME_FALSE;
@@ -61,7 +62,7 @@ void omeBufferDestroy(omeBuffer **b)
 {
     int i = 0;
 
-    //TODO: figure out what else do we need to free here...
+    //TODO: figure out what else do we need to free here -> add flags
 
     memset(*b, 0, sizeof(omeBuffer));
     free(*b);

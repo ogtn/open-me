@@ -12,6 +12,11 @@
 #define OME_LOGGER_H
 
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+
 #include <stdio.h>
 
 
@@ -34,6 +39,11 @@ typedef struct omeLogger
 void omeLoggerStart(void);
 void omeLoggerLog(char *format, ...);
 void omeLoggerStop(void);
+
+
+#ifdef __cplusplus
+}
+#endif
 
 
 #endif // OME_LOGGER_H

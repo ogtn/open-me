@@ -12,6 +12,11 @@
 #define OME_PLUGIN_LOADER_H
 
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+
 typedef enum omePluginType
 {
     OME_PLUGIN_TYPE_MESH_LOADER =       0x01,
@@ -39,6 +44,11 @@ typedef struct omePlugin
 omePlugin *omePluginLoad(const char *name);
 void omePluginUnload(omePlugin **p);
 void *omePluginGetFunc(omePlugin *p, const char *funcName);
+
+
+#ifdef __cplusplus
+}
+#endif
 
 
 #endif // OME_PLUGIN_LOADER_H

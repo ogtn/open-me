@@ -13,6 +13,11 @@
 #define OME_MATRIX_H
 
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+
 #include "vector.h"
 
 
@@ -41,6 +46,11 @@ void omeMatrixMultMatrix(omeMatrix *m, omeMatrix *m2, omeMatrix *res);
 //void omeMatrixMultVector(omeMatrix *m, omeVector *v, omeVector *res);
 //void omeMatrixSendAsUniform(omeMatrix *m, omeShaderProgram *sp, char *name);
 void omeMatrixPrint(omeMatrix *m);
+
+
+#ifdef __cplusplus
+}
+#endif
 
 
 #endif //OME_MATRIX_H

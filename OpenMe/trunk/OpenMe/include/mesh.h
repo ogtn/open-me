@@ -12,6 +12,11 @@
 #define OME_MESH_H
 
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+
 #include "utils.h"
 
 
@@ -20,7 +25,7 @@ typedef struct omeBuffer omeBuffer;
 typedef enum omePolygonType omePolygonType;
 
 
-// TODO: find a better way to name those things
+// TODO: only VBO in GL >= 3.x, get rid of that
 typedef enum omeRenderType
 {
     OME_IMMEDIATE,
@@ -50,6 +55,13 @@ void omeMeshRender(omeMesh *m);
 void omeMeshRenderImmediate(omeMesh *m);
 void omeMeshRenderVA(omeMesh *m);
 void omeMeshRenderVBO(omeMesh *m);
+void omeMeshSave(char *filename, omeMesh *m);
+omeMesh *omeMeshLoad(char *filename);
+
+
+#ifdef __cplusplus
+}
+#endif
 
 
 #endif // OME_MESH_H

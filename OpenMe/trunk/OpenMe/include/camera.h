@@ -12,6 +12,11 @@
 #define OME_CAMERA_H
 
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+
 #include "matrix.h"
 
 
@@ -71,6 +76,11 @@ void omeCameraSetLookAt(omeCamera *c, omeVector *pos, omeVector *target, omeVect
 void omeCameraSetPosition(omeCamera *c, omeVector *pos);
 void omeCameraSetTarget(omeCamera *c, omeVector *target);
 void omeCameraUpdate(omeCamera *c);
+
+
+#ifdef __cplusplus
+}
+#endif
 
 
 #endif // OME_CAMERA_H

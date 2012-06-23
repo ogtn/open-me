@@ -12,6 +12,11 @@
 #define OME_ENTITY_H
 
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+
 #include "vector.h"
 #include "utils.h"
 #include <wchar.h>
@@ -29,6 +34,11 @@ typedef struct omeEntity
 
 omeEntity *omeEntityCreate(wchar_t *name);
 void omeEntityDestroy(omeEntity **e);
+
+
+#ifdef __cplusplus
+}
+#endif
 
 
 #endif // OME_ENTITY_H

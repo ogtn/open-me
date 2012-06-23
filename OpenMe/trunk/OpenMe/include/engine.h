@@ -12,6 +12,11 @@
 #define OME_ENGINE_H
 
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+
 typedef enum omeEngineState
 {
     OME_ENGINE_STATE_STOPPED,
@@ -45,6 +50,11 @@ double omeEngineGetFrameDuration(void);
 void omeEngineUpdate(void);
 void omeEngineClearBuffers(int flags);
 void omeEngineClearAllBuffers(void);
+
+
+#ifdef __cplusplus
+}
+#endif
 
 
 #endif // OME_ENGINE_H

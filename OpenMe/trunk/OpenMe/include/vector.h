@@ -12,6 +12,11 @@
 #define OME_VECTOR_H
 
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+    
 typedef union omeVector
 {
     struct
@@ -47,6 +52,11 @@ void omeVectorMultVector(omeVector *v, omeVector *v2, omeVector *res);
 void omeVectorMultScal(omeVector *v, float f, omeVector *res);
 float omeVectorDot(omeVector *v, omeVector *v2);
 void omeVectorCross(omeVector *v, omeVector *v2, omeVector *res);
+
+
+#ifdef __cplusplus
+}
+#endif
 
 
 #endif // OME_VECTOR_H
