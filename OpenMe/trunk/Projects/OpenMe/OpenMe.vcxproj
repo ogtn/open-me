@@ -20,6 +20,7 @@
     <ClCompile Include="..\..\OpenMe\src\mesh.c" />
     <ClCompile Include="..\..\OpenMe\src\OBJLoader.c" />
     <ClCompile Include="..\..\OpenMe\src\pluginLoader.c" />
+    <ClCompile Include="..\..\OpenMe\src\shaderProgram.c" />
     <ClCompile Include="..\..\OpenMe\src\utils.c" />
     <ClCompile Include="..\..\OpenMe\src\vector.c" />
   </ItemGroup>
@@ -30,6 +31,7 @@
     <ClInclude Include="..\..\OpenMe\include\mesh.h" />
     <ClInclude Include="..\..\OpenMe\include\OBJLoader.h" />
     <ClInclude Include="..\..\OpenMe\include\pluginLoader.h" />
+    <ClInclude Include="..\..\OpenMe\include\shaderProgram.h" />
     <ClInclude Include="..\..\OpenMe\include\utils.h" />
     <ClInclude Include="..\..\OpenMe\include\engine.h" />
     <ClInclude Include="..\..\OpenMe\include\logger.h" />

@@ -103,7 +103,7 @@ int omeEngineStart(void)
     }
 
     //clear color and transparency
-    glClearColor(0.1f, 0.1f, 0.1f, 1);
+    glClearColor(0.8f, 0.8f, 0.8f, 1);
     //glEnable(GL_BGR_EXT); // doesn't seem supported on my laptop :/
     glEnable(GL_ALPHA_TEST);
     glEnable(GL_BLEND);
@@ -117,6 +117,9 @@ int omeEngineStart(void)
     engine.FPSUpdateTime = omeEngineGetTime();
     engine.lastFrameStart = omeEngineGetTime();
     engine.state = OME_ENGINE_STATE_STARTED;
+
+    omeLoggerLog("OpenGL %s\n", glGetString(GL_VERSION));
+    omeLoggerLog("GLSL %s\n", glGetString(GL_SHADING_LANGUAGE_VERSION));
     
     return OME_SUCCESS;
 }
