@@ -15,12 +15,14 @@
 #include <string.h>
 
 
-omeShader *omeCreateShader(char *fileName)
+omeShader *omeShaderCreate(char *fileName)
 {
     omeShader *s;
     FILE *file;
     char *ext;
     int size;
+    char c;
+    int i;
 
     ext = strrchr(fileName, '.');
 
@@ -39,11 +41,17 @@ omeShader *omeCreateShader(char *fileName)
 
     // loading shader code
     fseek(file, 0, SEEK_END);
-    size = ftell(file) + 1;
+    size = ftell(file);
     rewind(file);
-    s->code = malloc(size);
-    fread(s->code, 1, size - 1, file);
-    s->code[size - 1] = '\0';
+    s->code = malloc(size + 1);
+
+    for(i = 0; i < size; i++)
+    {
+        c = (char)fgetc(file);
+        s->code[i] = c == EOF ? '\0' : c; // fuckin' lame old drivers
+    }
+
+    s->code[size] = '\0';
     fclose(file);
 
     s->compiled = OME_FALSE;
@@ -126,8 +134,13 @@ void omeShaderProgramDestroy(omeShaderProgram **sp)
     int i;
 
     for(i = 0; i < OME_SHADER_TYPE_MAX; i++)
+    {
         if((*sp)->shaders[i])
+        {
+            glDetachShader((*sp)->id, (*sp)->shaders[i]->id);
             omeShaderDestroy(&(*sp)->shaders[i]);
+        }
+    }
 
     glDeleteProgram((*sp)->id);
     memset(*sp, 0, sizeof(omeShaderProgram));
@@ -138,7 +151,10 @@ void omeShaderProgramDestroy(omeShaderProgram **sp)
 void omeShaderProgramAddShader(omeShaderProgram *sp, omeShader *s)
 {
     if(sp->shaders[s->type])
+    {
+        glDetachShader(sp->id, sp->shaders[s->type]->id);
         omeShaderDestroy(&sp->shaders[s->type]);
+    }
 
     sp->shaders[s->type] = s;
     sp->linked = OME_FALSE;
@@ -152,10 +168,10 @@ omeStatus omeShaderProgramPrepareLink(omeShaderProgram *sp)
     int i;
 
     // check that there are at least both pixel and a vertex shaders...
-    if(sp->shaders[OME_SHADER_TYPE_PIXEL] == NULL
+ /*   if(sp->shaders[OME_SHADER_TYPE_PIXEL] == NULL
         || sp->shaders[OME_SHADER_TYPE_VERTEX] == NULL)
         goto error;
-
+        */
     // compile and attach all shaders...
     for(i = 0; i < OME_SHADER_TYPE_MAX; i++)
     {
@@ -213,6 +229,24 @@ omeStatus omeShaderProgramLink(omeShaderProgram *sp)
         omeLoggerLog("%s\n", log);
 
         return OME_FAILURE;
+    }
+
+
+    // crappy test, seams interesting for generating the uniform location cache...
+    {
+        int i;
+        int size;
+        int nbUniforms;
+        char name[64];
+        int dummy;
+
+        glGetProgramiv(sp->id, GL_ACTIVE_UNIFORMS, &nbUniforms);
+        
+        for(i = 0; i < nbUniforms; i++)
+        {
+            glGetActiveUniform(sp->id, i, 64, &size, &dummy, &dummy, name);
+            printf("unform %d: %s\n", i, name);
+        }
     }
 
     return OME_SUCCESS;

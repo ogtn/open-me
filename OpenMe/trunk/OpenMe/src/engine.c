@@ -108,7 +108,6 @@ int omeEngineStart(void)
     glEnable(GL_ALPHA_TEST);
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    glEnable(GL_TEXTURE_2D); // for later...
     //glAlphaFunc(GL_GREATER, 0.1); // maybe not very usefull...
     glEnable(GL_DEPTH_TEST);
     glDepthMask(GL_TRUE);

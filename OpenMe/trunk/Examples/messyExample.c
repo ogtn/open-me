@@ -24,8 +24,6 @@ void init_texture(wchar_t *fileName)
     int w, h;
     GLenum format;
 
-    glEnable(GL_TEXTURE_2D);
-
     // init
     ilInit();
     ilOriginFunc(IL_ORIGIN_LOWER_LEFT);
@@ -88,6 +86,7 @@ int main(void)
     float zoom = 5;
     int wheelPos;
     omeBool drag = OME_FALSE;
+    omeShaderProgram *shaderProgram;
 
     // get OpenGL context
     if(!glfwInit() || !glfwOpenWindow(width, height, 8, 8, 8, 8, 0, 0, GLFW_WINDOW))
@@ -108,10 +107,13 @@ int main(void)
 
     // deprecated stuff to test normals before using shaders
     //init_texture(L"data/test.png");
-    glEnable(GL_LIGHTING);
-    glEnable(GL_COLOR_MATERIAL);
-    glEnable(GL_LIGHT0);
-    glLightfv(GL_LIGHT0, GL_POSITION, pos.tab);
+
+    // shader test
+    shaderProgram = omeShaderProgramCreate();
+    omeShaderProgramAddShader(shaderProgram, omeShaderCreate("data/basic.vs"));
+    omeShaderProgramAddShader(shaderProgram, omeShaderCreate("data/basic.ps"));
+    omeShaderProgramLink(shaderProgram);
+    glUseProgram(shaderProgram->id);
 
     while(glfwGetWindowParam(GLFW_OPENED) && !glfwGetKey(GLFW_KEY_ESC))
     {

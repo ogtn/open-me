@@ -60,7 +60,7 @@ typedef struct omeShaderProgram
 } omeShaderProgram;
 
 
-omeShader *omeCreateShader(char *fileName);
+omeShader *omeShaderCreate(char *fileName);
 void omeShaderDestroy(omeShader **s);
 omeStatus omeShaderCompile(omeShader *s);
 
