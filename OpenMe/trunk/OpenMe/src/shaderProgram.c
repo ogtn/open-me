@@ -10,6 +10,7 @@
 
 #include "shaderProgram.h"
 #include "logger.h"
+#include <GL/glew.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
@@ -235,19 +236,26 @@ omeStatus omeShaderProgramLink(omeShaderProgram *sp)
     // crappy test, seams interesting for generating the uniform location cache...
     {
         int i;
-        int size;
+        int len;
         int nbUniforms;
         char name[64];
-        int dummy;
+        GLint size;
+        GLenum type;
 
         glGetProgramiv(sp->id, GL_ACTIVE_UNIFORMS, &nbUniforms);
         
         for(i = 0; i < nbUniforms; i++)
         {
-            glGetActiveUniform(sp->id, i, 64, &size, &dummy, &dummy, name);
+            glGetActiveUniform(sp->id, i, 64, &len, &size, &type, name);
             printf("unform %d: %s\n", i, name);
         }
     }
 
     return OME_SUCCESS;
+}
+
+
+void omeShaderProgramUse(omeShaderProgram *sp)
+{
+    glUseProgram(sp->id);
 }

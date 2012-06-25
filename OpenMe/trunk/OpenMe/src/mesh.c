@@ -30,7 +30,7 @@ omeMesh *omeMeshCreate(int nbBuffers)
 
 void omeMeshDestroy(omeMesh **m)
 {
-    int i;
+    //int i;
 
     //TODO: anything to add here??
     //for(i = 0; i < (*m)->nbBuffers; i++)

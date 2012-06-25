@@ -18,7 +18,6 @@ extern "C" {
 
 
 #include "utils.h"
-#include <GL/glew.h>
 
 
 // forward declaration
@@ -90,7 +89,7 @@ typedef struct omeBuffer
     omeBool finalized;
     omeMesh *mesh;
     omePolygonType polygonType;
-    GLuint VBO;
+    unsigned int VBO;
     omeBool VBOReady;
 } omeBuffer;
 

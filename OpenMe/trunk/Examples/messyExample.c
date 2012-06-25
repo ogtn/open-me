@@ -57,7 +57,7 @@ void init_texture(wchar_t *fileName)
 
     // send pixels to OpenGL
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0, format, GL_UNSIGNED_BYTE, ilGetData());
-
+    
     // set minifying and magnifying filters
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
@@ -113,7 +113,7 @@ int main(void)
     omeShaderProgramAddShader(shaderProgram, omeShaderCreate("data/basic.vs"));
     omeShaderProgramAddShader(shaderProgram, omeShaderCreate("data/basic.ps"));
     omeShaderProgramLink(shaderProgram);
-    glUseProgram(shaderProgram->id);
+    omeShaderProgramUse(shaderProgram);
 
     while(glfwGetWindowParam(GLFW_OPENED) && !glfwGetKey(GLFW_KEY_ESC))
     {

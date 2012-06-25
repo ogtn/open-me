@@ -18,7 +18,6 @@ extern "C" {
 
 
 #include "utils.h"
-#include <GL/glew.h>
 
 
 #define OME_SHADER_LOG_LENGTH       512
@@ -36,7 +35,7 @@ typedef struct omeShader
 {
     char *code;
     omeShaderType type;
-    GLuint id;
+    unsigned int id;
     omeBool compiled;
 } omeShader;
 
@@ -54,7 +53,7 @@ typedef struct omeShaderProgram
 {
     omeShader *shaders[OME_SHADER_TYPE_MAX];
     omeBool shadersAttached[OME_SHADER_TYPE_MAX];
-    GLuint id;
+    unsigned int id;
     omeBool linked;
     omeShaderProgramStatus status; 
 } omeShaderProgram;
@@ -69,6 +68,7 @@ void omeShaderProgramDestroy(omeShaderProgram **sp);
 void omeShaderProgramAddShader(omeShaderProgram *sp, omeShader *s);
 omeStatus omeShaderProgramPrepareLink(omeShaderProgram *sp);
 omeStatus omeShaderProgramLink(omeShaderProgram *sp);
+void omeShaderProgramUse(omeShaderProgram *sp);
 
 
 #ifdef __cplusplus
