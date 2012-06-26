@@ -17,7 +17,7 @@ extern "C" {
 #endif
 
 
-#include <uah/uthash.h>
+#include <uthash.h>
 
 
 #define OME_RESOURCE_NAME_LEN       64

@@ -15,7 +15,7 @@ runMessyExample: ../Debug/messyExample ../Debug/libOpenMe.so
 	cd ../Debug; LD_LIBRARY_PATH=. ./messyExample
 
 ../Debug/messyExample: ../Examples/messyExample.c ../Debug/libOpenMe.so
-	gcc -o ../Debug/messyExample ../Examples/messyExample.c -lOpenMe -I../OpenMe/include/ -L../Debug -lglfw
+	gcc -o ../Debug/messyExample ../Examples/messyExample.c -lOpenMe -I../OpenMe/include/ -L../Debug -lglfw -lIL
 
 ../Debug/libOpenMe.so: ../OpenMe/include/*.h ../OpenMe/src/*.c
 	gcc -o ../Debug/libOpenMe.so -fPIC -shared -Wl,-soname,libOpenMe.so ../OpenMe/src/*.c -lm -lGLEW -I../OpenMe/include/

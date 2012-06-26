@@ -18,7 +18,7 @@ extern "C" {
 
 
 #include "utils.h"
-#include <uah/uthash.h>
+#include <uthash.h>
 
 
 #define OME_PROGRAM_LOG_LENGTH          2048

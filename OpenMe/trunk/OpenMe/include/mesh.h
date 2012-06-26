@@ -55,8 +55,8 @@ void omeMeshRender(omeMesh *m);
 void omeMeshRenderImmediate(omeMesh *m);
 void omeMeshRenderVA(omeMesh *m);
 void omeMeshRenderVBO(omeMesh *m);
-void omeMeshSave(char *filename, omeMesh *m);
-omeMesh *omeMeshLoad(char *filename);
+void omeMeshSave(char *fileName, omeMesh *m);
+omeMesh *omeMeshLoad(char *fileName);
 
 
 #ifdef __cplusplus

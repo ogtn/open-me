@@ -204,7 +204,7 @@ void omeMeshRenderVBO(omeMesh *m)
 
 
 //TODO: add a version number, to avoid failure when loading an obsolete file (maybe a header?)
-void omeMeshSave(char *filename, omeMesh *m)
+void omeMeshSave(char *fileName, omeMesh *m)
 {
     int i, j;
     FILE *file;
@@ -217,7 +217,7 @@ void omeMeshSave(char *filename, omeMesh *m)
         return;
     }
 
-    file = fopen(filename, "wb+");
+    file = fopen(fileName, "wb+");
 
     // mesh info
     fwrite(&m->nbBuffers, sizeof m->nbBuffers, 1, file);
@@ -263,7 +263,7 @@ void omeMeshSave(char *filename, omeMesh *m)
 }
 
 
-omeMesh *omeMeshLoad(char *filename)
+omeMesh *omeMeshLoad(char *fileName)
 {
     int i, j;
     int nbBuffers;
@@ -271,7 +271,13 @@ omeMesh *omeMeshLoad(char *filename)
     omeMesh *m;
     omeBuffer *buffer;
 
-    file = fopen(filename, "rb");
+    file = fopen(fileName, "rb");
+    
+    if(file == NULL)
+    {
+		omeLoggerLog("Unable to load mesh: file %s missing\n", fileName);
+		return NULL;
+	}
 
     // mesh info
     fread(&nbBuffers, sizeof nbBuffers, 1, file);

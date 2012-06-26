@@ -15,6 +15,7 @@
 #include <windows.h>
 #endif
 #include <stdlib.h>
+#include <string.h>
 
 
 omePlugin *omePluginLoad(const char *name)
@@ -53,7 +54,7 @@ void omePluginUnload(omePlugin **p)
         quit();
 
 #ifdef __linux__
-    dlclose((*p))->handle); 
+    dlclose((*p)->handle); 
 #elif _WIN32
     FreeLibrary((*p)->handle);
 #endif
