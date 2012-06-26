@@ -8,8 +8,8 @@
 //  http://sam.zoy.org/projects/COPYING.WTFPL for more details.
 
 
-#ifndef OME_SHADER_PROGRAM_H
-#define OME_SHADER_PROGRAM_H
+#ifndef OME_PROGRAM_H
+#define OME_PROGRAM_H
 
 
 #ifdef __cplusplus
@@ -18,9 +18,13 @@ extern "C" {
 
 
 #include "utils.h"
+#include <uah/uthash.h>
 
 
-#define OME_SHADER_LOG_LENGTH       512
+#define OME_PROGRAM_LOG_LENGTH          2048
+// for uniforms and attributes names
+// TODO: dynamic solution instead because of concatenation for structs, enums...
+#define OME_PROGRAM_VAR_LENGTH          128
 
 
 typedef enum omeShaderType
@@ -40,35 +44,60 @@ typedef struct omeShader
 } omeShader;
 
 
-typedef enum omeShaderProgramStatus
+typedef enum omeProgramStatus
 {
-    OME_SHADER_PROGRAM_STATUS_READY,
-    OME_SHADER_PROGRAM_STATUS_NOT_READY,
-    OME_SHADER_PROGRAM_STATUS_BROKEN,
-    OME_SHADER_PROGRAM_STATUS_MAX
-} omeShaderProgramStatus;
+    OME_PROGRAM_STATUS_READY,
+    OME_PROGRAM_STATUS_NOT_READY,
+    OME_PROGRAM_STATUS_BROKEN,
+    OME_PROGRAM_STATUS_MAX
+} omeProgramStatus;
 
 
-typedef struct omeShaderProgram
+typedef enum omeLocationType
+{
+    OME_LOCATION_TYPE_UNIFORM,
+    OME_LOCATION_TYPE_ATTRIB
+} omeLocationType;
+
+
+typedef struct omeLocation
+{
+    UT_hash_handle hh;
+    char key[OME_PROGRAM_VAR_LENGTH];
+    int location;
+} omeLocation, omeLocationHashTable;
+
+
+typedef struct omeProgram
 {
     omeShader *shaders[OME_SHADER_TYPE_MAX];
     omeBool shadersAttached[OME_SHADER_TYPE_MAX];
     unsigned int id;
     omeBool linked;
-    omeShaderProgramStatus status; 
-} omeShaderProgram;
+    omeProgramStatus status;
+    omeLocationHashTable *uniforms;
+} omeProgram;
 
 
 omeShader *omeShaderCreate(char *fileName);
 void omeShaderDestroy(omeShader **s);
 omeStatus omeShaderCompile(omeShader *s);
 
-omeShaderProgram *omeShaderProgramCreate(void);
-void omeShaderProgramDestroy(omeShaderProgram **sp);
-void omeShaderProgramAddShader(omeShaderProgram *sp, omeShader *s);
-omeStatus omeShaderProgramPrepareLink(omeShaderProgram *sp);
-omeStatus omeShaderProgramLink(omeShaderProgram *sp);
-void omeShaderProgramUse(omeShaderProgram *sp);
+omeProgram *omeProgramCreate(void);
+void omeProgramDestroy(omeProgram **sp);
+void omeProgramAddShader(omeProgram *sp, omeShader *s);
+omeStatus omeProgramPrepareLink(omeProgram *sp);
+omeStatus omeProgramLink(omeProgram *sp);
+void omeProgramUse(omeProgram *sp);
+void omeProgramLocateUniforms(omeProgram *sp);
+int omeProgramLocateUniform(omeProgram *sp, char *name);
+
+void omeProgramSendUniformf(omeProgram *sp, float f, char *name);
+
+omeLocation *omeLocationCreate(omeProgram *sp, char *name, omeLocationType type);
+#define omeUniformLocationCreate(sp, name)  omeLocationCreate(sp, name, OME_LOCATION_TYPE_UNIFORM)
+#define omeAttribLocationCreate(sp, name)   omeLocationCreate(sp, name, OME_LOCATION_TYPE_ATTRIB)
+void omeLocationDestroy(omeLocation **loc);
 
 
 #ifdef __cplusplus
@@ -76,4 +105,4 @@ void omeShaderProgramUse(omeShaderProgram *sp);
 #endif
 
 
-#endif // OME_SHADER_PROGRAM_H
+#endif // OME_PROGRAM_H

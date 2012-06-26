@@ -44,7 +44,7 @@ void omeMatrixTranspose(omeMatrix *m);
 void omeMatrixLoad(omeMatrix *m, int transpose);
 void omeMatrixMultMatrix(omeMatrix *m, omeMatrix *m2, omeMatrix *res);
 //void omeMatrixMultVector(omeMatrix *m, omeVector *v, omeVector *res);
-//void omeMatrixSendAsUniform(omeMatrix *m, omeShaderProgram *sp, char *name);
+//void omeMatrixSendAsUniform(omeMatrix *m, omeProgram *sp, char *name);
 void omeMatrixPrint(omeMatrix *m);
 
 

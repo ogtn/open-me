@@ -92,7 +92,7 @@ omeStatus omeShaderCompile(omeShader *s)
 {
     GLint status;
     GLsizei size;
-    char log[OME_SHADER_LOG_LENGTH]; // TODO use glGetShader with GL_INFO_LOG_LENGTH instead?
+    char log[OME_PROGRAM_LOG_LENGTH]; // TODO use glGetShader with GL_INFO_LOG_LENGTH instead?
 
     // send source code
     glShaderSource(s->id, 1, &s->code, NULL);
@@ -103,7 +103,7 @@ omeStatus omeShaderCompile(omeShader *s)
 
     if(status == GL_FALSE)
     {
-        glGetShaderInfoLog(s->id, OME_SHADER_LOG_LENGTH, &size, log);
+        glGetShaderInfoLog(s->id, OME_PROGRAM_LOG_LENGTH, &size, log);
 
         omeLoggerLog("Error while compiling shader\n");        
         omeLoggerLog("%s\n", log);
@@ -117,22 +117,23 @@ omeStatus omeShaderCompile(omeShader *s)
 }
 
 
-omeShaderProgram *omeShaderProgramCreate(void)
+omeProgram *omeProgramCreate(void)
 {
-    omeShaderProgram *sp;
+    omeProgram *sp;
 
-    sp = calloc(1, sizeof(omeShaderProgram));
+    sp = calloc(1, sizeof(omeProgram));
     sp->id = glCreateProgram();
     sp->linked = OME_FALSE;
-    sp->status = OME_SHADER_PROGRAM_STATUS_NOT_READY;
+    sp->status = OME_PROGRAM_STATUS_NOT_READY;
 
     return sp;
 }
 
 
-void omeShaderProgramDestroy(omeShaderProgram **sp)
+void omeProgramDestroy(omeProgram **sp)
 {
     int i;
+    omeLocation *loc, *tmp;
 
     for(i = 0; i < OME_SHADER_TYPE_MAX; i++)
     {
@@ -143,13 +144,20 @@ void omeShaderProgramDestroy(omeShaderProgram **sp)
         }
     }
 
+    // free hashtable and locations
+    HASH_ITER(hh, (*sp)->uniforms, loc, tmp) 
+    {
+        HASH_DEL((*sp)->uniforms, loc);
+        omeLocationDestroy(&loc);
+    }
+
     glDeleteProgram((*sp)->id);
-    memset(*sp, 0, sizeof(omeShaderProgram));
+    memset(*sp, 0, sizeof(omeProgram));
     *sp = NULL;
 }
 
 
-void omeShaderProgramAddShader(omeShaderProgram *sp, omeShader *s)
+void omeProgramAddShader(omeProgram *sp, omeShader *s)
 {
     if(sp->shaders[s->type])
     {
@@ -159,20 +167,20 @@ void omeShaderProgramAddShader(omeShaderProgram *sp, omeShader *s)
 
     sp->shaders[s->type] = s;
     sp->linked = OME_FALSE;
-    sp->status = OME_SHADER_PROGRAM_STATUS_NOT_READY;
+    sp->status = OME_PROGRAM_STATUS_NOT_READY;
     sp->shadersAttached[s->type] = OME_FALSE;
 }
 
 
-omeStatus omeShaderProgramPrepareLink(omeShaderProgram *sp)
+omeStatus omeProgramPrepareLink(omeProgram *sp)
 {
     int i;
 
     // check that there are at least both pixel and a vertex shaders...
- /*   if(sp->shaders[OME_SHADER_TYPE_PIXEL] == NULL
-        || sp->shaders[OME_SHADER_TYPE_VERTEX] == NULL)
-        goto error;
-        */
+    /*   if(sp->shaders[OME_SHADER_TYPE_PIXEL] == NULL
+    || sp->shaders[OME_SHADER_TYPE_VERTEX] == NULL)
+    goto error;
+    */
     // compile and attach all shaders...
     for(i = 0; i < OME_SHADER_TYPE_MAX; i++)
     {
@@ -189,29 +197,29 @@ omeStatus omeShaderProgramPrepareLink(omeShaderProgram *sp)
         }
     }
 
-    sp->status = OME_SHADER_PROGRAM_STATUS_READY;
+    sp->status = OME_PROGRAM_STATUS_READY;
     return OME_SUCCESS;
 
 error:
-    sp->status = OME_SHADER_PROGRAM_STATUS_BROKEN;
+    sp->status = OME_PROGRAM_STATUS_BROKEN;
     return OME_FAILURE;
 }
 
 
-omeStatus omeShaderProgramLink(omeShaderProgram *sp)
+omeStatus omeProgramLink(omeProgram *sp)
 {
     GLint status;
     GLsizei size;
-    char log[OME_SHADER_LOG_LENGTH]; // TODO use glGetProgram with GL_INFO_LOG_LENGTH instead?
-    
+    char log[OME_PROGRAM_LOG_LENGTH]; // TODO use glGetProgram with GL_INFO_LOG_LENGTH instead?
+
     switch(sp->status)
     {
-    case OME_SHADER_PROGRAM_STATUS_READY:
+    case OME_PROGRAM_STATUS_READY:
         break;
-    case OME_SHADER_PROGRAM_STATUS_NOT_READY:
-        omeShaderProgramPrepareLink(sp);
+    case OME_PROGRAM_STATUS_NOT_READY:
+        omeProgramPrepareLink(sp);
         break;
-    case OME_SHADER_PROGRAM_STATUS_BROKEN:
+    case OME_PROGRAM_STATUS_BROKEN:
         return OME_FAILURE;
     default:
         omeLoggerLog("Invalid status in shader program\n");
@@ -224,7 +232,7 @@ omeStatus omeShaderProgramLink(omeShaderProgram *sp)
 
     if(status == GL_FALSE)
     {
-        glGetProgramInfoLog(sp->id, OME_SHADER_LOG_LENGTH, &size, log);
+        glGetProgramInfoLog(sp->id, OME_PROGRAM_LOG_LENGTH, &size, log);
 
         omeLoggerLog("Error while linking shaderr program\n");
         omeLoggerLog("%s\n", log);
@@ -232,30 +240,107 @@ omeStatus omeShaderProgramLink(omeShaderProgram *sp)
         return OME_FAILURE;
     }
 
-
-    // crappy test, seams interesting for generating the uniform location cache...
-    {
-        int i;
-        int len;
-        int nbUniforms;
-        char name[64];
-        GLint size;
-        GLenum type;
-
-        glGetProgramiv(sp->id, GL_ACTIVE_UNIFORMS, &nbUniforms);
-        
-        for(i = 0; i < nbUniforms; i++)
-        {
-            glGetActiveUniform(sp->id, i, 64, &len, &size, &type, name);
-            printf("unform %d: %s\n", i, name);
-        }
-    }
+    // fill the uniforms cache
+    // TODO: add a boolean value to tell if the cache is valid or to be deleted?
+    omeProgramLocateUniforms(sp);
 
     return OME_SUCCESS;
 }
 
 
-void omeShaderProgramUse(omeShaderProgram *sp)
+void omeProgramUse(omeProgram *sp)
 {
     glUseProgram(sp->id);
+}
+
+
+void omeProgramLocateUniforms(omeProgram *sp)
+{
+    int i;
+    int len;
+    int nbUniforms;
+    char name[64];
+    GLint size;
+    GLenum type;
+
+    glGetProgramiv(sp->id, GL_ACTIVE_UNIFORMS, &nbUniforms);
+
+    for(i = 0; i < nbUniforms; i++)
+    {
+        glGetActiveUniform(sp->id, i, 64, &len, &size, &type, name);
+        omeProgramLocateUniform(sp, name);
+    }
+}
+
+
+int omeProgramLocateUniform(omeProgram *sp, char *name)
+{
+    omeLocation *loc;
+    
+    HASH_FIND_STR(sp->uniforms, name, loc);
+
+    if(loc)
+        return loc->location;
+    else
+    {
+        loc = omeUniformLocationCreate(sp, name);
+
+        if(loc != NULL)
+        {
+            HASH_ADD_STR(sp->uniforms, key, loc);
+            return loc->location;
+        }
+    }
+
+    return -1;
+}
+
+
+omeLocation *omeLocationCreate(omeProgram *sp, char *name, omeLocationType type)
+{
+    omeLocation *loc = calloc(1, sizeof(omeLocation));
+
+    switch(type)
+    {
+    case OME_LOCATION_TYPE_UNIFORM:
+        loc->location = glGetUniformLocation(sp->id, name);
+        break;
+    case OME_LOCATION_TYPE_ATTRIB:
+        loc->location = glGetAttribLocation(sp->id, name);
+        break;
+    default:
+        omeLoggerLog("You shouldn't be here\n");
+        return NULL;
+    }
+
+    //TODO: this function sucks, not garanted to be null terminated and can't be sure that the whole string was copied...
+    strncpy(loc->key, name, OME_PROGRAM_VAR_LENGTH);
+    loc->key[OME_PROGRAM_VAR_LENGTH - 1];
+    
+    if(strcmp(loc->key, name))
+    {
+        omeLoggerLog("Problem with location: name is too long\n");
+        free(loc);
+        
+        return NULL;
+    }
+
+    return loc;
+}
+
+
+void omeLocationDestroy(omeLocation **loc)
+{
+    memset(*loc, 0, sizeof(omeLocation));
+    free(*loc);
+    *loc = NULL;
+}
+
+
+void omeProgramSendUniformf(omeProgram *sp, float f, char *name)
+{
+    // TODO: try to avoid this
+    // TODO: special struct than cointains everything, to send everything in the same time?
+    omeProgramUse(sp);
+    glUniform1f(omeProgramLocateUniform(sp, name), f);
 }

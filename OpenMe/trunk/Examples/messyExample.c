@@ -86,7 +86,7 @@ int main(void)
     float zoom = 5;
     int wheelPos;
     omeBool drag = OME_FALSE;
-    omeShaderProgram *shaderProgram;
+    omeProgram *shaderProgram;
 
     // get OpenGL context
     if(!glfwInit() || !glfwOpenWindow(width, height, 8, 8, 8, 8, 0, 0, GLFW_WINDOW))
@@ -109,12 +109,12 @@ int main(void)
     //init_texture(L"data/test.png");
 
     // shader test
-    shaderProgram = omeShaderProgramCreate();
-    omeShaderProgramAddShader(shaderProgram, omeShaderCreate("data/basic.vs"));
-    omeShaderProgramAddShader(shaderProgram, omeShaderCreate("data/basic.ps"));
-    omeShaderProgramLink(shaderProgram);
-    omeShaderProgramUse(shaderProgram);
-
+    shaderProgram = omeProgramCreate();
+    omeProgramAddShader(shaderProgram, omeShaderCreate("data/basic.vs"));
+    omeProgramAddShader(shaderProgram, omeShaderCreate("data/basic.ps"));
+    omeProgramLink(shaderProgram);
+    omeProgramUse(shaderProgram);
+    
     while(glfwGetWindowParam(GLFW_OPENED) && !glfwGetKey(GLFW_KEY_ESC))
     {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -177,6 +177,7 @@ int main(void)
         omeCameraUpdate(camera);
 
         // render
+        omeProgramSendUniformf(shaderProgram, sin(omeEngineGetTime()), "testUniform");
         omeMeshRender(mesh);
 
         // TODO: limit fps here?
