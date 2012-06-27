@@ -17,9 +17,9 @@
 
 
 
-static const omeVector defaultPosition = {1, 1, 1};
-static const omeVector defaultTarget = {0, 0, 0};
-static const omeVector defaultUp = {0, 0, 1};
+static const omeVector defaultPosition =	{{1, 1, 1}};
+static const omeVector defaultTarget = 		{{0, 0, 0}};
+static const omeVector defaultUp = 			{{0, 0, 1}};
 
 
 omeCamera *omeCameraCreate(omeCameraType type)

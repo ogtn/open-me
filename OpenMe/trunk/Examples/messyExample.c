@@ -72,9 +72,9 @@ int main(void)
     double t;
     omeGeometry *geometry;
     omeCamera *camera;
-    omeVector pos = {2.f, 2.f, 2.f};
-    omeVector target = {0.f, 0.f, 0.f};
-    omeVector vec = {0, 0, 1};
+    omeVector pos = 	{{2.f, 2.f, 2.f}};
+    omeVector target = 	{{0.f, 0.f, 0.f}};
+    omeVector vec = 	{{0, 0, 1}};
     omeMesh *mesh;
     omeMatrix matrix;
     float angle = 0;

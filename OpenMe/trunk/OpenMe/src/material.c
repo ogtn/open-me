@@ -15,11 +15,11 @@
 
 
 // default colors
-static const omeColorf defaultAmbiant =  {0.1f, 0.1f, 0.1f, 1.f};
-static const omeColorf defaultDiffuse =  {0.3f, 0.3f, 0.3f, 1.f};
-static const omeColorf defaultSpecular = {0.9f, 0.9f, 0.9f, 1.f};
-static const omeColorf defaultEmissive = {0.0f, 0.0f, 0.0f, 1.f};
-static const float defaultShininess =    64.0F;
+static const omeColorf defaultAmbiant =  {{0.1f, 0.1f, 0.1f, 1.f}};
+static const omeColorf defaultDiffuse =  {{0.3f, 0.3f, 0.3f, 1.f}};
+static const omeColorf defaultSpecular = {{0.9f, 0.9f, 0.9f, 1.f}};
+static const omeColorf defaultEmissive = {{0.0f, 0.0f, 0.0f, 1.f}};
+static const float defaultShininess =    64.0f;
 
 
 omeMaterial *omeMaterialCreate(void)

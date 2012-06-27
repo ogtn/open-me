@@ -14,9 +14,9 @@
 #include <stdlib.h>
 
 
-static const omeVector defaultPosition = {0, 0, 0};
-static const omeVector defaultScaling = {1, 1, 1};
-static const omeVector defaultRotation = {0, 0, 0};
+static const omeVector defaultPosition =	{{0, 0, 0}};
+static const omeVector defaultScaling = 	{{1, 1, 1}};
+static const omeVector defaultRotation = 	{{0, 0, 0}};
 
 
 omeEntity *omeEntityCreate(wchar_t *name)

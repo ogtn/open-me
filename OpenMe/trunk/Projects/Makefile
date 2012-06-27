@@ -15,10 +15,10 @@ runMessyExample: ../Debug/messyExample ../Debug/libOpenMe.so
 	cd ../Debug; LD_LIBRARY_PATH=. ./messyExample
 
 ../Debug/messyExample: ../Examples/messyExample.c ../Debug/libOpenMe.so
-	gcc -o ../Debug/messyExample ../Examples/messyExample.c -lOpenMe -I../OpenMe/include/ -L../Debug -lglfw -lIL
+	gcc -Wall -Wextra -o ../Debug/messyExample ../Examples/messyExample.c -lOpenMe -I../OpenMe/include/ -L../Debug -lglfw -lIL
 
 ../Debug/libOpenMe.so: ../OpenMe/include/*.h ../OpenMe/src/*.c
-	gcc -o ../Debug/libOpenMe.so -fPIC -shared -Wl,-soname,libOpenMe.so ../OpenMe/src/*.c -lm -lGLEW -I../OpenMe/include/
+	gcc -Wall -Wextra -o ../Debug/libOpenMe.so -fPIC -shared -Wl,-soname,libOpenMe.so ../OpenMe/src/*.c -lm -lGLEW -I../OpenMe/include/
 
 clean:
 	rm -rf ../Debug/libOpenMe.so ../Debug/libOpenMe.so
