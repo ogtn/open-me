@@ -17,6 +17,7 @@
     <ClCompile Include="..\..\OpenMe\src\engine.c" />
     <ClCompile Include="..\..\OpenMe\src\entity.c" />
     <ClCompile Include="..\..\OpenMe\src\logger.c" />
+    <ClCompile Include="..\..\OpenMe\src\material.c" />
     <ClCompile Include="..\..\OpenMe\src\matrix.c" />
     <ClCompile Include="..\..\OpenMe\src\mesh.c" />
     <ClCompile Include="..\..\OpenMe\src\OBJLoader.c" />
@@ -31,6 +32,7 @@
     <ClInclude Include="..\..\OpenMe\include\buffer.h" />
     <ClInclude Include="..\..\OpenMe\include\camera.h" />
     <ClInclude Include="..\..\OpenMe\include\entity.h" />
+    <ClInclude Include="..\..\OpenMe\include\material.h" />
     <ClInclude Include="..\..\OpenMe\include\mesh.h" />
     <ClInclude Include="..\..\OpenMe\include\OBJLoader.h" />
     <ClInclude Include="..\..\OpenMe\include\pluginLoader.h" />
@@ -76,12 +78,12 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Static Debug|Win32'">
-    <IncludePath>C:\Users\MouleMan\Documents\Visual Studio 2012\Projects\OpenMe\OpenMe\include;$(IncludePath)</IncludePath>
+    <IncludePath>$(VCInstallDir)include\uah;C:\Users\MouleMan\Documents\Visual Studio 2012\Projects\OpenMe\OpenMe\include;$(IncludePath)</IncludePath>
     <TargetName>$(ProjectName)_dbg</TargetName>
     <OutDir>$(SolutionDir)\lib\</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Static Release|Win32'">
-    <IncludePath>C:\Users\MouleMan\Documents\Visual Studio 2012\Projects\OpenMe\OpenMe\include;$(IncludePath)</IncludePath>
+    <IncludePath>$(VCInstallDir)include\uah;C:\Users\MouleMan\Documents\Visual Studio 2012\Projects\OpenMe\OpenMe\include;$(IncludePath)</IncludePath>
     <OutDir>$(SolutionDir)\lib\</OutDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Static Debug|Win32'">

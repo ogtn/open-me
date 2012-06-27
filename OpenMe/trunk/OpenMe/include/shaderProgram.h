@@ -21,6 +21,10 @@ extern "C" {
 #include <uthash.h>
 
 
+// forward declaration
+typedef struct omeMaterial omeMaterial;
+
+
 #define OME_PROGRAM_LOG_LENGTH          2048
 // for uniforms and attributes names
 // TODO: dynamic solution instead because of concatenation for structs, enums...
@@ -93,6 +97,7 @@ void omeProgramLocateUniforms(omeProgram *sp);
 int omeProgramLocateUniform(omeProgram *sp, char *name);
 
 void omeProgramSendUniformf(omeProgram *sp, float f, char *name);
+void omeProgramSendUniformMaterial(omeProgram *p, omeMaterial *m, char *name);
 
 omeLocation *omeLocationCreate(omeProgram *sp, char *name, omeLocationType type);
 #define omeUniformLocationCreate(sp, name)  omeLocationCreate(sp, name, OME_LOCATION_TYPE_UNIFORM)

@@ -9,6 +9,7 @@
 
 
 #include "shaderProgram.h"
+#include "material.h"
 #include "logger.h"
 #include <GL/glew.h>
 #include <stdlib.h>
@@ -339,8 +340,15 @@ void omeLocationDestroy(omeLocation **loc)
 
 void omeProgramSendUniformf(omeProgram *sp, float f, char *name)
 {
-    // TODO: try to avoid this
-    // TODO: special struct than cointains everything, to send everything in the same time?
     omeProgramUse(sp);
     glUniform1f(omeProgramLocateUniform(sp, name), f);
+}
+
+
+void omeProgramSendUniformMaterial(omeProgram *p, omeMaterial *m, char *name)
+{
+    char fullName[OME_PROGRAM_VAR_LENGTH] = {'\0'};
+
+    sprintf(fullName, "%s.ambiant", name);
+    glUniform3fv(omeProgramLocateUniform(p, fullName), 1, m->ambiantColor.tab); // /!\ omeColorf is made of 4 floats for the moment, only three are send here
 }

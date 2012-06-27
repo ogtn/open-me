@@ -87,6 +87,7 @@ int main(void)
     int wheelPos;
     omeBool drag = OME_FALSE;
     omeProgram *shaderProgram;
+    omeMaterial *mat;
 
     // get OpenGL context
     if(!glfwInit() || !glfwOpenWindow(width, height, 8, 8, 8, 8, 0, 0, GLFW_WINDOW))
@@ -104,7 +105,7 @@ int main(void)
     //mesh = omeLoadOBJFromFile("data/bunny69k.obj", OME_TRUE);
     //omeMeshSave("data/mesh1.omeMesh", mesh);
     mesh = omeMeshLoad("data/mesh1.omeMesh");
-
+    
     // deprecated stuff to test normals before using shaders
     //init_texture(L"data/test.png");
 
@@ -114,6 +115,9 @@ int main(void)
     omeProgramAddShader(shaderProgram, omeShaderCreate("data/basic.ps"));
     omeProgramLink(shaderProgram);
     omeProgramUse(shaderProgram);
+
+    // material test
+    mat = omeMaterialCreate();
     
     while(glfwGetWindowParam(GLFW_OPENED) && !glfwGetKey(GLFW_KEY_ESC))
     {
@@ -177,9 +181,13 @@ int main(void)
         omeCameraUpdate(camera);
 
         // render
-        omeProgramSendUniformf(shaderProgram, sin(omeEngineGetTime()), "testUniform");
+        {
+            float f;
+            f = glfwGetTime() * 5;
+        omeProgramSendUniformf(shaderProgram, f, "testUniform");
+        omeProgramSendUniformMaterial(shaderProgram, mat, "mat");
         omeMeshRender(mesh);
-
+        }
         // TODO: limit fps here?
         omeEngineUpdate();
         glfwSleep(0.002);
