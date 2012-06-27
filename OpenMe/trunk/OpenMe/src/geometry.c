@@ -14,6 +14,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <GL/glew.h>
+#include <utlist.h>
 
 
 GLenum omePolygonTypeToGL(omePolygonType polygonType)
@@ -39,7 +40,7 @@ GLenum omePolygonTypeToGL(omePolygonType polygonType)
 }
 
 
-omeGeometry *omeGeometryCreate(int nbVertices, int nbAttributes, omePolygonType polygonType, omeMesh *m)
+omeGeometry *omeGeometryCreate(int nbVertices, int nbAttributes, omePolygonType polygonType)
 {
     omeGeometry *g = calloc(1, sizeof(omeGeometry));
 
@@ -52,7 +53,6 @@ omeGeometry *omeGeometryCreate(int nbVertices, int nbAttributes, omePolygonType 
     g->nbVertices = nbVertices;
     g->nbAttributes = nbAttributes;
     g->polygonType = polygonType;
-    g->mesh = m;
 
     return g;
 }
@@ -149,8 +149,8 @@ void omeGeometryFinalize(omeGeometry *g)
 
     //TODO: take the hints and the options into account somewhere around here
 
-    if(g->mesh != NULL)
-        omeMeshBufferFinalized(g->mesh);
+    //if(g->mesh != NULL)
+    //    omeMeshBufferFinalized(g->mesh);
 
     g->finalized = OME_TRUE;
 }
@@ -333,4 +333,34 @@ void omeGeometryRenderVBO(omeGeometry *g)
 void omeGeometryUseIndices(omeGeometry *g)
 {
     g->indexed = OME_TRUE;
+}
+
+
+void omeGeometryAddRef(omeGeometry *g, omeMesh *m)
+{
+    omeMeshListElement *element = calloc(1, sizeof(omeMeshListElement));
+    element->mesh = m;
+    DL_APPEND(g->references, element);
+
+    g->nbReferences++;
+}
+
+
+void omeGeometryDelRef(omeGeometry *g, omeMesh *m)
+{
+    omeMeshListElement *element = NULL;
+
+    DL_SEARCH_SCALAR(g->references, element, mesh, m);
+
+    if(element)
+    {
+        DL_DELETE(g->references, element);
+        g->nbReferences--;
+
+        // TODO: add a flag to disable this, to allow static arrays
+        if(g->nbReferences == 0)
+            omeGeometryDestroy(&g);
+    }
+    else
+        omeLoggerLog("This geometry wasn't referenced by this mesh\n");
 }

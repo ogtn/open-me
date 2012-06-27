@@ -211,7 +211,7 @@ omeMesh *omeLoadOBJFromFile(char *fileName, omeBool swapYZ)
     free(tmpNormals);
 
     mesh = omeMeshCreate(1);
-    geometry = omeMeshAddBuffer(mesh, nbFaces * 3, 3, OME_TRIANGLES);
+    geometry = omeMeshAddGeometry(mesh, nbFaces * 3, 3, OME_TRIANGLES);
     omeGeometryAddAttrib(geometry, 3, OME_FLOAT, 0, OME_ATTRIB_TYPE_POSITION, positions);
     omeGeometryAddAttrib(geometry, 2, OME_FLOAT, 0, OME_ATTRIB_TYPE_TEXCOORD_0, texCoords);
     omeGeometryAddAttrib(geometry, 3, OME_FLOAT, 0, OME_ATTRIB_TYPE_NORMAL, normals);

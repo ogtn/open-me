@@ -30,11 +30,10 @@ omeMesh *omeMeshCreate(int nbBuffers)
 
 void omeMeshDestroy(omeMesh **m)
 {
-    //int i;
+    int i;
 
-    //TODO: anything to add here??
-    //for(i = 0; i < (*m)->nbBuffers; i++)
-    //    omeGeometryDelReference(...);
+    for(i = 0; i < (*m)->nbBuffers; i++)
+        omeGeometryDelRef((*m)->geometries[i], *m);
 
     memset(*m, 0, sizeof(omeMesh));
     free(*m);
@@ -42,18 +41,16 @@ void omeMeshDestroy(omeMesh **m)
 }
 
 
-//TODO: would omeMeshGetBuffer(geometryIndex...) be better? (on first get, automatically allocate, after ignore parameters)
-omeGeometry *omeMeshAddBuffer(omeMesh *m, int nbVertices, int nbAttributes, omePolygonType polygonType)
+omeGeometry *omeMeshAddGeometry(omeMesh *m, omeGeometry *g)
 {
-    omeGeometry *g;
-
     if(m->geometryCpt >= m->nbBuffers)
     {
         omeLoggerLog("All geometries have already been added");
         return NULL;
     }
 
-    g = m->geometries[m->geometryCpt] = omeGeometryCreate(nbVertices, nbAttributes, polygonType, m);
+    g = m->geometries[m->geometryCpt] = g;
+    omeGeometryAddRef(g, m);
     m->geometryCpt++;
 
     return g;
@@ -83,11 +80,14 @@ void omeMeshBufferFinalized(omeMesh *m)
 
 void omeMeshRender(omeMesh *m)
 {
+    // TODO: problem here, the old finalizing mechanism doesn't work anymore with geometry (multiple mesh for one geometry)
+    /*
     if(m->finalized == OME_FALSE)
     {
         omeLoggerLog("Can't render a non finalized mesh\n");
         return;
     }
+    */
 
     switch(m->renderType)
     {
@@ -300,7 +300,8 @@ omeMesh *omeMeshLoad(char *fileName)
         fread(&polygonType, sizeof polygonType, 1, file);
         fread(&indexed, sizeof indexed, 1, file);
 
-        geometry = omeMeshAddBuffer(m, nbVertices, nbAttributes, polygonType);
+        geometry = omeGeometryCreate(nbVertices, nbAttributes, polygonType);
+        omeMeshAddGeometry(m, geometry);
 
         if(indexed == OME_TRUE)
         {

@@ -22,6 +22,7 @@ extern "C" {
 
 // forward declaration
 typedef struct omeMesh omeMesh;
+typedef struct omeMeshListElement omeMeshListElement, omeMeshList;
 
 
 typedef enum omeAttribType
@@ -87,14 +88,17 @@ typedef struct omeGeometry
     omeBool indexed;
     omeBool padded;
     omeBool finalized;
-    omeMesh *mesh;
     omePolygonType polygonType;
     unsigned int VBO;
     omeBool VBOReady;
+
+    // TODO: maybe those things should be in a reference struct, used in a "polymorphic" way...
+    omeMeshList *references;
+    int nbReferences;
 } omeGeometry;
 
 
-omeGeometry *omeGeometryCreate(int nbVertices, int nbAttributes, omePolygonType polygonType, omeMesh *m);
+omeGeometry *omeGeometryCreate(int nbVertices, int nbAttributes, omePolygonType polygonType);
 void omeGeometryDestroy(omeGeometry **g);
 int omeGeometryAddAttrib(omeGeometry *g, int nbElements, omeType type, int updateHint, omeAttribType geometryType, void *data);
 int omeGeometryAddIndices(omeGeometry *g, omeType type, int updateHint, void *data);
@@ -103,6 +107,10 @@ void omeGeometryUpdateAttrib(omeGeometry *g, int attribIndex, void *data);
 void omeGeometryRenderVA(omeGeometry *g);
 void omeGeometryRenderVBO(omeGeometry *g);
 void omeGeometryUseIndices(omeGeometry *g);
+
+// TODO: => omeResourceAddRef() and omeResourceDelRef()???
+void omeGeometryAddRef(omeGeometry *g, omeMesh *m);
+void omeGeometryDelRef(omeGeometry *g, omeMesh *m);
 
 
 #ifdef __cplusplus

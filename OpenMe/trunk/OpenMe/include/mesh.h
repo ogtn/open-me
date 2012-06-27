@@ -46,9 +46,19 @@ typedef struct omeMesh
 } omeMesh;
 
 
+// TODO: use a macro for generating the typedef and the struct OME_TYPEDEF_LIST(type) OME_LIST(type)?
+typedef struct omeMeshListElement omeMeshListElement, omeMeshList;
+struct omeMeshListElement
+{
+    omeMesh *mesh;
+    omeMeshListElement *next;
+    omeMeshListElement *prev;
+};
+
+
 omeMesh *omeMeshCreate(int nbBuffers);
 void omeMeshDestroy(omeMesh **m);
-omeGeometry *omeMeshAddBuffer(omeMesh *m, int nbVertices, int nbAttributes, omePolygonType polygonType);
+omeGeometry *omeMeshAddGeometry(omeMesh *m, omeGeometry *g);
 void omeMeshFinalize(omeMesh *m);
 void omeMeshBufferFinalized(omeMesh *m);
 void omeMeshRender(omeMesh *m);
