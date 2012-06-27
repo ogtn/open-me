@@ -70,7 +70,7 @@ int main(void)
 {
     int i;
     double t;
-    omeBuffer *buffer;
+    omeGeometry *geometry;
     omeCamera *camera;
     omeVector pos = {2.f, 2.f, 2.f};
     omeVector target = {0.f, 0.f, 0.f};

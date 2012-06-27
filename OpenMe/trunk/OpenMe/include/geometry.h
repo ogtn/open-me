@@ -8,8 +8,8 @@
 //  http://sam.zoy.org/projects/COPYING.WTFPL for more details.
 
 
-#ifndef OME_BUFFER_H
-#define OME_BUFFER_H
+#ifndef OME_GEOMETRY_H
+#define OME_GEOMETRY_H
 
 
 #ifdef __cplusplus
@@ -24,22 +24,22 @@ extern "C" {
 typedef struct omeMesh omeMesh;
 
 
-typedef enum omeBufferType
+typedef enum omeAttribType
 {
-    OME_BUFFER_TYPE_POSITION,
-    OME_BUFFER_TYPE_TEXCOORD_0,
-    OME_BUFFER_TYPE_TEXCOORD_1,
-    OME_BUFFER_TYPE_TEXCOORD_2,
-    OME_BUFFER_TYPE_TEXCOORD_3,
-    OME_BUFFER_TYPE_NORMAL,
-    OME_BUFFER_TYPE_COLOR,
-    OME_BUFFER_TYPE_INDEX,
-    OME_BUFFER_TYPE_USER_0,
-    OME_BUFFER_TYPE_USER_1,
-    OME_BUFFER_TYPE_USER_2,
-    OME_BUFFER_TYPE_USER_3,
-    OME_BUFFER_TYPE_MAX
-} omeBufferType;
+    OME_ATTRIB_TYPE_POSITION,
+    OME_ATTRIB_TYPE_TEXCOORD_0,
+    OME_ATTRIB_TYPE_TEXCOORD_1,
+    OME_ATTRIB_TYPE_TEXCOORD_2,
+    OME_ATTRIB_TYPE_TEXCOORD_3,
+    OME_ATTRIB_TYPE_NORMAL,
+    OME_ATTRIB_TYPE_COLOR,
+    OME_ATTRIB_TYPE_INDEX,
+    OME_ATTRIB_TYPE_USER_0,
+    OME_ATTRIB_TYPE_USER_1,
+    OME_ATTRIB_TYPE_USER_2,
+    OME_ATTRIB_TYPE_USER_3,
+    OME_ATTRIB_TYPE_MAX
+} omeAttribType;
 
 
 typedef enum omePolygonType
@@ -67,14 +67,14 @@ typedef struct omeVertexAttrib
     char *data;
     int updateHint;
     omeType type;
-    omeBufferType bufferType;
+    omeAttribType geometryType;
 } omeVertexAttrib;
 
 
 #define OME_MAX_ATTRIB  8
 
 
-typedef struct omeBuffer
+typedef struct omeGeometry
 {
     int nbVertices;
     int nbAttributes;
@@ -91,18 +91,18 @@ typedef struct omeBuffer
     omePolygonType polygonType;
     unsigned int VBO;
     omeBool VBOReady;
-} omeBuffer;
+} omeGeometry;
 
 
-omeBuffer *omeBufferCreate(int nbVertices, int nbAttributes, omePolygonType polygonType, omeMesh *m);
-void omeBufferDestroy(omeBuffer **b);
-int omeBufferAddAttrib(omeBuffer *b, int nbElements, omeType type, int updateHint, omeBufferType bufferType, void *data);
-int omeBufferAddIndices(omeBuffer *b, omeType type, int updateHint, void *data);
-void omeBufferFinalize(omeBuffer *b);
-void omeBufferUpdateAttrib(omeBuffer *b, int attribIndex, void *data);
-void omeBufferRenderVA(omeBuffer *b);
-void omeBufferRenderVBO(omeBuffer *b);
-void omeBufferUseIndices(omeBuffer *b);
+omeGeometry *omeGeometryCreate(int nbVertices, int nbAttributes, omePolygonType polygonType, omeMesh *m);
+void omeGeometryDestroy(omeGeometry **g);
+int omeGeometryAddAttrib(omeGeometry *g, int nbElements, omeType type, int updateHint, omeAttribType geometryType, void *data);
+int omeGeometryAddIndices(omeGeometry *g, omeType type, int updateHint, void *data);
+void omeGeometryFinalize(omeGeometry *g);
+void omeGeometryUpdateAttrib(omeGeometry *g, int attribIndex, void *data);
+void omeGeometryRenderVA(omeGeometry *g);
+void omeGeometryRenderVBO(omeGeometry *g);
+void omeGeometryUseIndices(omeGeometry *g);
 
 
 #ifdef __cplusplus
@@ -110,4 +110,4 @@ void omeBufferUseIndices(omeBuffer *b);
 #endif
 
 
-#endif // OME_BUFFER_H
+#endif // OME_GEOMETRY_H

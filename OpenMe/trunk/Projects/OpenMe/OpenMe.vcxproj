@@ -12,7 +12,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\OpenMe\include\resourceManager.h" />
-    <ClCompile Include="..\..\OpenMe\src\buffer.c" />
+    <ClCompile Include="..\..\OpenMe\src\geometry.c" />
     <ClCompile Include="..\..\OpenMe\src\camera.c" />
     <ClCompile Include="..\..\OpenMe\src\engine.c" />
     <ClCompile Include="..\..\OpenMe\src\entity.c" />
@@ -29,7 +29,7 @@
     <ClCompile Include="..\..\OpenMe\src\vector.c" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\OpenMe\include\buffer.h" />
+    <ClInclude Include="..\..\OpenMe\include\geometry.h" />
     <ClInclude Include="..\..\OpenMe\include\camera.h" />
     <ClInclude Include="..\..\OpenMe\include\entity.h" />
     <ClInclude Include="..\..\OpenMe\include\material.h" />

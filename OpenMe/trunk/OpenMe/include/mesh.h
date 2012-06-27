@@ -21,7 +21,7 @@ extern "C" {
 
 
 // forward declaration
-typedef struct omeBuffer omeBuffer;
+typedef struct omeGeometry omeGeometry;
 typedef enum omePolygonType omePolygonType;
 
 
@@ -30,16 +30,16 @@ typedef enum omeRenderType
 {
     OME_IMMEDIATE,
     OME_VERTEX_ARRAY,
-    OME_VERTEX_BUFFER_OBJECT
+    OME_VERTEX_GEOMETRY_OBJECT
 } omeRenderType;
 
 
 typedef struct omeMesh
 {
     int nbBuffers;
-    int bufferCpt;
+    int geometryCpt;
     int nbFinalizedBuffers;
-    omeBuffer **buffers;
+    omeGeometry **geometries;
     omeBool finalized;
     omeRenderType  renderType;
     //omeEntity entity;
@@ -48,7 +48,7 @@ typedef struct omeMesh
 
 omeMesh *omeMeshCreate(int nbBuffers);
 void omeMeshDestroy(omeMesh **m);
-omeBuffer *omeMeshAddBuffer(omeMesh *m, int nbVertices, int nbAttributes, omePolygonType polygonType);
+omeGeometry *omeMeshAddBuffer(omeMesh *m, int nbVertices, int nbAttributes, omePolygonType polygonType);
 void omeMeshFinalize(omeMesh *m);
 void omeMeshBufferFinalized(omeMesh *m);
 void omeMeshRender(omeMesh *m);

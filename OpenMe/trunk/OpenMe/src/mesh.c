@@ -9,7 +9,7 @@
 
 
 #include "mesh.h"
-#include "buffer.h"
+#include "geometry.h"
 #include "logger.h"
 #include <stdlib.h>
 #include <string.h>
@@ -21,8 +21,8 @@ omeMesh *omeMeshCreate(int nbBuffers)
     omeMesh *m = calloc(1, sizeof(omeMesh));
 
     m->nbBuffers = nbBuffers;
-    m->buffers = calloc(nbBuffers, sizeof(omeBuffer*));
-    m->renderType = OME_VERTEX_BUFFER_OBJECT;
+    m->geometries = calloc(nbBuffers, sizeof(omeGeometry*));
+    m->renderType = OME_VERTEX_GEOMETRY_OBJECT;
 
     return m;
 }
@@ -34,7 +34,7 @@ void omeMeshDestroy(omeMesh **m)
 
     //TODO: anything to add here??
     //for(i = 0; i < (*m)->nbBuffers; i++)
-    //    omeBufferDelReference(...);
+    //    omeGeometryDelReference(...);
 
     memset(*m, 0, sizeof(omeMesh));
     free(*m);
@@ -42,21 +42,21 @@ void omeMeshDestroy(omeMesh **m)
 }
 
 
-//TODO: would omeMeshGetBuffer(bufferIndex...) be better? (on first get, automatically allocate, after ignore parameters)
-omeBuffer *omeMeshAddBuffer(omeMesh *m, int nbVertices, int nbAttributes, omePolygonType polygonType)
+//TODO: would omeMeshGetBuffer(geometryIndex...) be better? (on first get, automatically allocate, after ignore parameters)
+omeGeometry *omeMeshAddBuffer(omeMesh *m, int nbVertices, int nbAttributes, omePolygonType polygonType)
 {
-    omeBuffer *b;
+    omeGeometry *g;
 
-    if(m->bufferCpt >= m->nbBuffers)
+    if(m->geometryCpt >= m->nbBuffers)
     {
-        omeLoggerLog("All buffers have already been added");
+        omeLoggerLog("All geometries have already been added");
         return NULL;
     }
 
-    b = m->buffers[m->bufferCpt] = omeBufferCreate(nbVertices, nbAttributes, polygonType, m);
-    m->bufferCpt++;
+    g = m->geometries[m->geometryCpt] = omeGeometryCreate(nbVertices, nbAttributes, polygonType, m);
+    m->geometryCpt++;
 
-    return b;
+    return g;
 }
 
 
@@ -70,7 +70,7 @@ void omeMeshBufferFinalized(omeMesh *m)
 {
     if(m->nbFinalizedBuffers >= m->nbBuffers)
     {
-        omeLoggerLog("All buffers are already finalized\n");
+        omeLoggerLog("All geometries are already finalized\n");
         return;
     }
 
@@ -97,7 +97,7 @@ void omeMeshRender(omeMesh *m)
     case OME_VERTEX_ARRAY:
         omeMeshRenderVA(m);
         break;
-    case OME_VERTEX_BUFFER_OBJECT:
+    case OME_VERTEX_GEOMETRY_OBJECT:
         omeMeshRenderVBO(m);
         break;
     default:
@@ -112,26 +112,26 @@ void omeMeshRenderImmediate(omeMesh *m)
 
     for(i = 0; i < m->nbBuffers; i++)
     {
-        omeBuffer *b = m->buffers[i];
+        omeGeometry *g = m->geometries[i];
 
         glBegin(GL_TRIANGLES);
 
-        for(j = 0; j < b->nbVertices; j++)
+        for(j = 0; j < g->nbVertices; j++)
         {
-            for(k = b->nbAttributes - 1; k >= 0; k--)
+            for(k = g->nbAttributes - 1; k >= 0; k--)
             {
-                omeVertexAttrib *attr = &b->attributes[j];
+                omeVertexAttrib *attr = &g->attributes[j];
 
-                switch (attr->bufferType)
+                switch (attr->geometryType)
                 {
-                case OME_BUFFER_TYPE_POSITION:
+                case OME_ATTRIB_TYPE_POSITION:
                     glVertex3fv((void*)&attr->data[j * omeSizeOf(attr->type)]);
                     break;
-                case OME_BUFFER_TYPE_COLOR:
+                case OME_ATTRIB_TYPE_COLOR:
                     glColor3fv((void*)&attr->data[j * omeSizeOf(attr->type)]);
                     break;
                 default:
-                    omeLoggerLog("render of desired bufferType not implemented yet\n");
+                    omeLoggerLog("render of desired geometryType not implemented yet\n");
                     break;
                 }
             }
@@ -148,34 +148,34 @@ void omeMeshRenderImmediate_old(omeMesh *m)
 
     for(i = 0; i < m->nbBuffers; i++)
     {
-        omeBuffer *b = m->buffers[i];
+        omeGeometry *g = m->geometries[i];
 
         glBegin(GL_TRIANGLES);
 
-        for(j = b->nbAttributes - 1; j >= 0; j--)
+        for(j = g->nbAttributes - 1; j >= 0; j--)
         {
-            omeVertexAttrib *attr = &b->attributes[j];
+            omeVertexAttrib *attr = &g->attributes[j];
             void *ptr;
 
-            switch (attr->bufferType)
+            switch (attr->geometryType)
             {
-            case OME_BUFFER_TYPE_POSITION:
-                for(k = 0; k < (b->nbVertices * attr->nbElements); k += attr->nbElements)
+            case OME_ATTRIB_TYPE_POSITION:
+                for(k = 0; k < (g->nbVertices * attr->nbElements); k += attr->nbElements)
                 {
                     //glColor3fv((void*)&attr->data[k * omeSizeOf(attr->type)]);
                     ptr = &attr->data[k * omeSizeOf(attr->type)];
                     glVertex3fv((void*)&attr->data[k * omeSizeOf(attr->type)]);
                 }
                 break;
-            case OME_BUFFER_TYPE_COLOR:
-                for(k = 0; k < (b->nbVertices * attr->nbElements); k += attr->nbElements)
+            case OME_ATTRIB_TYPE_COLOR:
+                for(k = 0; k < (g->nbVertices * attr->nbElements); k += attr->nbElements)
                 {
                     ptr = &attr->data[k * omeSizeOf(attr->type)];
                     glColor3fv((void*)&attr->data[k * omeSizeOf(attr->type)]);
                 }
                 break;
             default:
-                omeLoggerLog("render of desired bufferType not implemented yet\n");
+                omeLoggerLog("render of desired geometryType not implemented yet\n");
                 break;
             }
         }
@@ -190,7 +190,7 @@ void omeMeshRenderVA(omeMesh *m)
     int i;
 
     for(i = 0; i < m->nbBuffers; i++)
-        omeBufferRenderVA(m->buffers[i]);
+        omeGeometryRenderVA(m->geometries[i]);
 }
 
 
@@ -199,7 +199,7 @@ void omeMeshRenderVBO(omeMesh *m)
     int i;
 
     for(i = 0; i < m->nbBuffers; i++)
-        omeBufferRenderVBO(m->buffers[i]);
+        omeGeometryRenderVBO(m->geometries[i]);
 }
 
 
@@ -208,7 +208,7 @@ void omeMeshSave(char *fileName, omeMesh *m)
 {
     int i, j;
     FILE *file;
-    omeBuffer *buffer;
+    omeGeometry *geometry;
     omeVertexAttrib *attr;
 
     if(m->finalized == OME_FALSE)
@@ -224,38 +224,38 @@ void omeMeshSave(char *fileName, omeMesh *m)
 
     for(i = 0; i < m->nbBuffers; i++)
     {
-        buffer = m->buffers[i];
+        geometry = m->geometries[i];
 
-        // buffer info
-        fwrite(&buffer->nbVertices, sizeof buffer->nbVertices, 1, file);
-        fwrite(&buffer->nbAttributes, sizeof buffer->nbAttributes, 1, file);
-        fwrite(&buffer->polygonType, sizeof buffer->polygonType, 1, file);
-        fwrite(&buffer->indexed, sizeof buffer->indexed, 1, file);
+        // geometry info
+        fwrite(&geometry->nbVertices, sizeof geometry->nbVertices, 1, file);
+        fwrite(&geometry->nbAttributes, sizeof geometry->nbAttributes, 1, file);
+        fwrite(&geometry->polygonType, sizeof geometry->polygonType, 1, file);
+        fwrite(&geometry->indexed, sizeof geometry->indexed, 1, file);
 
-        if(buffer->indexed == OME_TRUE)
+        if(geometry->indexed == OME_TRUE)
         {
-            attr = &buffer->indices;
+            attr = &geometry->indices;
 
             // attribute info
             fwrite(&attr->nbElements, sizeof attr->nbElements, 1, file);
             fwrite(&attr->type, sizeof attr->type, 1, file);
-            fwrite(&attr->bufferType, sizeof attr->bufferType, 1, file);
+            fwrite(&attr->geometryType, sizeof attr->geometryType, 1, file);
 
             // attribute data
-            fwrite(attr->data, omeSizeOf(attr->type) * attr->nbElements, buffer->nbVertices, file);
+            fwrite(attr->data, omeSizeOf(attr->type) * attr->nbElements, geometry->nbVertices, file);
         }
 
-        for(j = 0; j < buffer->nbAttributes; j++)
+        for(j = 0; j < geometry->nbAttributes; j++)
         {
-            attr = &buffer->attributes[j];
+            attr = &geometry->attributes[j];
 
             // attribute info
             fwrite(&attr->nbElements, sizeof attr->nbElements, 1, file);
             fwrite(&attr->type, sizeof attr->type, 1, file);
-            fwrite(&attr->bufferType, sizeof attr->bufferType, 1, file);
+            fwrite(&attr->geometryType, sizeof attr->geometryType, 1, file);
 
             // attribute data
-            fwrite(attr->data, omeSizeOf(attr->type) * attr->nbElements, buffer->nbVertices, file);
+            fwrite(attr->data, omeSizeOf(attr->type) * attr->nbElements, geometry->nbVertices, file);
         }
     }
 
@@ -269,7 +269,7 @@ omeMesh *omeMeshLoad(char *fileName)
     int nbBuffers;
     FILE *file;
     omeMesh *m;
-    omeBuffer *buffer;
+    omeGeometry *geometry;
 
     file = fopen(fileName, "rb");
     
@@ -292,43 +292,43 @@ omeMesh *omeMeshLoad(char *fileName)
         void *data;
         int nbElements;
         omeType type;
-        omeBufferType bufferType;
+        omeAttribType geometryType;
 
-        // buffer info
+        // geometry info
         fread(&nbVertices, sizeof nbVertices, 1, file);
         fread(&nbAttributes, sizeof nbAttributes, 1, file);
         fread(&polygonType, sizeof polygonType, 1, file);
         fread(&indexed, sizeof indexed, 1, file);
 
-        buffer = omeMeshAddBuffer(m, nbVertices, nbAttributes, polygonType);
+        geometry = omeMeshAddBuffer(m, nbVertices, nbAttributes, polygonType);
 
         if(indexed == OME_TRUE)
         {
             // attribute info
             fread(&nbElements, sizeof nbElements, 1, file);
             fread(&type, sizeof type, 1, file);
-            fread(&bufferType, sizeof bufferType, 1, file);
+            fread(&geometryType, sizeof geometryType, 1, file);
 
             // attribute data
             data = malloc(omeSizeOf(type) * nbElements * nbVertices);
             fread(data, omeSizeOf(type) * nbElements, nbVertices, file);
 
-            omeBufferUseIndices(buffer);
-            omeBufferAddIndices(buffer, type, 0, data);
+            omeGeometryUseIndices(geometry);
+            omeGeometryAddIndices(geometry, type, 0, data);
         }
 
-        for(j = 0; j < buffer->nbAttributes; j++)
+        for(j = 0; j < geometry->nbAttributes; j++)
         {
             // attribute info
             fread(&nbElements, sizeof nbElements, 1, file);
             fread(&type, sizeof type, 1, file);
-            fread(&bufferType, sizeof bufferType, 1, file);
+            fread(&geometryType, sizeof geometryType, 1, file);
 
             // attribute data
             data = malloc(omeSizeOf(type) * nbElements * nbVertices);
             fread(data, omeSizeOf(type) * nbElements, nbVertices, file);
 
-            omeBufferAddAttrib(buffer, nbElements, type, 0, bufferType, data);
+            omeGeometryAddAttrib(geometry, nbElements, type, 0, geometryType, data);
         }
     }
 

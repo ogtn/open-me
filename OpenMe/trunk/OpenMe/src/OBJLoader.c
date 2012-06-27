@@ -10,7 +10,7 @@
 
 #include "OBJLoader.h"
 #include "mesh.h"
-#include "buffer.h"
+#include "geometry.h"
 #include "logger.h"
 #include "vector.h"
 #include <string.h>
@@ -36,7 +36,7 @@ omeMesh *omeLoadOBJFromFile(char *fileName, omeBool swapYZ)
     omeVector *tmpNormals;
     omeVector2 *tmpTexCoords;
     omeMesh *mesh;
-    omeBuffer *buffer;
+    omeGeometry *geometry;
 
     file = fopen(fileName, "r");
 
@@ -211,10 +211,10 @@ omeMesh *omeLoadOBJFromFile(char *fileName, omeBool swapYZ)
     free(tmpNormals);
 
     mesh = omeMeshCreate(1);
-    buffer = omeMeshAddBuffer(mesh, nbFaces * 3, 3, OME_TRIANGLES);
-    omeBufferAddAttrib(buffer, 3, OME_FLOAT, 0, OME_BUFFER_TYPE_POSITION, positions);
-    omeBufferAddAttrib(buffer, 2, OME_FLOAT, 0, OME_BUFFER_TYPE_TEXCOORD_0, texCoords);
-    omeBufferAddAttrib(buffer, 3, OME_FLOAT, 0, OME_BUFFER_TYPE_NORMAL, normals);
+    geometry = omeMeshAddBuffer(mesh, nbFaces * 3, 3, OME_TRIANGLES);
+    omeGeometryAddAttrib(geometry, 3, OME_FLOAT, 0, OME_ATTRIB_TYPE_POSITION, positions);
+    omeGeometryAddAttrib(geometry, 2, OME_FLOAT, 0, OME_ATTRIB_TYPE_TEXCOORD_0, texCoords);
+    omeGeometryAddAttrib(geometry, 3, OME_FLOAT, 0, OME_ATTRIB_TYPE_NORMAL, normals);
 
     return mesh;
 }

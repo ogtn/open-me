@@ -21,7 +21,7 @@ extern "C" {
 #include "engine.h"
 #include "matrix.h"
 #include "camera.h"
-#include "buffer.h"
+#include "geometry.h"
 #include "mesh.h"
 #include "OBJLoader.h"
 #include "shaderProgram.h"
