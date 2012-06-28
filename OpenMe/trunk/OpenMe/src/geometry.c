@@ -238,13 +238,12 @@ void omeGeometryRenderVA(omeGeometry *g)
 }
 
 
-void omeGeometryRenderVBO(omeGeometry *g)
+void omeGeometryBuildVBO(omeGeometry *g)
 {
     int i;
     int offset = 0;
     omeVertexAttrib *attr;
 
-    // if needed, create VBO and send all vertex attributes
     if(g->VBOReady == OME_FALSE)
     {
         glGenBuffers(1, &g->VBO);
@@ -254,19 +253,32 @@ void omeGeometryRenderVBO(omeGeometry *g)
         glBufferData(GL_ARRAY_BUFFER, g->size, NULL, GL_STATIC_DRAW);
         offset = 0;
 
-         for(i = 0; i < g->nbAttributes; i++)
-         {
-             attr = &g->attributes[i];
+        for(i = 0; i < g->nbAttributes; i++)
+        {
+            attr = &g->attributes[i];
 
-             glBufferSubData(GL_ARRAY_BUFFER, offset, attr->size, attr->data);         
-             offset += attr->size;
-         }
+            glBufferSubData(GL_ARRAY_BUFFER, offset, attr->size, attr->data);         
+            offset += attr->size;
+        }
 
-         g->VBOReady = OME_TRUE;
+        g->VBOReady = OME_TRUE;
     }
+    else
+        omeLoggerLog("VBO already built\n");
+}
+
+
+void omeGeometrySendAttributes(omeGeometry *g)
+{
+    int i;
+    int offset = 0;
+    omeVertexAttrib *attr;
+
+    // if needed, create VBO and send all vertex attributes
+    if(g->VBOReady == OME_FALSE)
+        omeGeometryBuildVBO(g);
 
     glBindBuffer(GL_ARRAY_BUFFER, g->VBO);
-    offset = 0;
 
     for(i = 0; i < g->nbAttributes ; i++)
     {
@@ -300,7 +312,11 @@ void omeGeometryRenderVBO(omeGeometry *g)
 
         offset += attr->size;
     }
+}
 
+
+void omeGeometryRenderVBO(omeGeometry *g)
+{
     if(g->indexed)
     {
         if(g->indices.type != OME_UBYTE)
@@ -313,6 +329,13 @@ void omeGeometryRenderVBO(omeGeometry *g)
     }
     else
         glDrawArrays(omePolygonTypeToGL(g->polygonType), 0, g->nbVertices);
+}
+
+
+void omeGeometryDisableAttributes(omeGeometry *g)
+{
+    int i;
+    omeVertexAttrib *attr;
 
     for(i =  0; i < g->nbAttributes; i++)
     {

@@ -98,12 +98,25 @@ typedef struct omeGeometry
 } omeGeometry;
 
 
+// TODO: use a macro for generating the typedef and the struct OME_TYPEDEF_LIST(type) OME_LIST(type)?
+typedef struct omeGeometryListElement omeGeometryListElement, omeGeometryList;
+struct omeGeometryListElement
+{
+    omeGeometry *geometry;
+    omeGeometryListElement *next;
+    omeGeometryListElement *prev;
+};
+
+
 omeGeometry *omeGeometryCreate(int nbVertices, int nbAttributes, omePolygonType polygonType);
 void omeGeometryDestroy(omeGeometry **g);
 int omeGeometryAddAttrib(omeGeometry *g, int nbElements, omeType type, int updateHint, omeAttribType geometryType, void *data);
 int omeGeometryAddIndices(omeGeometry *g, omeType type, int updateHint, void *data);
 void omeGeometryFinalize(omeGeometry *g);
 void omeGeometryUpdateAttrib(omeGeometry *g, int attribIndex, void *data);
+void omeGeometryBuildVBO(omeGeometry *g);
+void omeGeometrySendAttributes(omeGeometry *g);
+void omeGeometryDisableAttributes(omeGeometry *g);
 void omeGeometryRenderVA(omeGeometry *g);
 void omeGeometryRenderVBO(omeGeometry *g);
 void omeGeometryUseIndices(omeGeometry *g);

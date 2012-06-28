@@ -23,6 +23,8 @@ extern "C" {
 // forward declaration
 typedef struct omeGeometry omeGeometry;
 typedef enum omePolygonType omePolygonType;
+typedef struct omeProgram omeProgram;
+typedef struct omeMaterial omeMaterial;
 
 
 // TODO: only VBO in GL >= 3.x, get rid of that
@@ -41,7 +43,9 @@ typedef struct omeMesh
     int nbFinalizedBuffers;
     omeGeometry **geometries;
     omeBool finalized;
-    omeRenderType  renderType;
+    omeRenderType renderType;
+    omeProgram *program;
+    omeMaterial *material;
     //omeEntity entity;
 } omeMesh;
 

@@ -88,6 +88,7 @@ int main(void)
     omeBool drag = OME_FALSE;
     omeProgram *shaderProgram;
     omeMaterial *mat;
+    omeScene *scene;
 
     // get OpenGL context
     if(!glfwInit() || !glfwOpenWindow(width, height, 8, 8, 8, 8, 0, 0, GLFW_WINDOW))
@@ -119,6 +120,17 @@ int main(void)
     // material test
     mat = omeMaterialCreate();
     
+    // scene test
+    {
+        omeGeometryListElement *elt;
+        int i;
+
+        scene = omeSceneCreate();
+
+        for(i = 0; i < mesh->nbBuffers; i++)
+            omeSceneAddGeometry(scene, mesh->geometries[i]);
+    }
+
     while(glfwGetWindowParam(GLFW_OPENED) && !glfwGetKey(GLFW_KEY_ESC))
     {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -182,11 +194,14 @@ int main(void)
 
         // render
         {
+            /*
             float f;
             f = glfwGetTime() * 5;
-        omeProgramSendUniformf(shaderProgram, f, "testUniform");
-        omeProgramSendUniformMaterial(shaderProgram, mat, "mat");
-        omeMeshRender(mesh);
+            omeProgramSendUniformf(shaderProgram, f, "testUniform");
+            omeProgramSendUniformMaterial(shaderProgram, mat, "mat");
+            omeMeshRender(mesh);
+            */
+            omeSceneRender(scene, camera);
         }
         // TODO: limit fps here?
         omeEngineUpdate();
