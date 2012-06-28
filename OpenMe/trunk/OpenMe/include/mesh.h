@@ -27,23 +27,13 @@ typedef struct omeProgram omeProgram;
 typedef struct omeMaterial omeMaterial;
 
 
-// TODO: only VBO in GL >= 3.x, get rid of that
-typedef enum omeRenderType
-{
-    OME_IMMEDIATE,
-    OME_VERTEX_ARRAY,
-    OME_VERTEX_GEOMETRY_OBJECT
-} omeRenderType;
-
-
 typedef struct omeMesh
 {
     int nbBuffers;
     int geometryCpt;
     int nbFinalizedBuffers;
     omeGeometry **geometries;
-    omeBool finalized;
-    omeRenderType renderType;
+    omeBool finalized;  //TODO: is this still usefull to keep thaht one? If it is, use this variable somewhere...
     omeProgram *program;
     omeMaterial *material;
     //omeEntity entity;
@@ -65,10 +55,6 @@ void omeMeshDestroy(omeMesh **m);
 omeGeometry *omeMeshAddGeometry(omeMesh *m, omeGeometry *g);
 void omeMeshFinalize(omeMesh *m);
 void omeMeshBufferFinalized(omeMesh *m);
-void omeMeshRender(omeMesh *m);
-void omeMeshRenderImmediate(omeMesh *m);
-void omeMeshRenderVA(omeMesh *m);
-void omeMeshRenderVBO(omeMesh *m);
 void omeMeshSave(char *fileName, omeMesh *m);
 omeMesh *omeMeshLoad(char *fileName);
 

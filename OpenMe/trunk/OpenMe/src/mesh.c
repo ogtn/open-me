@@ -22,7 +22,6 @@ omeMesh *omeMeshCreate(int nbBuffers)
 
     m->nbBuffers = nbBuffers;
     m->geometries = calloc(nbBuffers, sizeof(omeGeometry*));
-    m->renderType = OME_VERTEX_GEOMETRY_OBJECT;
 
     return m;
 }
@@ -75,131 +74,6 @@ void omeMeshBufferFinalized(omeMesh *m)
 
     if(m->nbFinalizedBuffers == m->nbBuffers)
         omeMeshFinalize(m);
-}
-
-
-void omeMeshRender(omeMesh *m)
-{
-    // TODO: problem here, the old finalizing mechanism doesn't work anymore with geometry (multiple mesh for one geometry)
-    /*
-    if(m->finalized == OME_FALSE)
-    {
-        omeLoggerLog("Can't render a non finalized mesh\n");
-        return;
-    }
-    */
-
-    switch(m->renderType)
-    {
-    case OME_IMMEDIATE:
-        omeMeshRenderImmediate(m); 
-        break;
-    case OME_VERTEX_ARRAY:
-        omeMeshRenderVA(m);
-        break;
-    case OME_VERTEX_GEOMETRY_OBJECT:
-        omeMeshRenderVBO(m);
-        break;
-    default:
-        omeLoggerLog("Not implemented yet\n");
-    }
-}
-
-
-void omeMeshRenderImmediate(omeMesh *m)
-{
-    int i, j, k;
-
-    for(i = 0; i < m->nbBuffers; i++)
-    {
-        omeGeometry *g = m->geometries[i];
-
-        glBegin(GL_TRIANGLES);
-
-        for(j = 0; j < g->nbVertices; j++)
-        {
-            for(k = g->nbAttributes - 1; k >= 0; k--)
-            {
-                omeVertexAttrib *attr = &g->attributes[j];
-
-                switch (attr->geometryType)
-                {
-                case OME_ATTRIB_TYPE_POSITION:
-                    glVertex3fv((void*)&attr->data[j * omeSizeOf(attr->type)]);
-                    break;
-                case OME_ATTRIB_TYPE_COLOR:
-                    glColor3fv((void*)&attr->data[j * omeSizeOf(attr->type)]);
-                    break;
-                default:
-                    omeLoggerLog("render of desired geometryType not implemented yet\n");
-                    break;
-                }
-            }
-        }
-
-        glEnd();
-    }
-}
-
-
-void omeMeshRenderImmediate_old(omeMesh *m)
-{
-    int i, j, k;
-
-    for(i = 0; i < m->nbBuffers; i++)
-    {
-        omeGeometry *g = m->geometries[i];
-
-        glBegin(GL_TRIANGLES);
-
-        for(j = g->nbAttributes - 1; j >= 0; j--)
-        {
-            omeVertexAttrib *attr = &g->attributes[j];
-            void *ptr;
-
-            switch (attr->geometryType)
-            {
-            case OME_ATTRIB_TYPE_POSITION:
-                for(k = 0; k < (g->nbVertices * attr->nbElements); k += attr->nbElements)
-                {
-                    //glColor3fv((void*)&attr->data[k * omeSizeOf(attr->type)]);
-                    ptr = &attr->data[k * omeSizeOf(attr->type)];
-                    glVertex3fv((void*)&attr->data[k * omeSizeOf(attr->type)]);
-                }
-                break;
-            case OME_ATTRIB_TYPE_COLOR:
-                for(k = 0; k < (g->nbVertices * attr->nbElements); k += attr->nbElements)
-                {
-                    ptr = &attr->data[k * omeSizeOf(attr->type)];
-                    glColor3fv((void*)&attr->data[k * omeSizeOf(attr->type)]);
-                }
-                break;
-            default:
-                omeLoggerLog("render of desired geometryType not implemented yet\n");
-                break;
-            }
-        }
-
-        glEnd();
-    }
-}
-
-
-void omeMeshRenderVA(omeMesh *m)
-{
-    int i;
-
-    for(i = 0; i < m->nbBuffers; i++)
-        omeGeometryRenderVA(m->geometries[i]);
-}
-
-
-void omeMeshRenderVBO(omeMesh *m)
-{
-    int i;
-
-    for(i = 0; i < m->nbBuffers; i++)
-        omeGeometryRenderVBO(m->geometries[i]);
 }
 
 

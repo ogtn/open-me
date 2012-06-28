@@ -121,6 +121,7 @@ int main(void)
     mat = omeMaterialCreate();
     
     // scene test
+    // TODO: automtize that
     {
         omeGeometryListElement *elt;
         int i;
@@ -193,16 +194,8 @@ int main(void)
         omeCameraUpdate(camera);
 
         // render
-        {
-            /*
-            float f;
-            f = glfwGetTime() * 5;
-            omeProgramSendUniformf(shaderProgram, f, "testUniform");
-            omeProgramSendUniformMaterial(shaderProgram, mat, "mat");
-            omeMeshRender(mesh);
-            */
-            omeSceneRender(scene, camera);
-        }
+        omeSceneRender(scene, camera);
+        
         // TODO: limit fps here?
         omeEngineUpdate();
         glfwSleep(0.002);
