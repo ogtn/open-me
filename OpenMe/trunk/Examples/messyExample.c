@@ -57,7 +57,7 @@ void init_texture(wchar_t *fileName)
 
     // send pixels to OpenGL
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0, format, GL_UNSIGNED_BYTE, ilGetData());
-    
+
     // set minifying and magnifying filters
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
@@ -88,7 +88,6 @@ int main(void)
     omeBool drag = OME_FALSE;
     omeProgram *shaderProgram;
     omeMaterial *mat;
-    omeScene *scene;
 
     // get OpenGL context
     if(!glfwInit() || !glfwOpenWindow(width, height, 8, 8, 8, 8, 0, 0, GLFW_WINDOW))
@@ -101,12 +100,13 @@ int main(void)
     camera = omeCameraCreate(OME_CAMERA_TYPE_PERPECTIVE);
     omeCameraSetPerspective(camera, 70.f, width / (float)height, 0.01f, 1000.f);
     omeCameraSetTarget(camera, &target);
+    omeEngineSetActiveCamera(camera);
 
     // obj loading test
     //mesh = omeLoadOBJFromFile("data/bunny69k.obj", OME_TRUE);
     //omeMeshSave("data/mesh1.omeMesh", mesh);
     mesh = omeMeshLoad("data/mesh1.omeMesh");
-    
+
     // deprecated stuff to test normals before using shaders
     //init_texture(L"data/test.png");
 
@@ -119,18 +119,6 @@ int main(void)
 
     // material test
     mat = omeMaterialCreate();
-    
-    // scene test
-    // TODO: automtize that
-    {
-        omeGeometryListElement *elt;
-        int i;
-
-        scene = omeSceneCreate();
-
-        for(i = 0; i < mesh->nbBuffers; i++)
-            omeSceneAddGeometry(scene, mesh->geometries[i]);
-    }
 
     while(glfwGetWindowParam(GLFW_OPENED) && !glfwGetKey(GLFW_KEY_ESC))
     {
@@ -194,8 +182,8 @@ int main(void)
         omeCameraUpdate(camera);
 
         // render
-        omeSceneRender(scene, camera);
-        
+        omeEngineRender();
+
         // TODO: limit fps here?
         omeEngineUpdate();
         glfwSleep(0.002);

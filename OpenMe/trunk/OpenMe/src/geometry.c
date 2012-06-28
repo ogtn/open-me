@@ -11,6 +11,8 @@
 #include "geometry.h"
 #include "logger.h"
 #include "mesh.h"
+#include "engine.h"
+#include "scene.h"
 #include <stdlib.h>
 #include <string.h>
 #include <GL/glew.h>
@@ -53,6 +55,8 @@ omeGeometry *omeGeometryCreate(int nbVertices, int nbAttributes, omePolygonType 
     g->nbVertices = nbVertices;
     g->nbAttributes = nbAttributes;
     g->polygonType = polygonType;
+
+    omeSceneAddGeometry(omeEnginegetActiveScene(), g);
 
     return g;
 }

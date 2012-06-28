@@ -10,12 +10,12 @@
 
 #include "engine.h"
 #include "utils.h"
+#include "scene.h"
 #include "logger.h"
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
 #include <GL/glew.h>
-#include <utlist.h>
 
 // gettimeofday() and equivalent...
 #ifdef _MSC_VER
@@ -25,6 +25,7 @@
 #endif
 
 
+// TODO: how about multithreading???
 static omeEngine engine;
 
 
@@ -123,79 +124,41 @@ int omeEngineStart(void)
     omeLoggerLog("OpenGL %s\n", glGetString(GL_VERSION));
     omeLoggerLog("GLSL %s\n", glGetString(GL_SHADING_LANGUAGE_VERSION));
     
+    engine.scene = omeSceneCreate();
+
     return OME_SUCCESS;
 }
 
 
 void omeEngineStop(void)
 {
+    omeSceneDestroy(&engine.scene);
+
     omeLoggerLog("Engine stopped, status = %s\n", engine.state == OME_ENGINE_STATE_DEFECT ? "KO" : "OK");
     omeLoggerStop();
     engine.state = OME_ENGINE_STATE_STOPPED;
 }
 
 
-#include "camera.h"
-#include "geometry.h"
-#include "mesh.h"
-#include "shaderProgram.h"
-
-
-omeScene *omeSceneCreate(void)
+void omeEngineRender(void)
 {
-    omeScene *s = calloc(1, sizeof(omeScene));
-
-    return s;
+    omeSceneRender(engine.scene, engine.camera);
 }
 
 
-void omeSceneDestroy(omeScene **s)
+void omeEngineSetActiveCamera(omeCamera *c)
 {
-
-    memset(*s, 0, sizeof(omeScene));
-    free(*s);
-    *s = NULL;
+    engine.camera = c;
 }
 
 
-void omeSceneAddGeometry(omeScene *s, omeGeometry *g)
+void omeEngineSetActiveScene(omeScene *s)
 {
-    omeGeometryListElement *element = calloc(1, sizeof(omeGeometryListElement));
-    element->geometry = g;
-
-    DL_APPEND(s->geometries, element);
+    engine.scene = s;
 }
 
 
-void omeSceneRender(omeScene *s, omeCamera *c)
+omeScene *omeEnginegetActiveScene(void)
 {
-    omeGeometryListElement *geometryElt;
-    
-    DL_FOREACH(s->geometries, geometryElt)
-    {
-        omeMeshListElement *meshElt;
-        omeGeometry *g = geometryElt->geometry;
-
-        omeGeometrySendAttributes(g);
-
-        DL_FOREACH(g->references, meshElt)
-        {         
-            omeProgram *p = meshElt->mesh->program;
-            omeMaterial *m = meshElt->mesh->material;
-
-            // TODO: When the code will be cleaner, remove this. This engine is meant to be shader only
-            if(p)
-            {
-                omeProgramUse(p);
-
-                // TODO: same here I guess... (default material set in meshCreate() maybe?)
-                if(m)
-                    omeProgramSendUniformMaterial(p, m, "mat");
-            }
-
-            omeGeometryRenderVBO(g);
-        }
-
-        omeGeometryDisableAttributes(g);
-    }
+    return engine.scene;
 }

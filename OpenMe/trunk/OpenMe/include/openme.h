@@ -26,6 +26,7 @@ extern "C" {
 #include "OBJLoader.h"
 #include "shaderProgram.h"
 #include "material.h"
+#include "scene.h"
 
 
 //TODO: avoid memset() calls in *Destroy functions in release

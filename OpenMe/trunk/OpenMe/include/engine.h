@@ -19,8 +19,7 @@ extern "C" {
 
 // forward declaration
 typedef struct omeCamera omeCamera;
-typedef struct omeGeometry omeGeometry;
-typedef struct omeGeometryListElement omeGeometryListElement, omeGeometryList;
+typedef struct omeScene omeScene;
 
 
 typedef enum omeEngineState
@@ -30,12 +29,6 @@ typedef enum omeEngineState
     OME_ENGINE_STATE_DEFECT,
     OME_ENGINE_STATE_MAX
 } omeEngineState;
-
-
-typedef struct omeScene
-{
-    omeGeometryList *geometries;
-} omeScene;
 
 
 typedef struct omeEngine
@@ -50,6 +43,10 @@ typedef struct omeEngine
     double lastFrameDuration;
     double lastFrameStart;
     double lastFPSCheck;
+
+    // render stuff
+    omeCamera *camera;
+    omeScene *scene;
 } omeEngine;
 
 
@@ -63,10 +60,10 @@ void omeEngineUpdate(void);
 void omeEngineClearBuffers(int flags);
 void omeEngineClearAllBuffers(void);
 
-omeScene *omeSceneCreate(void);
-void omeSceneDestroy(omeScene **s);
-void omeSceneAddGeometry(omeScene *s, omeGeometry *g);
-void omeSceneRender(omeScene *s, omeCamera *c);
+void omeEngineRender(void);
+void omeEngineSetActiveCamera(omeCamera *c);
+void omeEngineSetActiveScene(omeScene *s);
+omeScene *omeEnginegetActiveScene(void);
 
 
 #ifdef __cplusplus
