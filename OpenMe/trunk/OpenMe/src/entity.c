@@ -38,3 +38,15 @@ void omeEntityDestroy(omeEntity **e)
     free(*e);
     *e = NULL;
 }
+
+
+void omeEntitySetPosition(omeEntity *e, omeVector *pos)
+{
+	e->position = *pos;
+}
+
+
+void omeEntityMove(omeEntity *e, omeVector *displacement)
+{
+	omeVectorAddVector(&e->position, displacement, &e->position);
+}

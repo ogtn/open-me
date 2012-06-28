@@ -68,23 +68,16 @@ void init_texture(wchar_t *fileName)
 
 int main(void)
 {
-    int i;
-    double t;
-    omeGeometry *geometry;
     omeCamera *camera;
     omeVector pos = 	{{2.f, 2.f, 2.f}};
     omeVector target = 	{{0.f, 0.f, 0.f}};
-    omeVector vec = 	{{0, 0, 1}};
     omeMesh *mesh;
-    omeMatrix matrix;
-    float angle = 0;
     int width = 640;//1280;
     int height = 480;//800;
     float theta = OME_PIF / 4;
     float phi = OME_PIF / 4;
     float angleStep;
     float zoom = 5;
-    int wheelPos;
     omeBool drag = OME_FALSE;
     omeProgram *shaderProgram;
     omeMaterial *mat;
@@ -119,6 +112,7 @@ int main(void)
 
     // material test
     mat = omeMaterialCreate();
+    mesh->material = mat;
 
     while(glfwGetWindowParam(GLFW_OPENED) && !glfwGetKey(GLFW_KEY_ESC))
     {

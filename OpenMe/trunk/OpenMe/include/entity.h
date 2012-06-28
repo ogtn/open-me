@@ -17,6 +17,10 @@ extern "C" {
 #endif
 
 
+// forward declaration
+typedef struct omeMatrix omeMatrix;
+
+
 #include "vector.h"
 #include "utils.h"
 #include <wchar.h>
@@ -24,11 +28,12 @@ extern "C" {
 
 typedef struct omeEntity
 {
+	omeMatrix *modelview;
     omeVector position;
     omeVector scaling;
     omeVector rotation;
     //TODO: very basic string module?
-    wchar_t name[OME_NAME_MAXLEN];
+    char name[OME_NAME_MAXLEN];
 } omeEntity;
 
 

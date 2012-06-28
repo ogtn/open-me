@@ -21,10 +21,24 @@ extern "C" {
 
 
 #define OME_RESOURCE_NAME_LEN       64
+#define OME_RESOURCE_MAGIC			0x42042042
+
+
+typedef enum omeResourceType
+{
+	OME_RESOURCE_TEXTURE,
+	OME_RESOURCE_PIXEL_SHADER,
+	OME_RESOURCE_VERTEX_SHADER,
+	OME_RESOURCE_MATERIAL,
+	OME_RESOURCE_GEOMETRY,
+	OME_RESOURCE_MAX
+} omeResourceType;
 
 
 typedef struct omeResource
 {
+	unsigned int magic;
+	omeResourceType type;
     UT_hash_handle *hashHandle;
     char hashKey[OME_RESOURCE_NAME_LEN];
 } omeResource;

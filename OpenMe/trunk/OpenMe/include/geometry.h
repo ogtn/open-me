@@ -25,6 +25,7 @@ typedef struct omeMesh omeMesh;
 typedef struct omeMeshListElement omeMeshListElement, omeMeshList;
 
 
+// TODO: avoid two identical attributes in the same geometry... => boolean in attrib
 typedef enum omeAttribType
 {
     OME_ATTRIB_TYPE_POSITION,

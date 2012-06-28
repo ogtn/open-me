@@ -164,9 +164,9 @@ void omeMatrixRotateAxis(omeMatrix *m, omeVector *axis, float theta)
 void omeMatrixRotateAngles(omeMatrix *m, omeVector *v)
 {
     // TODO: find a less awful way to implement this...
-    static omeVector vx = {{1, 0, 0}};
-    static omeVector vy = {{0, 1, 0}};
-    static omeVector vz = {{0, 0, 1}};
+    static const omeVector vx = {{1, 0, 0}};
+    static const omeVector vy = {{0, 1, 0}};
+    static const omeVector vz = {{0, 0, 1}};
     omeMatrix mx, my, mz;
 
     omeMatrixCopy(&mx, m);
