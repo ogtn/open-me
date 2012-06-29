@@ -13,6 +13,7 @@
 #include "mesh.h"
 #include "engine.h"
 #include "scene.h"
+#include "shaderProgram.h"
 #include <stdlib.h>
 #include <string.h>
 #include <GL/glew.h>
@@ -98,6 +99,7 @@ int omeGeometryAddAttrib(omeGeometry *g, int nbElements, omeType type, int updat
     attr->data = data;
     attr->size = g->nbVertices * nbElements * omeSizeOf(type);
     attr->actived = OME_TRUE;
+    attr->name = omeAttribNames[geometryType];
 
     g->vertexSize += omeSizeOf(type) * nbElements;
     g->size += attr->size;
@@ -200,7 +202,7 @@ void omeGeometryBuildVBO(omeGeometry *g)
 }
 
 
-void omeGeometrySendAttributes(omeGeometry *g)
+void omeGeometrySendAttributes(omeGeometry *g, omeProgram *p)
 {
     int i;
     int offset = 0;
@@ -218,20 +220,21 @@ void omeGeometrySendAttributes(omeGeometry *g)
 
         if(attr->actived)
         {
-            glEnableVertexAttribArray(i);
+			int loc = omeProgramLocateAttribute(p, attr->name);
+            glEnableVertexAttribArray(loc);
 
             switch(attr->type)
             {
             case OME_BYTE:  case OME_UBYTE:
             case OME_SHORT: case OME_USHORT:
             case OME_INT:   case OME_UINT:
-                glVertexAttribIPointer(i, attr->nbElements, omeTypeToGL(attr->type), 0, OME_GEOMETRY_OFFSET(offset));
+                glVertexAttribIPointer(loc, attr->nbElements, omeTypeToGL(attr->type), 0, OME_GEOMETRY_OFFSET(offset));
                 break;
             case OME_FLOAT:
-                glVertexAttribPointer(i, attr->nbElements, omeTypeToGL(attr->type), GL_FALSE, 0, OME_GEOMETRY_OFFSET(offset));
+                glVertexAttribPointer(loc, attr->nbElements, omeTypeToGL(attr->type), GL_FALSE, 0, OME_GEOMETRY_OFFSET(offset));
                 break;
             case OME_DOUBLE:
-                glVertexAttribLPointer(i, attr->nbElements, omeTypeToGL(attr->type), 0, OME_GEOMETRY_OFFSET(offset));
+                glVertexAttribLPointer(loc, attr->nbElements, omeTypeToGL(attr->type), 0, OME_GEOMETRY_OFFSET(offset));
             default:
                 omeLoggerLog("Attrib doesn't have a valid data type\n");
                 return;

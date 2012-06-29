@@ -53,8 +53,6 @@ void omeSceneRender(omeScene *s, omeCamera *c)
         omeMeshListElement *meshElt;
         omeGeometry *g = geometryElt->geometry;
 
-        omeGeometrySendAttributes(g);
-
         DL_FOREACH(g->references, meshElt)
         {         
             omeProgram *p = meshElt->mesh->program;
@@ -64,6 +62,7 @@ void omeSceneRender(omeScene *s, omeCamera *c)
             if(p)
             {
                 omeProgramUse(p);
+                omeGeometrySendAttributes(g, p);
 
                 // TODO: same here I guess... (default material set in meshCreate() maybe?)
                 if(m)

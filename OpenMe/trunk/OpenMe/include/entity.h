@@ -23,7 +23,6 @@ typedef struct omeMatrix omeMatrix;
 
 #include "vector.h"
 #include "utils.h"
-#include <wchar.h>
 
 
 typedef struct omeEntity
@@ -37,7 +36,7 @@ typedef struct omeEntity
 } omeEntity;
 
 
-omeEntity *omeEntityCreate(wchar_t *name);
+omeEntity *omeEntityCreate(const char *name);
 void omeEntityDestroy(omeEntity **e);
 
 

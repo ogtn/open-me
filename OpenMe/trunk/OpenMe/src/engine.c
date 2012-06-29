@@ -115,6 +115,8 @@ int omeEngineStart(void)
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     //glAlphaFunc(GL_GREATER, 0.1); // maybe not very usefull...
+    
+    // Z buffer
     glEnable(GL_DEPTH_TEST);
     glDepthMask(GL_TRUE);
 
@@ -139,6 +141,8 @@ void omeEngineStop(void)
     omeSceneDestroy(&engine.scene);
 
     omeLoggerLog("Engine stopped, status = %s\n", engine.state == OME_ENGINE_STATE_DEFECT ? "KO" : "OK");
+    omeLoggerLog("%d frames rendered\n", engine.totalFrames);
+    
     omeLoggerStop();
     engine.state = OME_ENGINE_STATE_STOPPED;
 }

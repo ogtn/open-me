@@ -10,7 +10,6 @@
 
 #include "entity.h"
 #include <string.h>
-#include <wchar.h>
 #include <stdlib.h>
 
 
@@ -19,14 +18,14 @@ static const omeVector defaultScaling = 	{{1, 1, 1}};
 static const omeVector defaultRotation = 	{{0, 0, 0}};
 
 
-omeEntity *omeEntityCreate(wchar_t *name)
+omeEntity *omeEntityCreate(const char *name)
 {
     omeEntity *e = calloc(1, sizeof(omeEntity));
 
     omeVectorCopy(&e->position, &defaultPosition);
     omeVectorCopy(&e->scaling, &defaultScaling);
     omeVectorCopy(&e->rotation, &defaultRotation);
-    wcsncpy(e->name, name, OME_NAME_MAXLEN);
+    strncpy(e->name, name, OME_NAME_MAXLEN);
 
     return e;
 }

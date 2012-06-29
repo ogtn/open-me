@@ -17,7 +17,7 @@
 #include <string.h>
 
 
-omeShader *omeShaderCreate(char *fileName)
+omeShader *omeShaderCreate(const char *fileName)
 {
     omeShader *s;
     FILE *file;
@@ -287,37 +287,51 @@ void omeProgramLocateAttributes(omeProgram *sp)
     glGetProgramiv(sp->id, GL_ACTIVE_ATTRIBUTES, &nbAttributes);
 
     for(i = 0; i < nbAttributes; i++)
-    {
         glGetActiveAttrib(sp->id, i, 64, &len, &size, &type, name);
-        printf("attribute %d: %s located at %d\n", i, name, glGetAttribLocation(sp->id, name));
-    }
 }
 
 
-int omeProgramLocateUniform(omeProgram *sp, char *name)
+int omeProgramLocateUniform(omeProgram *sp, const char *name)
 {
     omeLocation *loc;
     
     HASH_FIND_STR(sp->uniforms, name, loc);
 
-    if(loc)
-        return loc->location;
-    else
+    if(loc == NULL)
     {
         loc = omeUniformLocationCreate(sp, name);
 
-        if(loc != NULL)
-        {
-            HASH_ADD_STR(sp->uniforms, key, loc);
-            return loc->location;
-        }
+        if(loc == NULL)
+			return -1;
+			
+        HASH_ADD_STR(sp->uniforms, key, loc);
     }
 
-    return -1;
+    return loc->location;
 }
 
 
-omeLocation *omeLocationCreate(omeProgram *sp, char *name, omeLocationType type)
+int omeProgramLocateAttribute(omeProgram *sp, const char *name)
+{
+	omeLocation *loc;
+	
+	HASH_FIND_STR(sp->attributes, name, loc);
+	
+	if(loc == NULL)
+	{
+		loc = omeAttribLocationCreate(sp, name);
+		
+		if(loc == NULL)
+			return -1;
+			
+		HASH_ADD_STR(sp->attributes, key, loc);
+	}
+	
+	return loc->location;
+}
+
+
+omeLocation *omeLocationCreate(omeProgram *sp, const char *name, omeLocationType type)
 {
     omeLocation *loc = calloc(1, sizeof(omeLocation));
 
@@ -358,14 +372,14 @@ void omeLocationDestroy(omeLocation **loc)
 }
 
 
-void omeProgramSendUniformf(omeProgram *sp, float f, char *name)
+void omeProgramSendUniformf(omeProgram *sp, float f, const char *name)
 {
     omeProgramUse(sp);
     glUniform1f(omeProgramLocateUniform(sp, name), f);
 }
 
 
-void omeProgramSendUniformMaterial(omeProgram *p, omeMaterial *m, char *name)
+void omeProgramSendUniformMaterial(omeProgram *p, omeMaterial *m, const char *name)
 {
     char fullName[OME_PROGRAM_VAR_LENGTH] = {'\0'};
 

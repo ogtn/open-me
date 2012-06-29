@@ -1,0 +1,27 @@
+-FPS Camera (angles and position)
+-Generic vertex attributes
+-Batch
+-Plugin interface
+-Mesh transformers
+-Compute AABBox for entity
+-Compute normals
+-Mesh optimiser
+	->compute index
+	->avoid redundancy
+	->turn quads into triangles?
+-Primitives (sphere, cube, grid...)
+-Resource manager
+-MD2 support
+-MD5 support
+-Generated shaders depending on the mesh?
+	->Regeneration when changes occurs
+	->Find a way to allow integration of users shaders in it
+-Fully working meshes rotations
+-Picking
+-Render target
+-Skyboxes/ skydomes
+-Cubemapping
+-Lights
+-Shadows
+-Octree
+-Differed render

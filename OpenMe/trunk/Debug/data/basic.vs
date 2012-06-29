@@ -13,16 +13,18 @@ struct omeMaterial
 // inputs
 attribute vec3 omePosition;
 attribute vec3 omeNormal;
-uniform float testUniform = 0.f;
 uniform omeMaterial mat;
 
 // outputs
 varying vec3 color;
+varying vec3 normal;
+varying vec3 position;
 
 void main(void)
-{
-	vec4 newPos = vec4(omePosition, 1.f);
-	newPos.x += sin((gl_Vertex.z / 4.f) + testUniform) * 4;
-	gl_Position = gl_ModelViewProjectionMatrix * newPos;
-	color = /*mat.ambiant.rgb * 0.25 +*/ omeNormal * 0.75;
+{	
+	gl_Position = gl_ModelViewProjectionMatrix * vec4(omePosition, 1.f);
+	
+	color = mat.ambiant;
+	normal = omeNormal;
+	position = omePosition;
 }

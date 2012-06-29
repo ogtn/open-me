@@ -83,7 +83,7 @@ int main(void)
     omeMaterial *mat;
 
     // get OpenGL context
-    if(!glfwInit() || !glfwOpenWindow(width, height, 8, 8, 8, 8, 0, 0, GLFW_WINDOW))
+    if(!glfwInit() || !glfwOpenWindow(width, height, 8, 8, 8, 0, 8, 8, GLFW_WINDOW))
         return EXIT_FAILURE;
 
     glfwSetMouseWheel(0);

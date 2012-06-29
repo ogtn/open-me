@@ -1,8 +1,13 @@
 #version 120
 
+// inputs
+
 varying vec3 color;
+varying vec3 normal;
+varying vec3 position;
 
 void main(void)
 {
-	gl_FragColor = vec4(color, 1);
+	float f = dot(normalize(position), normal);
+	gl_FragColor = vec4(color * f * 10, 1.f);
 }

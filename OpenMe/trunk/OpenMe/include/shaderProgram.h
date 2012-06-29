@@ -80,10 +80,11 @@ typedef struct omeProgram
     omeBool linked;
     omeProgramStatus status;
     omeLocationHashTable *uniforms;
+    omeLocationHashTable *attributes;
 } omeProgram;
 
 
-omeShader *omeShaderCreate(char *fileName);
+omeShader *omeShaderCreate(const char *fileName);
 void omeShaderDestroy(omeShader **s);
 omeStatus omeShaderCompile(omeShader *s);
 
@@ -95,12 +96,13 @@ omeStatus omeProgramLink(omeProgram *sp);
 void omeProgramUse(omeProgram *sp);
 void omeProgramLocateUniforms(omeProgram *sp);
 void omeProgramLocateAttributes(omeProgram *sp);
-int omeProgramLocateUniform(omeProgram *sp, char *name);
+int omeProgramLocateUniform(omeProgram *sp, const char *name);
+int omeProgramLocateAttribute(omeProgram *sp, const char *name);
 
-void omeProgramSendUniformf(omeProgram *sp, float f, char *name);
-void omeProgramSendUniformMaterial(omeProgram *p, omeMaterial *m, char *name);
+void omeProgramSendUniformf(omeProgram *sp, float f, const char *name);
+void omeProgramSendUniformMaterial(omeProgram *p, omeMaterial *m, const char *name);
 
-omeLocation *omeLocationCreate(omeProgram *sp, char *name, omeLocationType type);
+omeLocation *omeLocationCreate(omeProgram *sp, const char *name, omeLocationType type);
 #define omeUniformLocationCreate(sp, name)  omeLocationCreate(sp, name, OME_LOCATION_TYPE_UNIFORM)
 #define omeAttribLocationCreate(sp, name)   omeLocationCreate(sp, name, OME_LOCATION_TYPE_ATTRIB)
 void omeLocationDestroy(omeLocation **loc);
