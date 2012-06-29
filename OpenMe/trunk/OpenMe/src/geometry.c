@@ -84,21 +84,20 @@ int omeGeometryAddAttrib(omeGeometry *g, int nbElements, omeType type, int updat
         return -1;
     }
 
-    // TODO: play with indices to automatize that, or add a special function for position??? (check opengl 4.2 documentation)
-    if((g->indexCpt == 0 && geometryType != OME_ATTRIB_TYPE_POSITION) ||
-        (geometryType == OME_ATTRIB_TYPE_POSITION && g->indexCpt != 0))
+    if(g->attributes[geometryType].actived)
     {
-        omeLoggerLog("vertex position must be added first");
+        omeLoggerLog("This type of attribute has already been added\n");
         return -1;
     }
 
-    attr = &g->attributes[g->indexCpt];
+    attr = &g->attributes[geometryType];
     attr->nbElements = nbElements;
     attr->type = type;
     attr->updateHint = updateHint;
     attr->geometryType = geometryType;
     attr->data = data;
     attr->size = g->nbVertices * nbElements * omeSizeOf(type);
+    attr->actived = OME_TRUE;
 
     g->vertexSize += omeSizeOf(type) * nbElements;
     g->size += attr->size;
@@ -107,10 +106,11 @@ int omeGeometryAddAttrib(omeGeometry *g, int nbElements, omeType type, int updat
     if(g->indexCpt == g->nbAttributes)
         omeGeometryFinalize(g);
 
-    return g->indexCpt;
+    return geometryType; // TODO: remove this which is useless now I guess...
 }
 
 
+// TODO: think about removing this too, omeGeometryAddAttrib() should be generic now
 int omeGeometryAddIndices(omeGeometry *g, omeType type, int updateHint, void *data)
 {
     omeVertexAttrib *attr;
@@ -133,6 +133,7 @@ int omeGeometryAddIndices(omeGeometry *g, omeType type, int updateHint, void *da
 }
 
 
+// TODO: check if indexed has indices here...
 void omeGeometryFinalize(omeGeometry *g)
 {
     int i;
@@ -166,82 +167,6 @@ void omeGeometryUpdateAttrib(omeGeometry *g, int attribIndex, void *data)
 }
 
 
-void omeGeometryRenderVA(omeGeometry *g)
-{
-     /*
-    GL_COLOR_ARRAY
-    GL_EDGE_FLAG_ARRAY
-    GL_FOG_COORD_ARRAY
-    GL_INDEX_ARRAY
-    GL_NORMAL_ARRAY
-    GL_SECONDARY_COLOR_ARRAY
-    GL_TEXTURE_COORD_ARRAY
-    GL_VERTEX_ARRAY
-    */
-
-    int i;
-    omeVertexAttrib *attr = NULL;
-
-    for(i = 0; i < g->nbAttributes; i++)
-    {
-        attr = &g->attributes[i];
-
-        if(attr->geometryType == OME_ATTRIB_TYPE_POSITION)
-        {
-            glEnableClientState(GL_VERTEX_ARRAY);
-            glVertexPointer(attr->nbElements, GL_FLOAT, 0, attr->data);
-        }
-        else if(attr->geometryType == OME_ATTRIB_TYPE_COLOR)
-        {
-            glEnableClientState(GL_COLOR_ARRAY);
-            glColorPointer(attr->nbElements, GL_FLOAT, 0, attr->data);
-        }
-        else if(attr->geometryType == OME_ATTRIB_TYPE_NORMAL)
-        {
-            glEnableClientState(GL_NORMAL_ARRAY);
-            glNormalPointer(GL_FLOAT, 0, attr->data);
-        }
-        else if(attr->geometryType == OME_ATTRIB_TYPE_TEXCOORD_0)
-        {
-            glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-            glTexCoordPointer(attr->nbElements, GL_FLOAT, 0, attr->data);
-        }
-        else
-        {
-            omeLoggerLog("Not implemented yet\n");
-            return; //TODO: find a way to not skip the rest (goto??)
-        }
-    }
-
-    if(g->indexed)
-    {
-        if(g->indices.type != OME_UBYTE)
-        {
-            omeLoggerLog("Not implemented yet\n");
-            return;
-        }
-
-        glDrawElements(omePolygonTypeToGL(g->polygonType), g->nbVertices, GL_UNSIGNED_BYTE, g->indices.data);
-    }
-    else
-        glDrawArrays(omePolygonTypeToGL(g->polygonType), 0, g->nbVertices);
-
-    for(i = 0; i < g->nbAttributes; i++)
-    {
-        attr = &g->attributes[i];
-
-        if(attr->geometryType == OME_ATTRIB_TYPE_POSITION)
-            glDisableClientState(GL_VERTEX_ARRAY);
-        else if(attr->geometryType == OME_ATTRIB_TYPE_COLOR)
-            glDisableClientState(GL_COLOR_ARRAY);
-        else if(attr->geometryType == OME_ATTRIB_TYPE_NORMAL)
-            glDisableClientState(GL_NORMAL_ARRAY);
-        else if(attr->geometryType == OME_ATTRIB_TYPE_TEXCOORD_0)
-            glDisableClientState(GL_TEXTURE_COORD_ARRAY);
-    }
-}
-
-
 void omeGeometryBuildVBO(omeGeometry *g)
 {
     int i;
@@ -257,12 +182,15 @@ void omeGeometryBuildVBO(omeGeometry *g)
         glBufferData(GL_ARRAY_BUFFER, g->size, NULL, GL_STATIC_DRAW);
         offset = 0;
 
-        for(i = 0; i < g->nbAttributes; i++)
+        for(i = 0; i < OME_ATTRIB_MAX; i++)
         {
             attr = &g->attributes[i];
 
-            glBufferSubData(GL_ARRAY_BUFFER, offset, attr->size, attr->data);         
-            offset += attr->size;
+            if(attr->actived)
+            {
+                glBufferSubData(GL_ARRAY_BUFFER, offset, attr->size, attr->data);         
+                offset += attr->size;
+            }
         }
 
         g->VBOReady = OME_TRUE;
@@ -284,34 +212,30 @@ void omeGeometrySendAttributes(omeGeometry *g)
 
     glBindBuffer(GL_ARRAY_BUFFER, g->VBO);
 
-    for(i = 0; i < g->nbAttributes ; i++)
+    for(i = 0; i < OME_ATTRIB_MAX; i++)
     {
         attr = &g->attributes[i];
 
-        if(attr->geometryType == OME_ATTRIB_TYPE_POSITION)
+        if(attr->actived)
         {
-            glEnableClientState(GL_VERTEX_ARRAY);
-            glVertexPointer(attr->nbElements, GL_FLOAT, 0, OME_GEOMETRY_OFFSET(offset));
-        }
-        else if(attr->geometryType == OME_ATTRIB_TYPE_COLOR)
-        {
-            glEnableClientState(GL_COLOR_ARRAY);
-            glColorPointer(attr->nbElements, GL_FLOAT, 0, OME_GEOMETRY_OFFSET(offset));
-        }
-        else if(attr->geometryType == OME_ATTRIB_TYPE_NORMAL)
-        {
-            glEnableClientState(GL_NORMAL_ARRAY);
-            glNormalPointer(GL_FLOAT, 0, OME_GEOMETRY_OFFSET(offset));
-        }
-        else if(attr->geometryType == OME_ATTRIB_TYPE_TEXCOORD_0)
-        {
-            glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-            glTexCoordPointer(attr->nbElements, GL_FLOAT, 0, OME_GEOMETRY_OFFSET(offset));
-        }
-        else
-        {
-            omeLoggerLog("Not implemented yet\n");
-            return; //TODO: find a way to not skip the rest (goto??)
+            glEnableVertexAttribArray(i);
+
+            switch(attr->type)
+            {
+            case OME_BYTE:  case OME_UBYTE:
+            case OME_SHORT: case OME_USHORT:
+            case OME_INT:   case OME_UINT:
+                glVertexAttribIPointer(i, attr->nbElements, omeTypeToGL(attr->type), 0, OME_GEOMETRY_OFFSET(offset));
+                break;
+            case OME_FLOAT:
+                glVertexAttribPointer(i, attr->nbElements, omeTypeToGL(attr->type), GL_FALSE, 0, OME_GEOMETRY_OFFSET(offset));
+                break;
+            case OME_DOUBLE:
+                glVertexAttribLPointer(i, attr->nbElements, omeTypeToGL(attr->type), 0, OME_GEOMETRY_OFFSET(offset));
+            default:
+                omeLoggerLog("Attrib doesn't have a valid data type\n");
+                return;
+            }
         }
 
         offset += attr->size;
@@ -319,18 +243,10 @@ void omeGeometrySendAttributes(omeGeometry *g)
 }
 
 
-void omeGeometryRenderVBO(omeGeometry *g)
+void omeGeometryRender(omeGeometry *g)
 {
     if(g->indexed)
-    {
-        if(g->indices.type != OME_UBYTE)
-        {
-            omeLoggerLog("Not implemented yet\n");
-            return;
-        }
-
-        glDrawElements(omePolygonTypeToGL(g->polygonType), g->nbVertices, GL_UNSIGNED_BYTE, g->indices.data);
-    }
+        glDrawElements(omePolygonTypeToGL(g->polygonType), g->nbVertices, omeTypeToGL(g->attributes[OME_ATTRIB_TYPE_INDEX].type), g->indices.data);
     else
         glDrawArrays(omePolygonTypeToGL(g->polygonType), 0, g->nbVertices);
 }
@@ -341,18 +257,12 @@ void omeGeometryDisableAttributes(omeGeometry *g)
     int i;
     omeVertexAttrib *attr;
 
-    for(i =  0; i < g->nbAttributes; i++)
+    for(i =  0; i < OME_ATTRIB_MAX; i++)
     {
         attr = &g->attributes[i];
 
-        if(attr->geometryType == OME_ATTRIB_TYPE_POSITION)
-            glDisableClientState(GL_VERTEX_ARRAY);
-        else if(attr->geometryType == OME_ATTRIB_TYPE_COLOR)
-            glDisableClientState(GL_COLOR_ARRAY);
-        else if(attr->geometryType == OME_ATTRIB_TYPE_NORMAL)
-            glDisableClientState(GL_NORMAL_ARRAY);
-        else if(attr->geometryType == OME_ATTRIB_TYPE_TEXCOORD_0)
-            glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+        if(attr->actived)
+            glEnableVertexAttribArray(i);
     }
 }
 

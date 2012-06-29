@@ -25,7 +25,6 @@ typedef struct omeMesh omeMesh;
 typedef struct omeMeshListElement omeMeshListElement, omeMeshList;
 
 
-// TODO: avoid two identical attributes in the same geometry... => boolean in attrib
 typedef enum omeAttribType
 {
     OME_ATTRIB_TYPE_POSITION,
@@ -40,8 +39,25 @@ typedef enum omeAttribType
     OME_ATTRIB_TYPE_USER_1,
     OME_ATTRIB_TYPE_USER_2,
     OME_ATTRIB_TYPE_USER_3,
-    OME_ATTRIB_TYPE_MAX
+    OME_ATTRIB_MAX
 } omeAttribType;
+
+
+static const char *omeAttribNames[] = 
+{
+    "omePosition",
+    "omeTextCoord0",
+    "omeTextCoord1",
+    "omeTextCoord2",
+    "omeTextCoord3",
+    "omeNormal",
+    "omeColor",
+    "omeIndex",
+    "omeUser0",
+    "omeUser1",
+    "omeUser2",
+    "omeUser3"
+};
 
 
 typedef enum omePolygonType
@@ -70,10 +86,8 @@ typedef struct omeVertexAttrib
     int updateHint;
     omeType type;
     omeAttribType geometryType;
+    omeBool actived;
 } omeVertexAttrib;
-
-
-#define OME_MAX_ATTRIB  8
 
 
 typedef struct omeGeometry
@@ -83,7 +97,7 @@ typedef struct omeGeometry
     int vertexSize;
     int indexCpt;
     int size;
-    omeVertexAttrib attributes[OME_MAX_ATTRIB];  //TODO: try dynamic solution instead?
+    omeVertexAttrib attributes[OME_ATTRIB_MAX];  //TODO: try dynamic solution instead?
     omeVertexAttrib indices;
     omeBool interleaved;
     omeBool indexed;
@@ -118,8 +132,7 @@ void omeGeometryUpdateAttrib(omeGeometry *g, int attribIndex, void *data);
 void omeGeometryBuildVBO(omeGeometry *g);
 void omeGeometrySendAttributes(omeGeometry *g);
 void omeGeometryDisableAttributes(omeGeometry *g);
-void omeGeometryRenderVA(omeGeometry *g);
-void omeGeometryRenderVBO(omeGeometry *g);
+void omeGeometryRender(omeGeometry *g);
 void omeGeometryUseIndices(omeGeometry *g);
 
 // TODO: => omeResourceAddRef() and omeResourceDelRef()???

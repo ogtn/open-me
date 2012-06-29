@@ -235,7 +235,7 @@ omeStatus omeProgramLink(omeProgram *sp)
     {
         glGetProgramInfoLog(sp->id, OME_PROGRAM_LOG_LENGTH, &size, log);
 
-        omeLoggerLog("Error while linking shaderr program\n");
+        omeLoggerLog("Error while linking shader program\n");
         omeLoggerLog("%s\n", log);
 
         return OME_FAILURE;
@@ -244,6 +244,7 @@ omeStatus omeProgramLink(omeProgram *sp)
     // fill the uniforms cache
     // TODO: add a boolean value to tell if the cache is valid or to be deleted?
     omeProgramLocateUniforms(sp);
+    omeProgramLocateAttributes(sp);
 
     return OME_SUCCESS;
 }
@@ -270,6 +271,25 @@ void omeProgramLocateUniforms(omeProgram *sp)
     {
         glGetActiveUniform(sp->id, i, 64, &len, &size, &type, name);
         omeProgramLocateUniform(sp, name);
+    }
+}
+
+
+void omeProgramLocateAttributes(omeProgram *sp)
+{
+    int i;
+    int len;
+    int nbAttributes;
+    char name[64];
+    GLint size;
+    GLenum type;
+
+    glGetProgramiv(sp->id, GL_ACTIVE_ATTRIBUTES, &nbAttributes);
+
+    for(i = 0; i < nbAttributes; i++)
+    {
+        glGetActiveAttrib(sp->id, i, 64, &len, &size, &type, name);
+        printf("attribute %d: %s located at %d\n", i, name, glGetAttribLocation(sp->id, name));
     }
 }
 

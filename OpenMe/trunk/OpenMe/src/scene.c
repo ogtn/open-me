@@ -70,7 +70,7 @@ void omeSceneRender(omeScene *s, omeCamera *c)
                     omeProgramSendUniformMaterial(p, m, "mat");
             }
 
-            omeGeometryRenderVBO(g);
+            omeGeometryRender(g);
         }
 
         omeGeometryDisableAttributes(g);

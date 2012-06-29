@@ -59,6 +59,7 @@ typedef enum omeType
 // macros and functions
 #define OME_GEOMETRY_OFFSET(i) ((char *)NULL + i)
 int omeSizeOf(omeType type);
+unsigned int omeTypeToGL(omeType type);
 char *omeGetGLError(void);
 
 

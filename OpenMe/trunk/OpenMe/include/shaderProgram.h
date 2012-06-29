@@ -94,6 +94,7 @@ omeStatus omeProgramPrepareLink(omeProgram *sp);
 omeStatus omeProgramLink(omeProgram *sp);
 void omeProgramUse(omeProgram *sp);
 void omeProgramLocateUniforms(omeProgram *sp);
+void omeProgramLocateAttributes(omeProgram *sp);
 int omeProgramLocateUniform(omeProgram *sp, char *name);
 
 void omeProgramSendUniformf(omeProgram *sp, float f, char *name);

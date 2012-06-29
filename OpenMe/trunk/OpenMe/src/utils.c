@@ -18,22 +18,34 @@ int omeSizeOf(omeType type)
     {
     case OME_BYTE:  case OME_UBYTE:
         return 1;
-        break;
     case OME_SHORT: case OME_USHORT:
         return sizeof(short);
-        break;
     case OME_INT:   case OME_UINT:
         return sizeof(int);
-        break;
     case OME_FLOAT:
         return sizeof(float);
-        break;
     case OME_DOUBLE:
         return sizeof(double);
-        break;
     default:
         return OME_FAILURE;
-        break;
+    }
+}
+
+
+unsigned int omeTypeToGL(omeType type)
+{
+    switch (type)
+    {
+    case OME_BYTE:      return GL_BYTE;
+    case OME_UBYTE:     return GL_UNSIGNED_BYTE;
+    case OME_SHORT:     return GL_SHORT;
+    case OME_USHORT:    return GL_UNSIGNED_SHORT;
+    case OME_INT:       return GL_INT;
+    case OME_UINT:      return GL_UNSIGNED_INT;
+    case OME_FLOAT:     return GL_FLOAT;
+    case OME_DOUBLE:    return GL_DOUBLE;
+    default:
+        return OME_FAILURE;
     }
 }
 

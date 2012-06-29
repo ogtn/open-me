@@ -89,6 +89,8 @@ void omeEngineClearAllBuffers(void)
 
 int omeEngineStart(void)
 {
+    int value;
+
     // avoid double start
     if(engine.state == OME_ENGINE_STATE_STARTED)
     {
@@ -123,7 +125,9 @@ int omeEngineStart(void)
 
     omeLoggerLog("OpenGL %s\n", glGetString(GL_VERSION));
     omeLoggerLog("GLSL %s\n", glGetString(GL_SHADING_LANGUAGE_VERSION));
-    
+    glGetIntegerv(GL_MAX_VERTEX_ATTRIBS, &value);
+    omeLoggerLog("Max vertex attributes availables: %d\n", value);
+
     engine.scene = omeSceneCreate();
 
     return OME_SUCCESS;

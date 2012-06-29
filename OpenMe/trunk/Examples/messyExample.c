@@ -96,9 +96,9 @@ int main(void)
     omeEngineSetActiveCamera(camera);
 
     // obj loading test
-    //mesh = omeLoadOBJFromFile("data/bunny69k.obj", OME_TRUE);
+    mesh = omeLoadOBJFromFile("data/bunny69k.obj", OME_TRUE);
     //omeMeshSave("data/mesh1.omeMesh", mesh);
-    mesh = omeMeshLoad("data/mesh1.omeMesh");
+    //mesh = omeMeshLoad("data/mesh1.omeMesh");
 
     // deprecated stuff to test normals before using shaders
     //init_texture(L"data/test.png");
@@ -109,6 +109,7 @@ int main(void)
     omeProgramAddShader(shaderProgram, omeShaderCreate("data/basic.ps"));
     omeProgramLink(shaderProgram);
     omeProgramUse(shaderProgram);
+    mesh->program = shaderProgram;
 
     // material test
     mat = omeMaterialCreate();
