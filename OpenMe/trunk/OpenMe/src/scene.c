@@ -47,31 +47,32 @@ void omeSceneAddGeometry(omeScene *s, omeGeometry *g)
 void omeSceneRender(omeScene *s, omeCamera *c)
 {
     omeGeometryListElement *geometryElt;
-    
+    omeProgram *p =  NULL;
+
     DL_FOREACH(s->geometries, geometryElt)
     {
         omeMeshListElement *meshElt;
-        omeGeometry *g = geometryElt->geometry;
+        omeGeometry *g = geometryElt->geometry;    
 
         DL_FOREACH(g->references, meshElt)
         {         
-            omeProgram *p = meshElt->mesh->program;
             omeMaterial *m = meshElt->mesh->material;
 
-            // TODO: When the code will be cleaner, remove this. This engine is meant to be shader only
-            if(p)
+            if(p != meshElt->mesh->program)
             {
-                omeProgramUse(p);
-                omeGeometrySendAttributes(g, p);
+                p = meshElt->mesh->program;
 
-                // TODO: same here I guess... (default material set in meshCreate() maybe?)
-                if(m)
-                    omeProgramSendUniformMaterial(p, m, "mat");
+                omeProgramUse(p);
+                omeGeometryEnableAttributes(g, p);
+                omeGeometrySendAttributes(g);
             }
 
+            omeProgramSendUniformMaterial(p, m, "mat");
             omeGeometryRender(g);
+
+            //omeGeometryDisableAttributes(g);
         }
 
-        omeGeometryDisableAttributes(g);
+        p = NULL;
     }
 }

@@ -93,14 +93,6 @@
     <None Include="..\..\Debug\data\basic.ps" />
     <None Include="..\..\Debug\data\basic.vs" />
   </ItemGroup>
-  <ItemGroup>
-    <Object Include="..\..\Debug\data\2plans.obj" />
-    <Object Include="..\..\Debug\data\3cubes.obj" />
-    <Object Include="..\..\Debug\data\bunny69k.obj" />
-    <Object Include="..\..\Debug\data\chamfer.obj" />
-    <Object Include="..\..\Debug\data\cube-texture.obj" />
-    <Object Include="..\..\Debug\data\sphere.obj" />
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

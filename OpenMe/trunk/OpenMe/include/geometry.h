@@ -87,6 +87,8 @@ typedef struct omeVertexAttrib
     omeType type;
     omeAttribType geometryType;
     omeBool actived;
+    omeBool enabled;
+    int loc;
     const char *name;
 } omeVertexAttrib;
 
@@ -131,7 +133,8 @@ int omeGeometryAddIndices(omeGeometry *g, omeType type, int updateHint, void *da
 void omeGeometryFinalize(omeGeometry *g);
 void omeGeometryUpdateAttrib(omeGeometry *g, int attribIndex, void *data);
 void omeGeometryBuildVBO(omeGeometry *g);
-void omeGeometrySendAttributes(omeGeometry *g, omeProgram *p);
+void omeGeometryEnableAttributes(omeGeometry *g, omeProgram *p);
+void omeGeometrySendAttributes(omeGeometry *g);
 void omeGeometryDisableAttributes(omeGeometry *g);
 void omeGeometryRender(omeGeometry *g);
 void omeGeometryUseIndices(omeGeometry *g);

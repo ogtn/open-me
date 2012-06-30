@@ -85,11 +85,14 @@ void omeMeshSave(char *fileName, omeMesh *m)
     omeGeometry *geometry;
     omeVertexAttrib *attr;
 
+    // TODO: fix the finalizing process of meshes and geometries
+    /* 
     if(m->finalized == OME_FALSE)
     {
         omeLoggerLog("Can't save a non finalized mesh\n");
         return;
     }
+    */
 
     file = fopen(fileName, "wb+");
 
@@ -106,30 +109,16 @@ void omeMeshSave(char *fileName, omeMesh *m)
         fwrite(&geometry->polygonType, sizeof geometry->polygonType, 1, file);
         fwrite(&geometry->indexed, sizeof geometry->indexed, 1, file);
 
-        if(geometry->indexed == OME_TRUE)
-        {
-            attr = &geometry->indices;
-
-            // attribute info
-            fwrite(&attr->nbElements, sizeof attr->nbElements, 1, file);
-            fwrite(&attr->type, sizeof attr->type, 1, file);
-            fwrite(&attr->geometryType, sizeof attr->geometryType, 1, file);
-
-            // attribute data
-            fwrite(attr->data, omeSizeOf(attr->type) * attr->nbElements, geometry->nbVertices, file);
-        }
-
-        for(j = 0; j < geometry->nbAttributes; j++)
+        for(j = 0; j < OME_ATTRIB_MAX; j++)
         {
             attr = &geometry->attributes[j];
 
             // attribute info
-            fwrite(&attr->nbElements, sizeof attr->nbElements, 1, file);
-            fwrite(&attr->type, sizeof attr->type, 1, file);
-            fwrite(&attr->geometryType, sizeof attr->geometryType, 1, file);
+            fwrite(attr, sizeof *attr, 1, file);
 
             // attribute data
-            fwrite(attr->data, omeSizeOf(attr->type) * attr->nbElements, geometry->nbVertices, file);
+            if(attr->actived)
+                fwrite(attr->data, omeSizeOf(attr->type) * attr->nbElements, geometry->nbVertices, file);
         }
     }
 
@@ -164,9 +153,6 @@ omeMesh *omeMeshLoad(char *fileName)
         omePolygonType polygonType;
         omeBool indexed;
         void *data;
-        int nbElements;
-        omeType type;
-        omeAttribType geometryType;
 
         // geometry info
         fread(&nbVertices, sizeof nbVertices, 1, file);
@@ -177,33 +163,22 @@ omeMesh *omeMeshLoad(char *fileName)
         geometry = omeGeometryCreate(nbVertices, nbAttributes, polygonType);
         omeMeshAddGeometry(m, geometry);
 
-        if(indexed == OME_TRUE)
+        for(j = 0; j < OME_ATTRIB_MAX; j++)
         {
+            omeVertexAttrib attr;
+            
             // attribute info
-            fread(&nbElements, sizeof nbElements, 1, file);
-            fread(&type, sizeof type, 1, file);
-            fread(&geometryType, sizeof geometryType, 1, file);
+            fread(&attr, sizeof attr, 1, file);
 
             // attribute data
-            data = malloc(omeSizeOf(type) * nbElements * nbVertices);
-            fread(data, omeSizeOf(type) * nbElements, nbVertices, file);
+            if(attr.actived)
+            {
+                data = malloc(omeSizeOf(attr.type) * attr.nbElements * nbVertices);
+                fread(data, omeSizeOf(attr.type) * attr.nbElements, nbVertices, file);
 
-            omeGeometryUseIndices(geometry);
-            omeGeometryAddIndices(geometry, type, 0, data);
-        }
-
-        for(j = 0; j < geometry->nbAttributes; j++)
-        {
-            // attribute info
-            fread(&nbElements, sizeof nbElements, 1, file);
-            fread(&type, sizeof type, 1, file);
-            fread(&geometryType, sizeof geometryType, 1, file);
-
-            // attribute data
-            data = malloc(omeSizeOf(type) * nbElements * nbVertices);
-            fread(data, omeSizeOf(type) * nbElements, nbVertices, file);
-
-            omeGeometryAddAttrib(geometry, nbElements, type, 0, geometryType, data);
+                // TODO: an other omeGeometryAddAttrib() wich takes an attrib as parameter?
+                omeGeometryAddAttrib(geometry, attr.nbElements, attr.type, 0, attr.geometryType, data);
+            }
         }
     }
 

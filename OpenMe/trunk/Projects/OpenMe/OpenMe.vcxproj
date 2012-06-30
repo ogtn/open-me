@@ -47,6 +47,9 @@
     <ClInclude Include="..\..\OpenMe\include\openme.h" />
     <ClInclude Include="..\..\OpenMe\include\vector.h" />
   </ItemGroup>
+  <ItemGroup>
+    <Text Include="..\todo.txt" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCTargetsPath Condition="'$(VCTargetsPath11)' != '' and '$(VSVersion)' == '' and '$(VisualStudioVersion)' == ''">$(VCTargetsPath11)</VCTargetsPath>
   </PropertyGroup>

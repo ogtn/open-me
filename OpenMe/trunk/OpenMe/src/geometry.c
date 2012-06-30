@@ -202,7 +202,30 @@ void omeGeometryBuildVBO(omeGeometry *g)
 }
 
 
-void omeGeometrySendAttributes(omeGeometry *g, omeProgram *p)
+void omeGeometryEnableAttributes(omeGeometry *g, omeProgram *p)
+{
+    int i;
+
+    for(i =  0; i < OME_ATTRIB_MAX; i++)
+    {
+        omeVertexAttrib *attr = &g->attributes[i];
+
+        if(attr->actived)
+        {
+            attr->loc = omeProgramLocateAttribute(p, attr->name);
+            glEnableVertexAttribArray(attr->loc);
+            attr->enabled = OME_TRUE;
+        }
+        else if(attr->enabled)
+        {
+            glDisableVertexAttribArray(attr->loc);
+            attr->enabled = OME_FALSE;
+        }
+    }
+}
+
+
+void omeGeometrySendAttributes(omeGeometry *g)
 {
     int i;
     int offset = 0;
@@ -220,28 +243,25 @@ void omeGeometrySendAttributes(omeGeometry *g, omeProgram *p)
 
         if(attr->actived)
         {
-			int loc = omeProgramLocateAttribute(p, attr->name);
-            glEnableVertexAttribArray(loc);
-
             switch(attr->type)
             {
             case OME_BYTE:  case OME_UBYTE:
             case OME_SHORT: case OME_USHORT:
             case OME_INT:   case OME_UINT:
-                glVertexAttribIPointer(loc, attr->nbElements, omeTypeToGL(attr->type), 0, OME_GEOMETRY_OFFSET(offset));
+                glVertexAttribIPointer(attr->loc, attr->nbElements, omeTypeToGL(attr->type), 0, OME_GEOMETRY_OFFSET(offset));
                 break;
             case OME_FLOAT:
-                glVertexAttribPointer(loc, attr->nbElements, omeTypeToGL(attr->type), GL_FALSE, 0, OME_GEOMETRY_OFFSET(offset));
+                glVertexAttribPointer(attr->loc, attr->nbElements, omeTypeToGL(attr->type), GL_FALSE, 0, OME_GEOMETRY_OFFSET(offset));
                 break;
             case OME_DOUBLE:
-                glVertexAttribLPointer(loc, attr->nbElements, omeTypeToGL(attr->type), 0, OME_GEOMETRY_OFFSET(offset));
+                glVertexAttribLPointer(attr->loc, attr->nbElements, omeTypeToGL(attr->type), 0, OME_GEOMETRY_OFFSET(offset));
             default:
                 omeLoggerLog("Attrib doesn't have a valid data type\n");
                 return;
             }
-        }
 
-        offset += attr->size;
+            offset += attr->size;
+        }
     }
 }
 
@@ -258,14 +278,13 @@ void omeGeometryRender(omeGeometry *g)
 void omeGeometryDisableAttributes(omeGeometry *g)
 {
     int i;
-    omeVertexAttrib *attr;
 
     for(i =  0; i < OME_ATTRIB_MAX; i++)
     {
-        attr = &g->attributes[i];
+        omeVertexAttrib *attr = &g->attributes[i];
 
-        if(attr->actived)
-            glEnableVertexAttribArray(i);
+        if(attr->enabled)
+            glDisableVertexAttribArray(attr->loc);
     }
 }
 

@@ -61,7 +61,7 @@ omeTexture *omeTextureCreate(omeTextureType type, int width, int height, int dep
     // TODO: cubemap
     // TODO: mipmap
     // TODO: extra parameter for hints (mipmaps, filters, internal & external format...) If NULL, default values used...
-
+    // TODO: lot of things to check here: http://www.opengl.org/wiki/Common_Mistakes
     return t;
 }
 

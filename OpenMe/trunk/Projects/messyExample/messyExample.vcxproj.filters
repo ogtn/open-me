@@ -9,9 +9,6 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
-    <Filter Include="Models">
-      <UniqueIdentifier>{d3e9a70c-e30c-4f42-b77d-062d79662012}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Examples\messyExample.c">
@@ -25,25 +22,5 @@
     <None Include="..\..\Debug\data\basic.vs">
       <Filter>Shaders</Filter>
     </None>
-  </ItemGroup>
-  <ItemGroup>
-    <Object Include="..\..\Debug\data\2plans.obj">
-      <Filter>Models</Filter>
-    </Object>
-    <Object Include="..\..\Debug\data\3cubes.obj">
-      <Filter>Models</Filter>
-    </Object>
-    <Object Include="..\..\Debug\data\bunny69k.obj">
-      <Filter>Models</Filter>
-    </Object>
-    <Object Include="..\..\Debug\data\chamfer.obj">
-      <Filter>Models</Filter>
-    </Object>
-    <Object Include="..\..\Debug\data\cube-texture.obj">
-      <Filter>Models</Filter>
-    </Object>
-    <Object Include="..\..\Debug\data\sphere.obj">
-      <Filter>Models</Filter>
-    </Object>
   </ItemGroup>
 </Project>

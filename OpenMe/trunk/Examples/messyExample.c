@@ -83,7 +83,7 @@ int main(void)
     omeMaterial *mat;
 
     // get OpenGL context
-    if(!glfwInit() || !glfwOpenWindow(width, height, 8, 8, 8, 0, 8, 8, GLFW_WINDOW))
+    if(!glfwInit() || !glfwOpenWindow(width, height, 8, 8, 8, 8, 32, 0, GLFW_WINDOW))
         return EXIT_FAILURE;
 
     glfwSetMouseWheel(0);
@@ -96,9 +96,9 @@ int main(void)
     omeEngineSetActiveCamera(camera);
 
     // obj loading test
-    mesh = omeLoadOBJFromFile("data/bunny69k.obj", OME_TRUE);
+    //mesh = omeLoadOBJFromFile("data/chamfer.obj", OME_TRUE);
     //omeMeshSave("data/mesh1.omeMesh", mesh);
-    //mesh = omeMeshLoad("data/mesh1.omeMesh");
+    mesh = omeMeshLoad("data/mesh1.omeMesh");
 
     // deprecated stuff to test normals before using shaders
     //init_texture(L"data/test.png");
