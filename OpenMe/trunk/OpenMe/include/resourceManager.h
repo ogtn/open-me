@@ -17,10 +17,10 @@ extern "C" {
 #endif
 
 
+#include "utils.h"
 #include <uthash.h>
 
 
-#define OME_RESOURCE_NAME_LEN       64
 #define OME_RESOURCE_MAGIC			0x42042042
 
 
@@ -40,14 +40,14 @@ typedef struct omeResource
 	unsigned int magic;
 	omeResourceType type;
     UT_hash_handle *hashHandle;
-    char hashKey[OME_RESOURCE_NAME_LEN];
+    char hashKey[OME_NAME_MAXLEN];
 } omeResource;
 
 
 typedef struct omeResourceLoader
 {
     UT_hash_handle *hashHandle;
-    char hashKey[OME_RESOURCE_NAME_LEN];
+    char hashKey[OME_NAME_MAXLEN];
     //loadFunction;
     //saveFunction;
 } omeResourceLoader;

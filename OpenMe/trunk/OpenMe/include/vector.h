@@ -44,14 +44,14 @@ typedef union omeVector2
 
 void omeVectorCopy(omeVector *dst, const omeVector *src);
 void omeVector2Copy(omeVector2 *dst, const omeVector2 *src);
-float omeVectorLength(omeVector *v);
+float omeVectorLength(const omeVector *v);
 void omeVectorNormalize(omeVector *v);
-void omeVectorAddVector(omeVector *v, omeVector *v2, omeVector *res);
-void omeVectorSubVector(omeVector *v, omeVector *v2, omeVector *res);
-void omeVectorMultVector(omeVector *v, omeVector *v2, omeVector *res);
-void omeVectorMultScal(omeVector *v, float f, omeVector *res);
-float omeVectorDot(omeVector *v, omeVector *v2);
-void omeVectorCross(omeVector *v, omeVector *v2, omeVector *res);
+void omeVectorAddVector(const omeVector *v, const omeVector *v2, omeVector *res);
+void omeVectorSubVector(const omeVector *v, const omeVector *v2, omeVector *res);
+void omeVectorMultVector(const omeVector *v, const omeVector *v2, omeVector *res);
+void omeVectorMultScal(const omeVector *v, float f, omeVector *res);
+float omeVectorDot(const omeVector *v, const omeVector *v2);
+void omeVectorCross(const omeVector *v, const omeVector *v2, omeVector *res);
 
 
 #ifdef __cplusplus

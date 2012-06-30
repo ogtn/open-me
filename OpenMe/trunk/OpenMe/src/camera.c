@@ -121,21 +121,19 @@ void omeCameraSetTarget(omeCamera *c, omeVector *target)
 
 void omeCameraUpdate(omeCamera *c)
 {
+    // TODO: add a boolean to avoid recomputation
     switch(c->type)
     {
     case OME_CAMERA_TYPE_PERPECTIVE:
         glMatrixMode(GL_PROJECTION);
         omeMatrixMakePerspective(&c->projection, c->fov, c->ratio, c->near, c->far);
-        omeMatrixLoad(&c->projection, OME_TRUE);
 
         glMatrixMode(GL_MODELVIEW);
         omeMatrixMakeLookAt(&c->modelview, &c->pos, &c->target, &c->up);
-        omeMatrixLoad(&c->modelview, OME_TRUE);
         break;
     case OME_CAMERA_TYPE_ORTHO:
         glMatrixMode(GL_PROJECTION);
         omeMatrixMakeOrtho(&c->projection, c->left, c->right, c->bottom, c->top, c->near, c->far);
-        omeMatrixLoad(&c->projection, OME_TRUE);
         break;
     default:
         omeLoggerLog("unknown type of camera");

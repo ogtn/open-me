@@ -18,16 +18,39 @@ extern "C" {
 
 
 // forward declaration
-typedef struct omeMatrix omeMatrix;
+typedef union omeMatrix omeMatrix;
 
 
 #include "vector.h"
 #include "utils.h"
 
 
+#define OME_ENTITY_MAGIC        0x66666666
+
+// TODO: disable this in release?
+#define OME_ENTITY_CHECK(ptr)   do\
+    {\
+    if(((omeEntity*)(ptr))->magic != OME_ENTITY_MAGIC)\
+            omeLoggerLog("Polymorphism panic: dynamic cast failed!\n");\
+            return;\
+    } while(0);
+
+
+typedef enum omeEntityType
+{
+    OME_ENTITY_MESH,
+    OME_ENTITY_OMNI_LIGHT,
+    OME_ENTITY_CAMERA,
+    OME_ENTITY_MAX
+} omeEntityType;
+
+
 typedef struct omeEntity
 {
-	omeMatrix *modelview;
+    // header
+    unsigned int magic;
+    omeEntityType type;
+
     omeVector position;
     omeVector scaling;
     omeVector rotation;
@@ -36,8 +59,9 @@ typedef struct omeEntity
 } omeEntity;
 
 
-omeEntity *omeEntityCreate(const char *name);
-void omeEntityDestroy(omeEntity **e);
+void omeEntityInit(void *object, omeEntityType type, const char *name);
+void omeEntitySetPosition(void *object, const omeVector *pos);
+void omeEntityMove(void *object, const omeVector *displacement);
 
 
 #ifdef __cplusplus

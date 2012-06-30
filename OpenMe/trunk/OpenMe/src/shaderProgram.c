@@ -11,6 +11,8 @@
 #include "shaderProgram.h"
 #include "material.h"
 #include "logger.h"
+#include "entity.h"
+#include "camera.h"
 #include <GL/glew.h>
 #include <stdlib.h>
 #include <stdio.h>
@@ -374,10 +376,14 @@ void omeLocationDestroy(omeLocation **loc)
 
 void omeProgramSendUniformf(omeProgram *sp, float f, const char *name)
 {
-    omeProgramUse(sp);
     glUniform1f(omeProgramLocateUniform(sp, name), f);
 }
 
+
+void omeProgramSendUniformVec(omeProgram *sp, const omeVector *v, const char *name)
+{
+    glUniform3fv(omeProgramLocateUniform(sp, name), 1, v->tab);
+}
 
 void omeProgramSendUniformMaterial(omeProgram *p, omeMaterial *m, const char *name)
 {
@@ -385,4 +391,19 @@ void omeProgramSendUniformMaterial(omeProgram *p, omeMaterial *m, const char *na
 
     sprintf(fullName, "%s.ambiant", name);
     glUniform3fv(omeProgramLocateUniform(p, fullName), 1, m->ambiantColor.tab); // /!\ omeColorf is made of 4 floats for the moment, only three are send here
+}
+
+
+void omeProgramSendUniformEntity(omeProgram *p, void *object)
+{
+    omeEntity *e = object;
+    //OME_ENTITY_CHECK(e);
+
+    glUniform3fv(omeProgramLocateUniform(p, "omeMeshPosition"), 1, e->position.tab);
+}
+
+void omeProgramSendUniformCamera(omeProgram *p, omeCamera *c)
+{
+    glUniformMatrix4fv(omeProgramLocateUniform(p, "omeModelview"), 1, GL_TRUE, c->modelview.tab);
+    glUniformMatrix4fv(omeProgramLocateUniform(p, "omeProjection"), 1, GL_TRUE, c->projection.tab);
 }

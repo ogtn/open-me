@@ -23,7 +23,7 @@ static const float identity[16] = {
     0, 0, 0, 1};
 
 
-void omeMatrixCopy(omeMatrix *dst, omeMatrix *src)
+void omeMatrixCopy(omeMatrix *dst, const omeMatrix *src)
 {
     memcpy(dst, src, sizeof(omeMatrix));
 }
@@ -68,7 +68,7 @@ void omeMatrixMakePerspective(omeMatrix *m, float angle, float ratio, float near
 }
 
 
-void omeMatrixMakeLookAt(omeMatrix *m, omeVector *pos, omeVector *target, omeVector *up)
+void omeMatrixMakeLookAt(omeMatrix *m, const omeVector *pos, const omeVector *target, const omeVector *up)
 {
     omeVector forward, side, newUP;
 
@@ -101,7 +101,7 @@ void omeMatrixMakeLookAt(omeMatrix *m, omeVector *pos, omeVector *target, omeVec
 }
 
 
-void omeMatrixTranslate(omeMatrix *m, omeVector *v)
+void omeMatrixTranslate(omeMatrix *m, const omeVector *v)
 {
     omeMatrix m2;
 
@@ -116,7 +116,7 @@ void omeMatrixTranslate(omeMatrix *m, omeVector *v)
 
 
 // TODO: fix this function...
-void omeMatrixScale(omeMatrix *m, omeVector *v)
+void omeMatrixScale(omeMatrix *m, const omeVector *v)
 {
     omeMatrix m2;
 
@@ -131,7 +131,7 @@ void omeMatrixScale(omeMatrix *m, omeVector *v)
 
 
 // TODO: fix this function...
-void omeMatrixRotateAxis(omeMatrix *m, omeVector *axis, float theta)
+void omeMatrixRotateAxis(omeMatrix *m, const omeVector *axis, float theta)
 {
     omeVector v;
     omeMatrix m2;
@@ -161,7 +161,7 @@ void omeMatrixRotateAxis(omeMatrix *m, omeVector *axis, float theta)
 }
 
 
-void omeMatrixRotateAngles(omeMatrix *m, omeVector *v)
+void omeMatrixRotateAngles(omeMatrix *m, const omeVector *v)
 {
     // TODO: find a less awful way to implement this...
     static const omeVector vx = {{1, 0, 0}};
@@ -196,7 +196,7 @@ void omeMatrixTranspose(omeMatrix *m)
 }
 
 
-void omeMatrixLoad(omeMatrix *m, int transpose)
+void omeMatrixLoad(const omeMatrix *m, int transpose)
 {
     omeMatrix m2;
 
@@ -210,7 +210,7 @@ void omeMatrixLoad(omeMatrix *m, int transpose)
 }
 
 
-void omeMatrixMultMatrix(omeMatrix *m, omeMatrix *m2, omeMatrix *res)
+void omeMatrixMultMatrix(const omeMatrix *m, const omeMatrix *m2, omeMatrix *res)
 {
     int i, j, k;
     omeMatrix tmp;
@@ -242,7 +242,7 @@ void omeMatrixMultMatrix(omeMatrix *m, omeMatrix *m2, omeMatrix *res)
 //void omeMatrixSendAsUniform(omeMatrix *m, omeProgram *sp, char *name);
 
 
-void omeMatrixPrint(omeMatrix *m)
+void omeMatrixPrint(const omeMatrix *m)
 {
     int i, j;
 

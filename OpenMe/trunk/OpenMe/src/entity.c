@@ -9,6 +9,7 @@
 
 
 #include "entity.h"
+#include "logger.h"
 #include <string.h>
 #include <stdlib.h>
 
@@ -18,34 +19,33 @@ static const omeVector defaultScaling = 	{{1, 1, 1}};
 static const omeVector defaultRotation = 	{{0, 0, 0}};
 
 
-omeEntity *omeEntityCreate(const char *name)
+void omeEntityInit(void *object, omeEntityType type, const char *name)
 {
-    omeEntity *e = calloc(1, sizeof(omeEntity));
+    omeEntity *e = object;
+
+    e->magic = OME_ENTITY_MAGIC;
+    e->type = type;
 
     omeVectorCopy(&e->position, &defaultPosition);
     omeVectorCopy(&e->scaling, &defaultScaling);
     omeVectorCopy(&e->rotation, &defaultRotation);
     strncpy(e->name, name, OME_NAME_MAXLEN);
-
-    return e;
 }
 
 
-void omeEntityDestroy(omeEntity **e)
+void omeEntitySetPosition(void *object, const omeVector *pos)
 {
-    memset(*e, 0, sizeof(omeEntity));
-    free(*e);
-    *e = NULL;
-}
+    omeEntity *e = object;
+    OME_ENTITY_CHECK(e);
 
-
-void omeEntitySetPosition(omeEntity *e, omeVector *pos)
-{
 	e->position = *pos;
 }
 
 
-void omeEntityMove(omeEntity *e, omeVector *displacement)
+void omeEntityMove(void *object, const omeVector *displacement)
 {
+    omeEntity *e = object;
+    OME_ENTITY_CHECK(e);
+
 	omeVectorAddVector(&e->position, displacement, &e->position);
 }

@@ -23,6 +23,8 @@ extern "C" {
 
 // forward declaration
 typedef struct omeMaterial omeMaterial;
+typedef struct omeCamera omeCamera;
+typedef union omeVector omeVector;
 
 
 #define OME_PROGRAM_LOG_LENGTH          2048
@@ -100,7 +102,10 @@ int omeProgramLocateUniform(omeProgram *sp, const char *name);
 int omeProgramLocateAttribute(omeProgram *sp, const char *name);
 
 void omeProgramSendUniformf(omeProgram *sp, float f, const char *name);
+void omeProgramSendUniformVec(omeProgram *sp, const omeVector *v, const char *name);
 void omeProgramSendUniformMaterial(omeProgram *p, omeMaterial *m, const char *name);
+void omeProgramSendUniformEntity(omeProgram *p, void *object);
+void omeProgramSendUniformCamera(omeProgram *p, omeCamera *c);
 
 omeLocation *omeLocationCreate(omeProgram *sp, const char *name, omeLocationType type);
 #define omeUniformLocationCreate(sp, name)  omeLocationCreate(sp, name, OME_LOCATION_TYPE_UNIFORM)

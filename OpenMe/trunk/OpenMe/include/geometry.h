@@ -45,7 +45,7 @@ typedef enum omeAttribType
 
 static const char *omeAttribNames[] = 
 {
-    "omePosition",
+    "omeVertexPosition",
     "omeTextCoord0",
     "omeTextCoord1",
     "omeTextCoord2",

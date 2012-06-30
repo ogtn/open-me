@@ -71,7 +71,7 @@ int main(void)
     omeCamera *camera;
     omeVector pos = 	{{2.f, 2.f, 2.f}};
     omeVector target = 	{{0.f, 0.f, 0.f}};
-    omeMesh *mesh;
+    omeMesh *mesh, *mesh2;
     int width = 640;//1280;
     int height = 480;//800;
     float theta = OME_PIF / 4;
@@ -98,7 +98,12 @@ int main(void)
     // obj loading test
     //mesh = omeLoadOBJFromFile("data/chamfer.obj", OME_TRUE);
     //omeMeshSave("data/mesh1.omeMesh", mesh);
-    mesh = omeMeshLoad("data/mesh1.omeMesh");
+    //mesh = omeMeshLoad("data/mesh1.omeMesh");
+    //mesh2 = omeMeshLoad("data/mesh1.omeMesh");
+    
+    // primitives test
+    mesh = omePrimitiveCube(50, 1);
+    mesh2 = omePrimitiveSphere(50, 8);
 
     // deprecated stuff to test normals before using shaders
     //init_texture(L"data/test.png");
@@ -110,10 +115,15 @@ int main(void)
     omeProgramLink(shaderProgram);
     omeProgramUse(shaderProgram);
     mesh->program = shaderProgram;
+    mesh2->program = shaderProgram;
 
     // material test
     mat = omeMaterialCreate();
+    mat->ambiantColor.r = 2.f;
     mesh->material = mat;
+    mat = omeMaterialCreate();
+    mat->ambiantColor.b = 2.f;
+    mesh2->material = mat;
 
     while(glfwGetWindowParam(GLFW_OPENED) && !glfwGetKey(GLFW_KEY_ESC))
     {
@@ -124,9 +134,9 @@ int main(void)
 
         // angles update
         if(glfwGetKey(GLFW_KEY_UP))
-            phi += angleStep;
+            mesh->entity.position.z += omeEngineGetFrameDuration() * 20;
         else if(glfwGetKey(GLFW_KEY_DOWN))
-            phi -= angleStep;
+            mesh->entity.position.z -= omeEngineGetFrameDuration() * 20;
         if(glfwGetKey(GLFW_KEY_LEFT))
             theta -= angleStep;
         else if(glfwGetKey(GLFW_KEY_RIGHT))
@@ -174,7 +184,6 @@ int main(void)
         pos.z = sin(phi);
         omeVectorMultScal(&pos, zoom, &pos);
         omeCameraSetPosition(camera, &pos);
-        omeCameraUpdate(camera);
 
         // render
         omeEngineRender();

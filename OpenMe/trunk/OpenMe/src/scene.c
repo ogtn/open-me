@@ -49,6 +49,8 @@ void omeSceneRender(omeScene *s, omeCamera *c)
     omeGeometryListElement *geometryElt;
     omeProgram *p =  NULL;
 
+    omeCameraUpdate(c);
+
     DL_FOREACH(s->geometries, geometryElt)
     {
         omeMeshListElement *meshElt;
@@ -67,7 +69,12 @@ void omeSceneRender(omeScene *s, omeCamera *c)
                 omeGeometrySendAttributes(g);
             }
 
+            // uniforms
+            omeProgramSendUniformCamera(p, c);
             omeProgramSendUniformMaterial(p, m, "mat");
+            omeProgramSendUniformEntity(p, meshElt->mesh);
+            omeProgramSendUniformVec(p, &c->pos, "omeCameraPosition");
+
             omeGeometryRender(g);
 
             //omeGeometryDisableAttributes(g);

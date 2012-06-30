@@ -11,9 +11,13 @@ struct omeMaterial
 };
 
 // inputs
-attribute vec3 omePosition;
+attribute vec3 omeVertexPosition;
 attribute vec3 omeNormal;
 uniform omeMaterial mat;
+uniform vec3 omeMeshPosition;
+uniform mat4 omeProjection;
+uniform mat4 omeModelview;
+uniform vec3 omeCameraPosition;
 
 // outputs
 varying vec3 color;
@@ -21,10 +25,11 @@ varying vec3 normal;
 varying vec3 position;
 
 void main(void)
-{	
-	gl_Position = gl_ModelViewProjectionMatrix * vec4(omePosition, 1.f);
+{
+	vec3 realPosition = omeVertexPosition + omeMeshPosition;
+	gl_Position = omeProjection * omeModelview * vec4(realPosition, 1.f);
 	
 	color = mat.ambiant;
 	normal = omeNormal;
-	position = omePosition;
+	position = omeCameraPosition - realPosition;
 }

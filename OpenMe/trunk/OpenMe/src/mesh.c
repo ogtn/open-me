@@ -16,12 +16,19 @@
 #include <GL/glew.h>
 
 
+static int meshCpt = 0;
+
+
 omeMesh *omeMeshCreate(int nbBuffers)
 {
+    char name[OME_NAME_MAXLEN];
     omeMesh *m = calloc(1, sizeof(omeMesh));
 
     m->nbBuffers = nbBuffers;
     m->geometries = calloc(nbBuffers, sizeof(omeGeometry*));
+
+    sprintf(name, "mesh_%d", meshCpt++);
+    omeEntityInit(m, OME_ENTITY_MESH, name);
 
     return m;
 }
@@ -183,6 +190,149 @@ omeMesh *omeMeshLoad(char *fileName)
     }
 
     fclose(file);
+
+    return m;
+}
+
+
+omeMesh *omePrimitiveCube(float size, int subdivisions)
+{
+    int i, j, k;
+    omeVector *positions, *normals;
+    omeVector *pos, *norm;
+    int nbVertices;
+    omeMesh *m;
+    omeGeometry *g;
+    float step;
+    omeVector xBase, yBase, zBase;
+    omeVector xAxis[] = {
+        {0, 0, 0}, {0, 1, 0}, {0, 1, 1},
+        {0, 1, 1}, {0, 0, 1}, {0, 0, 0}};
+    omeVector yAxis[] = {
+        {0, 0, 0}, {1, 0, 0}, {1, 0, 1},
+        {1, 0, 1}, {0, 0, 1}, {0, 0, 0}};
+    omeVector zAxis[] = {
+        {0, 0, 0}, {1, 0, 0}, {1, 1, 0},
+        {1, 1, 0}, {0, 1, 0}, {0, 0, 0}};
+    // normals
+    omeVector left = {-1, 0, 0};
+    omeVector right = {1, 0, 0};
+    omeVector backward = {0, -1, 0};
+    omeVector forward = {0, 1, 0};
+    omeVector down = {0, 0, -1};
+    omeVector up = {0, 0, 1};
+
+    if(subdivisions < 1)
+    {
+        omeLoggerLog("You tried to divide by zero, you idiot\n");
+        return NULL;
+    }
+
+    step = (size / subdivisions);
+    nbVertices = subdivisions * subdivisions * 6 * 6;
+    pos = positions = malloc(nbVertices * sizeof(omeVector));
+    norm = normals = malloc(nbVertices * sizeof(omeVector));
+
+    for(i = 0; i < 6; i++)
+    {
+        omeVectorMultScal(&xAxis[i], step, &xAxis[i]);
+        omeVectorMultScal(&yAxis[i], step, &yAxis[i]);
+        omeVectorMultScal(&zAxis[i], step, &zAxis[i]);
+    }
+
+    for(i = 0; i < subdivisions; i++)
+    {
+        xBase.y = step * i - size / 2;
+        yBase.x = step * i - size / 2;
+        zBase.x = step * i - size / 2;
+
+        for(j = 0; j < subdivisions; j++)
+        {
+            xBase.z = step * j - size / 2;
+            yBase.z = step * j - size / 2;
+            zBase.y = step * j - size / 2;
+
+            // left
+            xBase.x = -size / 2;
+            for(k = 0; k < 6; k++)
+            {
+                omeVectorAddVector(&xBase, &xAxis[k], pos++);
+                omeVectorCopy(norm++, &left);
+            }
+
+            // right
+            xBase.x = size / 2;
+            for(k = 0; k < 6; k++)
+            {
+                omeVectorAddVector(&xBase, &xAxis[k], pos++);
+                omeVectorCopy(norm++, &right);
+            }
+
+            // backward
+            yBase.y = -size / 2;
+            for(k = 0; k < 6; k++)
+            {
+                omeVectorAddVector(&yBase, &yAxis[k], pos++);
+                omeVectorCopy(norm++, &backward);
+            }
+
+            // forward
+            yBase.y = size / 2;
+            for(k = 0; k < 6; k++)
+            {
+                omeVectorAddVector(&yBase, &yAxis[k], pos++);
+                omeVectorCopy(norm++, &forward);
+            }
+
+            // bottom
+            zBase.z = -size / 2;
+            for(k = 0; k < 6; k++)
+            {
+                omeVectorAddVector(&zBase, &zAxis[k], pos++);
+                omeVectorCopy(norm++, &down);
+            }
+            
+            // top
+            zBase.z = size / 2;
+            for(k = 0; k < 6; k++)
+            {
+                omeVectorAddVector(&zBase, &zAxis[k], pos++);
+                omeVectorCopy(norm++, &up);
+            }
+        }
+    }
+
+    m = omeMeshCreate(2);
+    g = omeGeometryCreate(nbVertices, 2, OME_TRIANGLES);
+    omeGeometryAddAttrib(g, 3, OME_FLOAT, 0, OME_ATTRIB_TYPE_POSITION, positions);
+    omeGeometryAddAttrib(g, 3, OME_FLOAT, 0, OME_ATTRIB_TYPE_NORMAL, normals);
+    omeMeshAddGeometry(m, g);
+
+    return m;
+}
+
+
+omeMesh *omePrimitiveSphere(float radius, int subdivisions)
+{
+    int i;
+    omeMesh *m;
+    int nbVertices;
+    omeVector *pos, *norm;
+
+    m = omePrimitiveCube(radius, subdivisions);
+    nbVertices = m->geometries[0]->nbVertices;
+    pos = m->geometries[0]->attributes[OME_ATTRIB_TYPE_POSITION].data;
+    norm = m->geometries[0]->attributes[OME_ATTRIB_TYPE_NORMAL].data;
+
+    for(i = 0; i < nbVertices; i++)
+    {
+        omeVectorMultScal(pos, radius / omeVectorLength(pos) * 0.5f, pos);
+        *norm = *pos;
+        omeVectorNormalize(norm);
+
+        pos++;
+        norm++;
+    }
 
     return m;
 }

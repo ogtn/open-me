@@ -3,7 +3,6 @@
 -Fully working meshes rotations
 -Lights
 -Mesh and vertex attribute finalizing mechanism
--Entities "polymorphism"
 
 ======[Normal priority]======
 -FPS Camera (angles and position)
@@ -30,4 +29,4 @@
 -MD5 support
 -Picking
 -Shadows
--Differed render
+-Deferred render

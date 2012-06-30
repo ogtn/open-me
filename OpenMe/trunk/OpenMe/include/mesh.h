@@ -18,6 +18,7 @@ extern "C" {
 
 
 #include "utils.h"
+#include "entity.h"
 
 
 // forward declaration
@@ -29,6 +30,9 @@ typedef struct omeMaterial omeMaterial;
 
 typedef struct omeMesh
 {
+    // keep first
+    omeEntity entity;
+
     int nbBuffers;
     int geometryCpt;
     int nbFinalizedBuffers;
@@ -57,6 +61,9 @@ void omeMeshFinalize(omeMesh *m);
 void omeMeshBufferFinalized(omeMesh *m);
 void omeMeshSave(char *fileName, omeMesh *m);
 omeMesh *omeMeshLoad(char *fileName);
+
+omeMesh *omePrimitiveCube(float size, int subdivisions);
+omeMesh *omePrimitiveSphere(float radius, int subdivisions);
 
 
 #ifdef __cplusplus
