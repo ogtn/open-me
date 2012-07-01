@@ -66,7 +66,7 @@ void omeCameraSetPerspective(omeCamera *c, float fov, float ratio, float near, f
 {
     if(c->type != OME_CAMERA_TYPE_PERPECTIVE)
     {
-        omeLoggerLog("this is not a perspective camera");
+        omeLoggerLog("This is not a perspective camera");
         return;
     }
 
@@ -119,6 +119,19 @@ void omeCameraSetTarget(omeCamera *c, omeVector *target)
 }
 
 
+void omeCameraSetRatio(omeCamera *c, float ratio)
+{
+    if(c->type != OME_CAMERA_TYPE_PERPECTIVE)
+    {
+        omeLoggerLog("this is not a perspective camera");
+        return;
+    }
+
+    c->state = OME_CAMERA_STATE_OUTDATED;
+    c->ratio = ratio;
+}
+
+
 void omeCameraUpdate(omeCamera *c)
 {
     // TODO: add a boolean to avoid recomputation
@@ -136,7 +149,7 @@ void omeCameraUpdate(omeCamera *c)
         omeMatrixMakeOrtho(&c->projection, c->left, c->right, c->bottom, c->top, c->near, c->far);
         break;
     default:
-        omeLoggerLog("unknown type of camera");
+        omeLoggerLog("Unknown type of camera");
         return;
     }
 

@@ -13,6 +13,7 @@
 #include "scene.h"
 #include "logger.h"
 #include "renderTarget.h"
+#include "camera.h"
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
@@ -58,6 +59,8 @@ double omeEngineGetFrameDuration(void)
 
 void omeEngineUpdate(void)
 {
+    omeViewport *v = &engine.viewport;
+    omeCamera *c = engine.camera;
     double now = omeEngineGetTime();
 
     // performaces counters
@@ -76,9 +79,20 @@ void omeEngineUpdate(void)
 }
 
 
-int omeEngineStart(void)
+void omeEngineResize(int width, int height)
+{
+    omeViewport *v = &engine.viewport;
+    
+    v->width = width;
+    v->height = height;
+    v->upToDate = OME_FALSE;
+}
+
+
+int omeEngineStart(int width, int height)
 {
     int value;
+    omeViewport *v = &engine.viewport;
 
     // avoid double start
     if(engine.state == OME_ENGINE_STATE_STARTED)
@@ -113,6 +127,12 @@ int omeEngineStart(void)
     engine.lastFrameStart = omeEngineGetTime();
     engine.state = OME_ENGINE_STATE_STARTED;
 
+    // viewport
+    v->x = v->y = 0;
+    v->width = width;
+    v->height = height;
+    v->upToDate = OME_TRUE;
+
     omeLoggerLog("OpenGL %s\n", glGetString(GL_VERSION));
     omeLoggerLog("GLSL %s\n", glGetString(GL_SHADING_LANGUAGE_VERSION));
     glGetIntegerv(GL_MAX_VERTEX_ATTRIBS, &value);
@@ -138,22 +158,33 @@ void omeEngineStop(void)
 
 void omeEngineRender(omeRenderTarget *rt)
 {
-    if(rt)
+    omeViewport *v = &engine.viewport;
+
+    if(rt != engine.renderTarget || v->upToDate == OME_FALSE)
     {
-        glClearColor(0, 0, 0, 1);
-        omeRenderTargetBind(rt);
-        glViewport(0, 0, rt->width, rt->height);
+        engine.renderTarget = rt;
+        v->upToDate = OME_TRUE;
+
+        // render to texture
+        if(rt != NULL)
+        {
+            glClearColor(0, 0, 0, 1);
+            omeRenderTargetBind(rt);
+            glViewport(0, 0, rt->width, rt->height);
+            omeCameraSetRatio(engine.camera, (float)rt->width / rt->height);
+        }
+        // default buffer
+        else
+        {
+            glClearColor(0.2f, 0.2f, 0.2f, 1);
+            omeRenderTargetUnbind();
+            glViewport(0, 0, v->width, v->height);
+            omeCameraSetRatio(engine.camera, (float)v->width / v->height);
+        }
     }
-        
+
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     omeSceneRender(engine.scene, engine.camera);
-
-    if(rt)
-    {
-        omeRenderTargetUnbind();
-        glViewport(0, 0, 640, 480); // TODO: bad idea... very bad idea
-        glClearColor(0.2f, 0.2f, 0.2f, 1);
-    }
 }
 
 

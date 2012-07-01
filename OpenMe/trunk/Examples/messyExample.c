@@ -62,15 +62,15 @@ omeTexture *loadTexture(wchar_t *fileName)
 int main(void)
 {
     omeCamera *camera;
-    omeVector pos = 	{{2.f, 2.f, 2.f}};
+    omeVector pos;
     omeVector target = 	{{0.f, 0.f, 0.f}};
     omeMesh *mesh, *mesh2;
-    int width = 640;//1280;
-    int height = 480;//800;
+    int width = 640;
+    int height = 480;
     float theta = OME_PIF / 4;
     float phi = OME_PIF / 4;
     float angleStep;
-    float zoom = 5;
+    float zoom = 15;
     omeBool drag = OME_FALSE;
     omeProgram *shaderProgram;
     omeMaterial *mat;
@@ -81,11 +81,12 @@ int main(void)
         return EXIT_FAILURE;
 
     glfwSetMouseWheel(0);
-    omeEngineStart();
+    glfwSetWindowSizeCallback(omeEngineResize);
+    omeEngineStart(width, height);
 
     // camera settings
     camera = omeCameraCreate(OME_CAMERA_TYPE_PERPECTIVE);
-    omeCameraSetPerspective(camera, 70.f, width / (float)height, 0.01f, 1000.f);
+    omeCameraSetPerspective(camera, 70.f, width / (float)height, 0.1f, 1000.f);
     omeCameraSetTarget(camera, &target);
     omeEngineSetActiveCamera(camera);
 
@@ -96,8 +97,9 @@ int main(void)
     //mesh2 = omeMeshLoad("data/mesh1.omeMesh");
     
     // primitives test
-    mesh = omePrimitiveCube(50, 1);
-    mesh2 = omePrimitiveSphere(50, 8);
+    mesh = omePrimitiveCube(10, 1);
+    mesh->entity.position.z = -4;
+    mesh2 = omePrimitiveSphere(8, 16);
 
     // shader test
     shaderProgram = omeProgramCreate();
@@ -182,11 +184,10 @@ int main(void)
         omeCameraSetPosition(camera, &pos);
 
         // render
+        omeEngineUpdate(); // TODO: limit fps here?
         omeEngineRender(renderTarget);
         omeEngineRender(NULL);
 
-        // TODO: limit fps here?
-        omeEngineUpdate();
         glfwSleep(0.002);
         glfwSwapBuffers();
     }

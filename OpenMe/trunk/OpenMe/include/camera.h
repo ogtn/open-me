@@ -75,6 +75,7 @@ void omeCameraSetPerspective(omeCamera *c, float fov, float ratio, float near, f
 void omeCameraSetLookAt(omeCamera *c, omeVector *pos, omeVector *target, omeVector *up);
 void omeCameraSetPosition(omeCamera *c, omeVector *pos);
 void omeCameraSetTarget(omeCamera *c, omeVector *target);
+void omeCameraSetRatio(omeCamera *c, float ratio);
 void omeCameraUpdate(omeCamera *c);
 
 

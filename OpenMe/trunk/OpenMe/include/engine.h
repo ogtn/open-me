@@ -17,6 +17,9 @@ extern "C" {
 #endif
 
 
+#include "utils.h"
+
+
 // forward declaration
 typedef struct omeCamera omeCamera;
 typedef struct omeScene omeScene;
@@ -30,6 +33,16 @@ typedef enum omeEngineState
     OME_ENGINE_STATE_DEFECT,
     OME_ENGINE_STATE_MAX
 } omeEngineState;
+
+
+typedef struct omeViewport
+{
+    int x;
+    int y;
+    int width;
+    int height;
+    omeBool upToDate;
+} omeViewport;
 
 
 typedef struct omeEngine
@@ -46,18 +59,21 @@ typedef struct omeEngine
     double lastFPSCheck;
 
     // render stuff
+    omeRenderTarget *renderTarget;
     omeCamera *camera;
     omeScene *scene;
+    omeViewport viewport;
 } omeEngine;
 
 
-int omeEngineStart(void);
+int omeEngineStart(int width, int height);
 void omeEngineStop(void);
 
 double omeEngineGetTime(void);
 double omeEngineGetFPS(void);
 double omeEngineGetFrameDuration(void);
 void omeEngineUpdate(void);
+void omeEngineResize(int width, int height);
 
 void omeEngineRender(omeRenderTarget *rt);
 void omeEngineSetActiveCamera(omeCamera *c);
