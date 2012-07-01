@@ -20,6 +20,7 @@ extern "C" {
 // forward declaration
 typedef struct omeCamera omeCamera;
 typedef struct omeScene omeScene;
+typedef struct omeRenderTarget omeRenderTarget;
 
 
 typedef enum omeEngineState
@@ -57,10 +58,8 @@ double omeEngineGetTime(void);
 double omeEngineGetFPS(void);
 double omeEngineGetFrameDuration(void);
 void omeEngineUpdate(void);
-void omeEngineClearBuffers(int flags);
-void omeEngineClearAllBuffers(void);
 
-void omeEngineRender(void);
+void omeEngineRender(omeRenderTarget *rt);
 void omeEngineSetActiveCamera(omeCamera *c);
 void omeEngineSetActiveScene(omeScene *s);
 omeScene *omeEnginegetActiveScene(void);

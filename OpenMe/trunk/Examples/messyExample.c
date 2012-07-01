@@ -17,12 +17,13 @@
 
 
 // quick and dirty test of texture coordinates
-void init_texture(wchar_t *fileName)
+omeTexture *loadTexture(wchar_t *fileName)
 {
     GLuint id;
     ILuint il_id;
     int w, h;
     GLenum format;
+    omeTexture *t;
 
     // init
     ilInit();
@@ -37,32 +38,24 @@ void init_texture(wchar_t *fileName)
     {
         ilDeleteImage(il_id);
         //printf("unable to load: %s\n", fileName);
-        return;
+        return NULL;
     }
 
     if(ilConvertImage(IL_RGBA, IL_UNSIGNED_BYTE) == IL_FALSE)
     {
         ilDeleteImage(il_id);
         //printf("Unable to convert: %s\n", fileName);
-        return;
+        return NULL;
     }
 
     w = ilGetInteger(IL_IMAGE_WIDTH);
     h = ilGetInteger(IL_IMAGE_HEIGHT);
-    //format = ilGetInteger(IL_IMAGE_FORMAT);
-    format = GL_RGBA;
 
-    glGenTextures(1, &id);
-    glBindTexture(GL_TEXTURE_2D, id);
-
-    // send pixels to OpenGL
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0, format, GL_UNSIGNED_BYTE, ilGetData());
-
-    // set minifying and magnifying filters
-    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    t = omeTextureCreate2D(w, h, ilGetData());
 
     ilDeleteImage(il_id);
+
+    return t;
 }
 
 
@@ -81,6 +74,7 @@ int main(void)
     omeBool drag = OME_FALSE;
     omeProgram *shaderProgram;
     omeMaterial *mat;
+    omeRenderTarget *renderTarget;
 
     // get OpenGL context
     if(!glfwInit() || !glfwOpenWindow(width, height, 8, 8, 8, 8, 32, 0, GLFW_WINDOW))
@@ -105,9 +99,6 @@ int main(void)
     mesh = omePrimitiveCube(50, 1);
     mesh2 = omePrimitiveSphere(50, 8);
 
-    // deprecated stuff to test normals before using shaders
-    //init_texture(L"data/test.png");
-
     // shader test
     shaderProgram = omeProgramCreate();
     omeProgramAddShader(shaderProgram, omeShaderCreate("data/basic.vs"));
@@ -119,16 +110,21 @@ int main(void)
 
     // material test
     mat = omeMaterialCreate();
-    mat->ambiantColor.r = 2.f;
+    mat->ambiantColor.r = 0.f;
     mesh->material = mat;
     mat = omeMaterialCreate();
-    mat->ambiantColor.b = 2.f;
+    mat->ambiantColor.b = 1.f;
     mesh2->material = mat;
+
+    // render target test
+    renderTarget = omeRenderTargetCreate(256, 256);
+
+    // texture test
+    mesh->material->diffuseTexture = renderTarget->colorBuffer;
+    mesh2->material->diffuseTexture = loadTexture(L"data/lena.jpg");
 
     while(glfwGetWindowParam(GLFW_OPENED) && !glfwGetKey(GLFW_KEY_ESC))
     {
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
         // move camera
         angleStep = 3 * omeEngineGetFrameDuration();
 
@@ -186,7 +182,8 @@ int main(void)
         omeCameraSetPosition(camera, &pos);
 
         // render
-        omeEngineRender();
+        omeEngineRender(renderTarget);
+        omeEngineRender(NULL);
 
         // TODO: limit fps here?
         omeEngineUpdate();

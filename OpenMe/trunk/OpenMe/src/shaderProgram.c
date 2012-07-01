@@ -13,6 +13,7 @@
 #include "logger.h"
 #include "entity.h"
 #include "camera.h"
+#include "texture.h"
 #include <GL/glew.h>
 #include <stdlib.h>
 #include <stdio.h>
@@ -391,6 +392,13 @@ void omeProgramSendUniformMaterial(omeProgram *p, omeMaterial *m, const char *na
 
     sprintf(fullName, "%s.ambiant", name);
     glUniform3fv(omeProgramLocateUniform(p, fullName), 1, m->ambiantColor.tab); // /!\ omeColorf is made of 4 floats for the moment, only three are send here
+    
+    if(m->diffuseTexture != NULL)
+    {
+        glActiveTexture(GL_TEXTURE0);
+        omeTextureBind(m->diffuseTexture);
+        glUniform1i(omeProgramLocateUniform(p, "texture"), GL_TEXTURE0);
+    }
 }
 
 

@@ -1,13 +1,13 @@
 #version 120
 
 // inputs
-
+uniform sampler2D texture;
 varying vec3 color;
 varying vec3 normal;
 varying vec3 position;
+varying vec2 texCoord;
 
 void main(void)
 {
-	float f = dot(normalize(position), normal);
-	gl_FragColor = vec4(color * f * 10, 1.f);
+	gl_FragColor = texture2D(texture, texCoord);
 }

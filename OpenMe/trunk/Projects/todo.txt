@@ -13,7 +13,6 @@
 	->compute index
 	->avoid redundancy
 	->turn quads into triangles?
--Primitives (sphere, cube, grid...)
 -Generated shaders depending on the mesh?
 	->Regeneration when changes occurs
 	->Find a way to allow integration of users shaders in it
@@ -21,12 +20,12 @@
 -Skyboxes/ skydomes
 -Cubemapping
 -Octree
+-Picking
 
 ======[Low priority]======
 -Plugin interface
 -Mesh transformers
 -MD2 support
 -MD5 support
--Picking
 -Shadows
 -Deferred render

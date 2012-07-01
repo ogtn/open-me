@@ -37,7 +37,7 @@ omeTexture *omeTextureCreate(omeTextureType type, int width, int height, int dep
         //glTexImage1D(GL_TEXTURE_1D, 0, GL_RGBA, width, height, 0, format, GL_UNSIGNED_BYTE, data);
         break;
     case OME_TEXTURE_TYPE_2D:
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, format, GL_UNSIGNED_BYTE, data);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, width, height, 0, format, GL_UNSIGNED_BYTE, data);
         break;
     case OME_TEXTURE_TYPE_3D:
         omeLoggerLog("texture 3D not supported yet\n");

@@ -47,9 +47,11 @@ void omeVector2Copy(omeVector2 *dst, const omeVector2 *src);
 float omeVectorLength(const omeVector *v);
 void omeVectorNormalize(omeVector *v);
 void omeVectorAddVector(const omeVector *v, const omeVector *v2, omeVector *res);
+void omeVector2AddVector(const omeVector2 *v, const omeVector2 *v2, omeVector2 *res);
 void omeVectorSubVector(const omeVector *v, const omeVector *v2, omeVector *res);
 void omeVectorMultVector(const omeVector *v, const omeVector *v2, omeVector *res);
 void omeVectorMultScal(const omeVector *v, float f, omeVector *res);
+void omeVector2MultScal(const omeVector2 *v, float f, omeVector2 *res);
 float omeVectorDot(const omeVector *v, const omeVector *v2);
 void omeVectorCross(const omeVector *v, const omeVector *v2, omeVector *res);
 

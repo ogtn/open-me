@@ -27,6 +27,8 @@ extern "C" {
 #include "shaderProgram.h"
 #include "material.h"
 #include "scene.h"
+#include "texture.h"
+#include "renderTarget.h"
 
 
 //TODO: avoid memset() calls in *Destroy functions in release

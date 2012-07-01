@@ -197,7 +197,7 @@ omeMesh *omeMeshLoad(char *fileName)
 
 omeMesh *omePrimitiveCube(float size, int subdivisions)
 {
-    int i, j, k;
+    int i, j, k, l;
     omeVector *positions, *normals;
     omeVector *pos, *norm;
     int nbVertices;
@@ -222,6 +222,15 @@ omeMesh *omePrimitiveCube(float size, int subdivisions)
     omeVector down = {0, 0, -1};
     omeVector up = {0, 0, 1};
 
+    // textsure coordinates
+    float coordStep;
+    omeVector2 *texCoords;
+    omeVector2 *coord;
+    omeVector2 coordBase;
+    omeVector2 coordVec[] = {
+        {0, 0}, {1, 0}, {1, 1},
+        {1, 1}, {0, 1}, {0, 0}};
+
     if(subdivisions < 1)
     {
         omeLoggerLog("You tried to divide by zero, you idiot\n");
@@ -229,15 +238,18 @@ omeMesh *omePrimitiveCube(float size, int subdivisions)
     }
 
     step = (size / subdivisions);
+    coordStep = 1.f / subdivisions;
     nbVertices = subdivisions * subdivisions * 6 * 6;
     pos = positions = malloc(nbVertices * sizeof(omeVector));
     norm = normals = malloc(nbVertices * sizeof(omeVector));
+    coord = texCoords = malloc(nbVertices * sizeof(omeVector2));
 
     for(i = 0; i < 6; i++)
     {
         omeVectorMultScal(&xAxis[i], step, &xAxis[i]);
         omeVectorMultScal(&yAxis[i], step, &yAxis[i]);
         omeVectorMultScal(&zAxis[i], step, &zAxis[i]);
+        omeVector2MultScal(&coordVec[i], coordStep, &coordVec[i]);
     }
 
     for(i = 0; i < subdivisions; i++)
@@ -245,67 +257,50 @@ omeMesh *omePrimitiveCube(float size, int subdivisions)
         xBase.y = step * i - size / 2;
         yBase.x = step * i - size / 2;
         zBase.x = step * i - size / 2;
+        coordBase.x = coordStep * i;
 
-        for(j = 0; j < subdivisions; j++)
+        for(j = 0; j < subdivisions; j++, pos += 30)
         {
             xBase.z = step * j - size / 2;
             yBase.z = step * j - size / 2;
             zBase.y = step * j - size / 2;
+            coordBase.y = coordStep * j;
 
-            // left
-            xBase.x = -size / 2;
-            for(k = 0; k < 6; k++)
+            for(k = 0; k < 6; k++, pos++, norm++)
             {
-                omeVectorAddVector(&xBase, &xAxis[k], pos++);
-                omeVectorCopy(norm++, &left);
-            }
+                // first triangle
+                xBase.x = yBase.y = zBase.z = -size / 2;
+                omeVectorAddVector(&xBase, &xAxis[k], pos);
+                omeVectorAddVector(&yBase, &yAxis[k], pos + 6);
+                omeVectorAddVector(&zBase, &zAxis[k], pos + 12);
+                
+                // second triangle
+                xBase.x = yBase.y = zBase.z = size / 2;
+                omeVectorAddVector(&xBase, &xAxis[k], pos + 18);
+                omeVectorAddVector(&yBase, &yAxis[k], pos + 24);
+                omeVectorAddVector(&zBase, &zAxis[k], pos + 30);
 
-            // right
-            xBase.x = size / 2;
-            for(k = 0; k < 6; k++)
-            {
-                omeVectorAddVector(&xBase, &xAxis[k], pos++);
-                omeVectorCopy(norm++, &right);
-            }
+                // normals
+                omeVectorCopy(norm, &left);
+                omeVectorCopy(norm + 6, &backward);              
+                omeVectorCopy(norm + 12, &down);
+                omeVectorCopy(norm + 18, &right);
+                omeVectorCopy(norm + 24, &forward);
+                omeVectorCopy(norm + 30, &up);
 
-            // backward
-            yBase.y = -size / 2;
-            for(k = 0; k < 6; k++)
-            {
-                omeVectorAddVector(&yBase, &yAxis[k], pos++);
-                omeVectorCopy(norm++, &backward);
-            }
-
-            // forward
-            yBase.y = size / 2;
-            for(k = 0; k < 6; k++)
-            {
-                omeVectorAddVector(&yBase, &yAxis[k], pos++);
-                omeVectorCopy(norm++, &forward);
-            }
-
-            // bottom
-            zBase.z = -size / 2;
-            for(k = 0; k < 6; k++)
-            {
-                omeVectorAddVector(&zBase, &zAxis[k], pos++);
-                omeVectorCopy(norm++, &down);
-            }
-            
-            // top
-            zBase.z = size / 2;
-            for(k = 0; k < 6; k++)
-            {
-                omeVectorAddVector(&zBase, &zAxis[k], pos++);
-                omeVectorCopy(norm++, &up);
+                // texture coordinates
+                // TODO: fix this: 3 faces have a mirrored texture
+                for(l = 0; l < 6; l++)
+                    omeVector2AddVector(&coordBase, &coordVec[l], coord++);
             }
         }
     }
 
-    m = omeMeshCreate(2);
-    g = omeGeometryCreate(nbVertices, 2, OME_TRIANGLES);
+    m = omeMeshCreate(1);
+    g = omeGeometryCreate(nbVertices, 3, OME_TRIANGLES);
     omeGeometryAddAttrib(g, 3, OME_FLOAT, 0, OME_ATTRIB_TYPE_POSITION, positions);
     omeGeometryAddAttrib(g, 3, OME_FLOAT, 0, OME_ATTRIB_TYPE_NORMAL, normals);
+    omeGeometryAddAttrib(g, 2, OME_FLOAT, 0, OME_ATTRIB_TYPE_TEXCOORD_0, texCoords);
     omeMeshAddGeometry(m, g);
 
     return m;

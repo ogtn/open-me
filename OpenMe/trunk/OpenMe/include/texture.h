@@ -39,8 +39,8 @@ typedef struct omeTexture
 
 omeTexture *omeTextureCreate(omeTextureType type, int width, int height, int depth, void *data);
 #define omeTextureCreate1D(width, data) omeTextureCreate(OME_TEXTURE_TYPE_1D, (width), 0, 0, (data))
-#define omeTextureCreate2D(width, data) omeTextureCreate(OME_TEXTURE_TYPE_2D, (width), (height), 0, (data))
-#define omeTextureCreate3D(width, data) omeTextureCreate(OME_TEXTURE_TYPE_3D, (width), (height), (depth), (data))
+#define omeTextureCreate2D(width, height, data) omeTextureCreate(OME_TEXTURE_TYPE_2D, (width), (height), 0, (data))
+#define omeTextureCreate3D(width, heigt, depth, data) omeTextureCreate(OME_TEXTURE_TYPE_3D, (width), (height), (depth), (data))
 void omeTextureDestroy(omeTexture **t);
 void omeTextureBind(omeTexture *t);
 // TODO: should be private?

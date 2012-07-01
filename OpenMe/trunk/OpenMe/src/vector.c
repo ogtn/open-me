@@ -52,6 +52,13 @@ void omeVectorAddVector(const omeVector *v, const omeVector *v2, omeVector *res)
 }
 
 
+void omeVector2AddVector(const omeVector2 *v, const omeVector2 *v2, omeVector2 *res)
+{
+    res->x = v->x + v2->x;
+    res->y = v->y + v2->y;
+}
+
+
 void omeVectorSubVector(const omeVector *v, const omeVector *v2, omeVector *res)
 {
     res->x = v->x - v2->x;
@@ -73,6 +80,13 @@ void omeVectorMultScal(const omeVector *v, float f, omeVector *res)
     res->x = v->x * f;
     res->y = v->y * f;
     res->z = v->z * f;
+}
+
+
+void omeVector2MultScal(const omeVector2 *v, float f, omeVector2 *res)
+{
+    res->x = v->x * f;
+    res->y = v->y * f;
 }
 
 

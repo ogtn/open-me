@@ -12,6 +12,7 @@
 #include "utils.h"
 #include "scene.h"
 #include "logger.h"
+#include "renderTarget.h"
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
@@ -75,18 +76,6 @@ void omeEngineUpdate(void)
 }
 
 
-void omeEngineClearBuffers(int flags)
-{
-    glClear(flags);
-}
-
-
-void omeEngineClearAllBuffers(void)
-{
-    // TODO: call omeEngineClearBuffers() with all the activated buffers
-}
-
-
 int omeEngineStart(void)
 {
     int value;
@@ -114,7 +103,6 @@ int omeEngineStart(void)
     glEnable(GL_ALPHA_TEST);
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    //glAlphaFunc(GL_GREATER, 0.1); // maybe not very usefull...
     
     // Z buffer
     glEnable(GL_DEPTH_TEST);
@@ -148,9 +136,24 @@ void omeEngineStop(void)
 }
 
 
-void omeEngineRender(void)
+void omeEngineRender(omeRenderTarget *rt)
 {
+    if(rt)
+    {
+        glClearColor(0, 0, 0, 1);
+        omeRenderTargetBind(rt);
+        glViewport(0, 0, rt->width, rt->height);
+    }
+        
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     omeSceneRender(engine.scene, engine.camera);
+
+    if(rt)
+    {
+        omeRenderTargetUnbind();
+        glViewport(0, 0, 640, 480); // TODO: bad idea... very bad idea
+        glClearColor(0.2f, 0.2f, 0.2f, 1);
+    }
 }
 
 
