@@ -20,6 +20,23 @@
 #include <utlist.h>
 
 
+static const char *omeAttribNames[] = 
+{
+    "omeVertexPosition",
+    "omeTextCoord0",
+    "omeTextCoord1",
+    "omeTextCoord2",
+    "omeTextCoord3",
+    "omeNormal",
+    "omeColor",
+    "omeIndex",
+    "omeUser0",
+    "omeUser1",
+    "omeUser2",
+    "omeUser3"
+};
+
+
 GLenum omePolygonTypeToGL(omePolygonType polygonType)
 {
     switch(polygonType)
@@ -65,8 +82,6 @@ omeGeometry *omeGeometryCreate(int nbVertices, int nbAttributes, omePolygonType 
 
 void omeGeometryDestroy(omeGeometry **g)
 {
-    int i = 0;
-
     //TODO: figure out what else do we need to free here -> add flags
 
     memset(*g, 0, sizeof(omeGeometry));
@@ -138,9 +153,6 @@ int omeGeometryAddIndices(omeGeometry *g, omeType type, int updateHint, void *da
 // TODO: check if indexed has indices here...
 void omeGeometryFinalize(omeGeometry *g)
 {
-    int i;
-    char *ptr;
-
     // TODO: remove thoses tests once the function will be private?
     if(g->indexCpt != g->nbAttributes)
     {
@@ -162,12 +174,13 @@ void omeGeometryFinalize(omeGeometry *g)
     g->finalized = OME_TRUE;
 }
 
-
+//TODO: implement that :)
+/*
 void omeGeometryUpdateAttrib(omeGeometry *g, int attribIndex, void *data)
 {
-    //TODO: implement that :)
+    
 }
-
+*/
 
 void omeGeometryBuildVBO(omeGeometry *g)
 {

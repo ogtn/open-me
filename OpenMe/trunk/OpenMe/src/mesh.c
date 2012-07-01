@@ -206,21 +206,21 @@ omeMesh *omePrimitiveCube(float size, int subdivisions)
     float step;
     omeVector xBase, yBase, zBase;
     omeVector xAxis[] = {
-        {0, 0, 0}, {0, 1, 0}, {0, 1, 1},
-        {0, 1, 1}, {0, 0, 1}, {0, 0, 0}};
+        {{0, 0, 0}}, {{0, 1, 0}}, {{0, 1, 1}},
+        {{0, 1, 1}}, {{0, 0, 1}}, {{0, 0, 0}}};
     omeVector yAxis[] = {
-        {0, 0, 0}, {1, 0, 0}, {1, 0, 1},
-        {1, 0, 1}, {0, 0, 1}, {0, 0, 0}};
+        {{0, 0, 0}}, {{1, 0, 0}}, {{1, 0, 1}},
+        {{1, 0, 1}}, {{0, 0, 1}}, {{0, 0, 0}}};
     omeVector zAxis[] = {
-        {0, 0, 0}, {1, 0, 0}, {1, 1, 0},
-        {1, 1, 0}, {0, 1, 0}, {0, 0, 0}};
+        {{0, 0, 0}}, {{1, 0, 0}}, {{1, 1, 0}},
+        {{1, 1, 0}}, {{0, 1, 0}}, {{0, 0, 0}}};
     // normals
-    omeVector left = {-1, 0, 0};
-    omeVector right = {1, 0, 0};
-    omeVector backward = {0, -1, 0};
-    omeVector forward = {0, 1, 0};
-    omeVector down = {0, 0, -1};
-    omeVector up = {0, 0, 1};
+    omeVector left = {{-1, 0, 0}};
+    omeVector right = {{1, 0, 0}};
+    omeVector backward = {{0, -1, 0}};
+    omeVector forward = {{0, 1, 0}};
+    omeVector down = {{0, 0, -1}};
+    omeVector up = {{0, 0, 1}};
 
     // textsure coordinates
     float coordStep;
@@ -228,8 +228,8 @@ omeMesh *omePrimitiveCube(float size, int subdivisions)
     omeVector2 *coord;
     omeVector2 coordBase;
     omeVector2 coordVec[] = {
-        {0, 0}, {1, 0}, {1, 1},
-        {1, 1}, {0, 1}, {0, 0}};
+        {{0, 0}}, {{1, 0}}, {{1, 1}},
+        {{1, 1}}, {{0, 1}}, {{0, 0}}};
 
     if(subdivisions < 1)
     {

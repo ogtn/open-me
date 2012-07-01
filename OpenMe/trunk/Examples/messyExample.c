@@ -17,12 +17,10 @@
 
 
 // quick and dirty test of texture coordinates
-omeTexture *loadTexture(wchar_t *fileName)
+omeTexture *loadTexture(const char *fileName)
 {
-    GLuint id;
     ILuint il_id;
     int w, h;
-    GLenum format;
     omeTexture *t;
 
     // init
@@ -34,7 +32,7 @@ omeTexture *loadTexture(wchar_t *fileName)
     ilGenImages(1, &il_id);
     ilBindImage(il_id);
 
-    if(ilLoadImage(fileName) == IL_FALSE)
+    if(ilLoadImage((const ILstring)fileName) == IL_FALSE)
     {
         ilDeleteImage(il_id);
         //printf("unable to load: %s\n", fileName);
@@ -123,7 +121,7 @@ int main(void)
 
     // texture test
     mesh->material->diffuseTexture = renderTarget->colorBuffer;
-    mesh2->material->diffuseTexture = loadTexture(L"data/lena.jpg");
+    mesh2->material->diffuseTexture = loadTexture("data/lena.jpg");
 
     while(glfwGetWindowParam(GLFW_OPENED) && !glfwGetKey(GLFW_KEY_ESC))
     {

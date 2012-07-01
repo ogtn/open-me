@@ -70,7 +70,8 @@ void omeMatrixMakePerspective(omeMatrix *m, float angle, float ratio, float near
 
 void omeMatrixMakeLookAt(omeMatrix *m, const omeVector *pos, const omeVector *target, const omeVector *up)
 {
-    omeVector forward, side, newUP;
+    omeVector forward, side;
+    omeVector newUp = *up;
 
     omeMatrixMakeIdentity(m);
 
@@ -79,20 +80,20 @@ void omeMatrixMakeLookAt(omeMatrix *m, const omeVector *pos, const omeVector *ta
     omeVectorNormalize(&forward);
 
     // side vector
-    omeVectorNormalize(up);
-    omeVectorCross(&forward, up, &side);
+    omeVectorNormalize(&newUp);
+    omeVectorCross(&forward, &newUp, &side);
 
     // corrected up vector
     omeVectorNormalize(&side);
-    omeVectorCross(&side, &forward, &newUP);
+    omeVectorCross(&side, &forward, &newUp);
 
     m->data[0][0] = side.x;
     m->data[0][1] = side.y;
     m->data[0][2] = side.z;
 
-    m->data[1][0] = newUP.x;
-    m->data[1][1] = newUP.y;
-    m->data[1][2] = newUP.z;
+    m->data[1][0] = newUp.x;
+    m->data[1][1] = newUp.y;
+    m->data[1][2] = newUp.z;
 
     m->data[2][0] = -forward.x;
     m->data[2][1] = -forward.y;

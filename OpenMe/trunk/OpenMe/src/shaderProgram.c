@@ -353,7 +353,7 @@ omeLocation *omeLocationCreate(omeProgram *sp, const char *name, omeLocationType
 
     //TODO: this function sucks, not garanted to be null terminated and can't be sure that the whole string was copied...
     strncpy(loc->key, name, OME_PROGRAM_VAR_LENGTH);
-    loc->key[OME_PROGRAM_VAR_LENGTH - 1];
+    loc->key[OME_PROGRAM_VAR_LENGTH - 1] = '\0';
     
     if(strcmp(loc->key, name))
     {

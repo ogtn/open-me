@@ -59,8 +59,6 @@ double omeEngineGetFrameDuration(void)
 
 void omeEngineUpdate(void)
 {
-    omeViewport *v = &engine.viewport;
-    omeCamera *c = engine.camera;
     double now = omeEngineGetTime();
 
     // performaces counters

@@ -43,23 +43,6 @@ typedef enum omeAttribType
 } omeAttribType;
 
 
-static const char *omeAttribNames[] = 
-{
-    "omeVertexPosition",
-    "omeTextCoord0",
-    "omeTextCoord1",
-    "omeTextCoord2",
-    "omeTextCoord3",
-    "omeNormal",
-    "omeColor",
-    "omeIndex",
-    "omeUser0",
-    "omeUser1",
-    "omeUser2",
-    "omeUser3"
-};
-
-
 typedef enum omePolygonType
 {
     OME_POINTS,
@@ -82,7 +65,7 @@ typedef struct omeVertexAttrib
 {
     int nbElements;
     int size;
-    char *data;
+    void *data;
     int updateHint;
     omeType type;
     omeAttribType geometryType;
