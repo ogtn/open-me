@@ -412,6 +412,12 @@ void omeProgramSendUniformEntity(omeProgram *p, void *object)
 
 void omeProgramSendUniformCamera(omeProgram *p, omeCamera *c)
 {
-    glUniformMatrix4fv(omeProgramLocateUniform(p, "omeModelview"), 1, GL_TRUE, c->modelview.tab);
-    glUniformMatrix4fv(omeProgramLocateUniform(p, "omeProjection"), 1, GL_TRUE, c->projection.tab);
+    omeProgramSendUniformMatrix(p, &c->modelview, "omeModelview");
+    omeProgramSendUniformMatrix(p, &c->projection, "omeProjection");
+}
+
+
+void omeProgramSendUniformMatrix(omeProgram *p, omeMatrix *m, const char *name)
+{
+    glUniformMatrix4fv(omeProgramLocateUniform(p, name), 1, GL_TRUE, m->tab);
 }

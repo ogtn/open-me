@@ -1,4 +1,5 @@
 #version 120
+#extension GL_EXT_gpu_shader4: enable
 
 // inputs
 uniform sampler2D texture;
@@ -9,5 +10,8 @@ varying vec2 texCoord;
 
 void main(void)
 {
-	gl_FragColor = texture2D(texture, texCoord);
+	//if(int(gl_FragCoord.x + gl_FragCoord.y) % 25 < 5)
+	//	discard;
+	//else
+		gl_FragColor = texture2D(texture, texCoord);
 }

@@ -25,6 +25,7 @@ extern "C" {
 typedef struct omeMaterial omeMaterial;
 typedef struct omeCamera omeCamera;
 typedef union omeVector omeVector;
+typedef union omeMatrix omeMatrix;
 
 
 #define OME_PROGRAM_LOG_LENGTH          2048
@@ -106,6 +107,7 @@ void omeProgramSendUniformVec(omeProgram *sp, const omeVector *v, const char *na
 void omeProgramSendUniformMaterial(omeProgram *p, omeMaterial *m, const char *name);
 void omeProgramSendUniformEntity(omeProgram *p, void *object);
 void omeProgramSendUniformCamera(omeProgram *p, omeCamera *c);
+void omeProgramSendUniformMatrix(omeProgram *p, omeMatrix *m, const char *name);
 
 omeLocation *omeLocationCreate(omeProgram *sp, const char *name, omeLocationType type);
 #define omeUniformLocationCreate(sp, name)  omeLocationCreate(sp, name, OME_LOCATION_TYPE_UNIFORM)

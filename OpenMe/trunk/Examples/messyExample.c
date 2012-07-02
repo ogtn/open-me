@@ -59,10 +59,12 @@ omeTexture *loadTexture(const char *fileName)
 
 int main(void)
 {
+    int i = 0;
     omeCamera *camera;
     omeVector pos;
     omeVector target = 	{{0.f, 0.f, 0.f}};
     omeMesh *mesh, *mesh2;
+    omeMesh *pickedMesh = NULL;
     int width = 640;
     int height = 480;
     float theta = OME_PIF / 4;
@@ -73,6 +75,7 @@ int main(void)
     omeProgram *shaderProgram;
     omeMaterial *mat;
     omeRenderTarget *renderTarget;
+    omeBool picked = OME_FALSE;
 
     // get OpenGL context
     if(!glfwInit() || !glfwOpenWindow(width, height, 8, 8, 8, 8, 32, 0, GLFW_WINDOW))
@@ -104,7 +107,6 @@ int main(void)
     omeProgramAddShader(shaderProgram, omeShaderCreate("data/basic.vs"));
     omeProgramAddShader(shaderProgram, omeShaderCreate("data/basic.ps"));
     omeProgramLink(shaderProgram);
-    omeProgramUse(shaderProgram);
     mesh->program = shaderProgram;
     mesh2->program = shaderProgram;
 
@@ -121,22 +123,28 @@ int main(void)
 
     // texture test
     mesh->material->diffuseTexture = renderTarget->colorBuffer;
-    mesh2->material->diffuseTexture = loadTexture("data/lena.jpg");
+    mesh2->material->diffuseTexture = loadTexture(L"data/lena.jpg");
 
     while(glfwGetWindowParam(GLFW_OPENED) && !glfwGetKey(GLFW_KEY_ESC))
     {
         // move camera
         angleStep = 3 * omeEngineGetFrameDuration();
 
-        // angles update
-        if(glfwGetKey(GLFW_KEY_UP))
-            mesh->entity.position.z += omeEngineGetFrameDuration() * 20;
-        else if(glfwGetKey(GLFW_KEY_DOWN))
-            mesh->entity.position.z -= omeEngineGetFrameDuration() * 20;
-        if(glfwGetKey(GLFW_KEY_LEFT))
-            theta -= angleStep;
-        else if(glfwGetKey(GLFW_KEY_RIGHT))
-            theta += angleStep;
+        // moving selected mesh
+        if(pickedMesh)
+        {
+            double step = omeEngineGetFrameDuration() * 10;
+            omeVector *v = &pickedMesh->entity.position;
+
+            if(glfwGetKey(GLFW_KEY_UP))
+                v->y += step;
+            else if(glfwGetKey(GLFW_KEY_DOWN))
+                v->y -= step;
+            if(glfwGetKey(GLFW_KEY_LEFT))
+                v->x -= step;
+            else if(glfwGetKey(GLFW_KEY_RIGHT))
+                v->x += step;
+        }
 
         // angle update using mouse
         if(glfwGetMouseButton(GLFW_MOUSE_BUTTON_LEFT))
@@ -181,6 +189,28 @@ int main(void)
         omeVectorMultScal(&pos, zoom, &pos);
         omeCameraSetPosition(camera, &pos);
 
+        // picking test
+        if(glfwGetMouseButton(GLFW_MOUSE_BUTTON_RIGHT))
+        {
+            if(!picked)
+            {
+                int x, y;
+
+                picked = OME_TRUE;
+                glfwGetMousePos(&x, &y);
+                glfwGetWindowSize(&width, &height);
+
+                pickedMesh = omeEnginePick(x, height - y);
+                
+                if(pickedMesh)
+                    printf("%s picked!\n", pickedMesh->entity.name);
+                else
+                    printf("nothing picked!\n");
+            }
+        }
+        else
+            picked = OME_FALSE;
+
         // render
         omeEngineUpdate(); // TODO: limit fps here?
         omeEngineRender(renderTarget);
@@ -192,6 +222,7 @@ int main(void)
 
     // free all the memory!!!
     omeMeshDestroy(&mesh);
+    omeMeshDestroy(&mesh2);
     omeCameraDestroy(&camera);
     omeEngineStop();
 

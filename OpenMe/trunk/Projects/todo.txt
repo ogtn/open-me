@@ -3,6 +3,7 @@
 -Fully working meshes rotations
 -Lights
 -Mesh and vertex attribute finalizing mechanism
+-Mipmaping
 
 ======[Normal priority]======
 -FPS Camera (angles and position)
@@ -16,11 +17,11 @@
 -Generated shaders depending on the mesh?
 	->Regeneration when changes occurs
 	->Find a way to allow integration of users shaders in it
--Render target
 -Skyboxes/ skydomes
 -Cubemapping
 -Octree
--Picking
+-Screenshot
+-Anti aliasing
 
 ======[Low priority]======
 -Plugin interface
@@ -29,3 +30,4 @@
 -MD5 support
 -Shadows
 -Deferred render
+-Uniform buffer object

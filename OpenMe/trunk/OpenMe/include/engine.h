@@ -24,6 +24,8 @@ extern "C" {
 typedef struct omeCamera omeCamera;
 typedef struct omeScene omeScene;
 typedef struct omeRenderTarget omeRenderTarget;
+typedef struct omeProgram omeProgram;
+typedef struct omeMesh omeMesh;
 
 
 typedef enum omeEngineState
@@ -63,6 +65,7 @@ typedef struct omeEngine
     omeCamera *camera;
     omeScene *scene;
     omeViewport viewport;
+    omeProgram *pickingProgram;
 } omeEngine;
 
 
@@ -78,7 +81,9 @@ void omeEngineResize(int width, int height);
 void omeEngineRender(omeRenderTarget *rt);
 void omeEngineSetActiveCamera(omeCamera *c);
 void omeEngineSetActiveScene(omeScene *s);
-omeScene *omeEnginegetActiveScene(void);
+omeScene *omeEngineGetActiveScene(void);
+omeProgram *omeEngineGetPickingProgram(void);
+omeMesh *omeEnginePick(int x, int y);
 
 
 #ifdef __cplusplus

@@ -14,6 +14,8 @@
 #include "logger.h"
 #include "renderTarget.h"
 #include "camera.h"
+#include "mesh.h"
+#include "shaderProgram.h"
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
@@ -129,7 +131,13 @@ int omeEngineStart(int width, int height)
     v->x = v->y = 0;
     v->width = width;
     v->height = height;
-    v->upToDate = OME_TRUE;
+    v->upToDate = OME_FALSE;
+
+    // picking program
+    engine.pickingProgram = omeProgramCreate();
+    omeProgramAddShader(engine.pickingProgram, omeShaderCreate("data/picking.vs"));
+    omeProgramAddShader(engine.pickingProgram, omeShaderCreate("data/picking.ps"));
+    omeProgramLink(engine.pickingProgram);
 
     omeLoggerLog("OpenGL %s\n", glGetString(GL_VERSION));
     omeLoggerLog("GLSL %s\n", glGetString(GL_SHADING_LANGUAGE_VERSION));
@@ -186,6 +194,32 @@ void omeEngineRender(omeRenderTarget *rt)
 }
 
 
+// TODO: add a way to set the origin
+omeMesh *omeEnginePick(int x, int y)
+{
+    omeViewport *v = &engine.viewport;
+
+    // avoiding out of viewport picking
+    if(x < engine.viewport.x || y < engine.viewport.y
+        || x > engine.viewport.width || y > engine.viewport.height)
+    {
+        omeLoggerLog("No picking allowed in this area: %d %d\n", x, y);
+        return NULL;
+    }
+
+    engine.viewport.upToDate = OME_FALSE;
+
+    glClearColor(1, 1, 1, 1);
+    omeRenderTargetUnbind();
+    glViewport(0, 0, v->width, v->height);
+    omeCameraSetRatio(engine.camera, (float)v->width / v->height);
+
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+    return omeScenePick(engine.scene, engine.camera, x, y);
+}
+
+
 void omeEngineSetActiveCamera(omeCamera *c)
 {
     engine.camera = c;
@@ -198,7 +232,13 @@ void omeEngineSetActiveScene(omeScene *s)
 }
 
 
-omeScene *omeEnginegetActiveScene(void)
+omeScene *omeEngineGetActiveScene(void)
 {
     return engine.scene;
+}
+
+
+omeProgram *omeEngineGetPickingProgram(void)
+{
+    return engine.pickingProgram;
 }

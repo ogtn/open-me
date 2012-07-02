@@ -22,5 +22,11 @@
     <None Include="..\..\Debug\data\basic.vs">
       <Filter>Shaders</Filter>
     </None>
+    <None Include="..\..\Debug\data\picking.ps">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="..\..\Debug\data\picking.vs">
+      <Filter>Shaders</Filter>
+    </None>
   </ItemGroup>
 </Project>

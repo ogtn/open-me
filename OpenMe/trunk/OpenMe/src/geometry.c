@@ -74,7 +74,7 @@ omeGeometry *omeGeometryCreate(int nbVertices, int nbAttributes, omePolygonType 
     g->nbAttributes = nbAttributes;
     g->polygonType = polygonType;
 
-    omeSceneAddGeometry(omeEnginegetActiveScene(), g);
+    omeSceneAddGeometry(omeEngineGetActiveScene(), g);
 
     return g;
 }

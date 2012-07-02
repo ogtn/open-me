@@ -21,6 +21,7 @@ extern "C" {
 typedef struct omeCamera omeCamera;
 typedef struct omeGeometry omeGeometry;
 typedef struct omeGeometryListElement omeGeometryListElement, omeGeometryList;
+typedef struct omeMesh omeMesh;
 
 
 typedef struct omeScene
@@ -33,6 +34,7 @@ omeScene *omeSceneCreate(void);
 void omeSceneDestroy(omeScene **s);
 void omeSceneAddGeometry(omeScene *s, omeGeometry *g);
 void omeSceneRender(omeScene *s, omeCamera *c);
+omeMesh *omeScenePick(omeScene *s, omeCamera *c, int x, int y);
 
 
 #ifdef __cplusplus

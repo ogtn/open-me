@@ -40,7 +40,6 @@ typedef struct omeMesh
     omeBool finalized;  //TODO: is this still usefull to keep thaht one? If it is, use this variable somewhere...
     omeProgram *program;
     omeMaterial *material;
-    //omeEntity entity;
 } omeMesh;
 
 
