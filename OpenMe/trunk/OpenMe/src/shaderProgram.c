@@ -20,15 +20,55 @@
 #include <string.h>
 
 
-omeShader *omeShaderCreate(const char *fileName)
+omeShader *omeShaderCreate(omeShaderType type, char *code, const char *name)
 {
+    omeShader *s = calloc(1, sizeof(omeShader));
+
+    switch(type)
+    {
+    case OME_SHADER_TYPE_PIXEL:
+        omeResourceInitialize(s, OME_RESOURCE_PIXEL_SHADER, name);
+        s->id = glCreateShader(GL_FRAGMENT_SHADER);
+        break;
+    case OME_SHADER_TYPE_VERTEX:
+        omeResourceInitialize(s, OME_RESOURCE_VERTEX_SHADER, name);
+        s->id = glCreateShader(GL_VERTEX_SHADER);
+        break;
+    default:
+        omeLoggerLog("Shader type is not valid\n");
+        free(s);
+        return NULL;
+    }
+
+    s->code = code;
+    s->type = type;
+    s->compiled = OME_FALSE;
+
+    return s;
+}
+
+
+omeShader *omeShaderLoadFromFile(const char *fileName)
+{
+    omeShaderType type;
     omeShader *s;
     FILE *file;
+    char *code;
     char *ext;
     int size;
     char c;
     int i;
 
+    // shader already loaded
+    s = omeResourceFind(fileName);
+
+    if(s != NULL)
+    {
+        omeResourceAddRef(s);
+        return s;
+    }
+
+    // look for a file extension
     ext = strrchr(fileName, '.');
 
     if(ext == NULL)
@@ -37,48 +77,41 @@ omeShader *omeShaderCreate(const char *fileName)
         return NULL;
     }
 
-    file = fopen(fileName, "r");
-
-    if(file == NULL)
-        return NULL;
-
-    s = calloc(1, sizeof(omeShader));
-
-    // loading shader code
-    fseek(file, 0, SEEK_END);
-    size = ftell(file);
-    rewind(file);
-    s->code = malloc(size + 1);
-
-    for(i = 0; i < size; i++)
-    {
-        c = (char)fgetc(file);
-        s->code[i] = c == EOF ? '\0' : c; // fuckin' lame old drivers
-    }
-
-    s->code[size] = '\0';
-    fclose(file);
-
-    s->compiled = OME_FALSE;
-
-    // create OpenGl shader from file extension
+    // determine shader type using the extension
     if(!strcmp(ext, ".vs"))
-    {
-        s->id = glCreateShader(GL_VERTEX_SHADER);
-        s->type = OME_SHADER_TYPE_VERTEX;
-    }
+        type = OME_SHADER_TYPE_VERTEX;
     else if(!strcmp(ext, ".ps"))
-    {
-        s->id = glCreateShader(GL_FRAGMENT_SHADER);
-        s->type = OME_SHADER_TYPE_PIXEL;
-    }
+        type = OME_SHADER_TYPE_PIXEL;
     else
     {
         omeLoggerLog("Unable to determine shader type: extension \"%s\" unknown!\n", ext);
         return NULL;
     }
 
-    return s;
+    file = fopen(fileName, "r");
+
+    if(file == NULL)
+    {
+        omeLoggerLog("Unable to open file %s\n", fileName);
+        return NULL;
+    }
+
+    // loading shader code
+    fseek(file, 0, SEEK_END);
+    size = ftell(file);
+    rewind(file);
+    code = malloc(size + 1);
+
+    for(i = 0; i < size; i++)
+    {
+        c = (char)fgetc(file);
+        code[i] = c == EOF ? '\0' : c; // fuckin' lame old drivers
+    }
+
+    code[size] = '\0';
+    fclose(file);
+
+    return omeShaderCreate(type, code, fileName);
 }
 
 
@@ -144,7 +177,7 @@ void omeProgramDestroy(omeProgram **sp)
         if((*sp)->shaders[i])
         {
             glDetachShader((*sp)->id, (*sp)->shaders[i]->id);
-            omeShaderDestroy(&(*sp)->shaders[i]);
+            omeResourceDelRef(&(*sp)->shaders[i]);
         }
     }
 

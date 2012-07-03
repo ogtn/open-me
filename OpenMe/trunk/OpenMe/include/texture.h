@@ -17,6 +17,9 @@ extern "C" {
 #endif
 
 
+#include "resourceManager.h"
+
+
 typedef enum omeTextureType
 {
     OME_TEXTURE_TYPE_1D,
@@ -29,6 +32,9 @@ typedef enum omeTextureType
 
 typedef struct omeTexture
 {
+    // keep in first position
+    omeResource resource;
+
     unsigned int type;
     int width;
     int height;
@@ -37,14 +43,16 @@ typedef struct omeTexture
 } omeTexture;
 
 
-omeTexture *omeTextureCreate(omeTextureType type, int width, int height, int depth, void *data);
-#define omeTextureCreate1D(width, data) omeTextureCreate(OME_TEXTURE_TYPE_1D, (width), 0, 0, (data))
-#define omeTextureCreate2D(width, height, data) omeTextureCreate(OME_TEXTURE_TYPE_2D, (width), (height), 0, (data))
-#define omeTextureCreate3D(width, heigt, depth, data) omeTextureCreate(OME_TEXTURE_TYPE_3D, (width), (height), (depth), (data))
+omeTexture *omeTextureCreate(omeTextureType type, int width, int height, int depth, void *data, const char *name);
+#define omeTextureCreate1D(width, data, name) omeTextureCreate(OME_TEXTURE_TYPE_1D, (width), 0, 0, (data), (name))
+#define omeTextureCreate2D(width, height, data, name) omeTextureCreate(OME_TEXTURE_TYPE_2D, (width), (height), 0, (data), (name))
+#define omeTextureCreate3D(width, heigt, depth, data, name) omeTextureCreate(OME_TEXTURE_TYPE_3D, (width), (height), (depth), (data), (name))
 void omeTextureDestroy(omeTexture **t);
 void omeTextureBind(omeTexture *t);
 // TODO: should be private?
 unsigned int omeTextureGetGLType(omeTextureType type);
+
+omeTexture *omeTextureLoadFromFile(const char *fileName);
 
 
 #ifdef __cplusplus

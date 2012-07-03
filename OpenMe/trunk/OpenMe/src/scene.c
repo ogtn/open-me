@@ -106,8 +106,6 @@ omeMesh *omeScenePick(omeScene *s, omeCamera *c, int x, int y)
 
         DL_FOREACH(g->references, meshElt)
         {         
-            omeMesh *m = meshElt->mesh;
-
             // attributes
             omeGeometryEnableAttributes(g, p);
             omeGeometrySendAttributes(g);

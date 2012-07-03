@@ -18,6 +18,7 @@ extern "C" {
 
 
 #include "utils.h"
+#include "resourceManager.h"
 #include <uthash.h>
 
 
@@ -44,6 +45,9 @@ typedef enum omeShaderType
 
 typedef struct omeShader
 {
+    // keep in first position
+    omeResource resource;
+
     char *code;
     omeShaderType type;
     unsigned int id;
@@ -87,7 +91,8 @@ typedef struct omeProgram
 } omeProgram;
 
 
-omeShader *omeShaderCreate(const char *fileName);
+omeShader *omeShaderCreate(omeShaderType type, char *code, const char *name);
+omeShader *omeShaderLoadFromFile(const char *fileName);
 void omeShaderDestroy(omeShader **s);
 omeStatus omeShaderCompile(omeShader *s);
 

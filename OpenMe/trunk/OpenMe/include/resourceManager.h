@@ -27,6 +27,7 @@ extern "C" {
 typedef enum omeResourceType
 {
 	OME_RESOURCE_TEXTURE,
+    // TODO: why details on shaders and no details on textures??? simplifies this??? Or maybe add a type parameter in resourceFind() to be safe...
 	OME_RESOURCE_PIXEL_SHADER,
 	OME_RESOURCE_VERTEX_SHADER,
 	OME_RESOURCE_MATERIAL,
@@ -39,8 +40,10 @@ typedef struct omeResource
 {
 	unsigned int magic;
 	omeResourceType type;
-    UT_hash_handle *hashHandle;
+    UT_hash_handle hh;
     char hashKey[OME_NAME_MAXLEN];
+    int refCount;
+    omeBool anonymous;
 } omeResource;
 
 
@@ -57,6 +60,13 @@ typedef struct omeResourceManager
 {
     omeResource *resources;
 } omeResourceManager;
+
+
+void omeResourceInitialize(void *resource, omeResourceType type, const char *name);
+omeBool omeResourceCheck(omeResource *r);
+void *omeResourceFind(const char *name);
+void omeResourceAddRef(void *resource);
+void omeResourceDelRef(void **resource);
 
 
 #ifdef __cplusplus

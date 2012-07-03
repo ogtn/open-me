@@ -32,7 +32,7 @@ omeRenderTarget *omeRenderTargetCreate(int width, int height)
     rt->binded = OME_TRUE;
 
     // create and allocate color buffer
-    rt->colorBuffer = omeTextureCreate2D(width, height, NULL);
+    rt->colorBuffer = omeTextureCreate2D(width, height, NULL, NULL);
 
     // create and allocate depth buffer
     glGenRenderbuffersEXT(1, &rt->depthBuffer);
@@ -41,11 +41,11 @@ omeRenderTarget *omeRenderTargetCreate(int width, int height)
 
     // attach buffers to the framebuffer object
     glFramebufferRenderbufferEXT(GL_FRAMEBUFFER_EXT, GL_DEPTH_ATTACHMENT_EXT, GL_RENDERBUFFER_EXT, rt->depthBuffer);
-    glFramebufferTexture2DEXT(GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, rt->colorBuffer->id, 0);
-
+    glFramebufferTexture2DEXT(GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT0_EXT, GL_TEXTURE_2D, rt->colorBuffer->id, 0);
+    
     // check status
     status = glCheckFramebufferStatusEXT(GL_FRAMEBUFFER_EXT);
-
+    
     if(status != GL_FRAMEBUFFER_COMPLETE_EXT)
     {
         omeLoggerLog("Something went wrong with the render target\n");
@@ -67,7 +67,7 @@ void omeRenderTargetDestroy(omeRenderTarget **rt)
 
     glDeleteFramebuffersEXT(1, &(*rt)->FBO);
     glDeleteRenderbuffersEXT(1, &(*rt)->depthBuffer);
-    omeTextureDestroy(&(*rt)->colorBuffer); // TODO: should probably be a delRef() instead...
+    omeResourceDelRef(&(*rt)->colorBuffer);
 
     memset(*rt, 0, sizeof(omeRenderTarget));
     free(*rt);

@@ -135,8 +135,8 @@ int omeEngineStart(int width, int height)
 
     // picking program
     engine.pickingProgram = omeProgramCreate();
-    omeProgramAddShader(engine.pickingProgram, omeShaderCreate("data/picking.vs"));
-    omeProgramAddShader(engine.pickingProgram, omeShaderCreate("data/picking.ps"));
+    omeProgramAddShader(engine.pickingProgram, omeShaderLoadFromFile("data/picking.vs"));
+    omeProgramAddShader(engine.pickingProgram, omeShaderLoadFromFile("data/picking.ps"));
     omeProgramLink(engine.pickingProgram);
 
     omeLoggerLog("OpenGL %s\n", glGetString(GL_VERSION));

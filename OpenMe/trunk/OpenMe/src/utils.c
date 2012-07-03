@@ -45,7 +45,7 @@ unsigned int omeTypeToGL(omeType type)
     case OME_FLOAT:     return GL_FLOAT;
     case OME_DOUBLE:    return GL_DOUBLE;
     default:
-        return OME_FAILURE;
+        return (unsigned int)OME_FAILURE;
     }
 }
 

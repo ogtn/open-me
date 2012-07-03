@@ -12,54 +12,11 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <GL/glfw.h>
-#include <IL/il.h>
 #include <math.h>
-
-
-// quick and dirty test of texture coordinates
-omeTexture *loadTexture(const char *fileName)
-{
-    ILuint il_id;
-    int w, h;
-    omeTexture *t;
-
-    // init
-    ilInit();
-    ilOriginFunc(IL_ORIGIN_LOWER_LEFT);
-    ilEnable(IL_ORIGIN_SET);
-
-    // create image
-    ilGenImages(1, &il_id);
-    ilBindImage(il_id);
-
-    if(ilLoadImage((const ILstring)fileName) == IL_FALSE)
-    {
-        ilDeleteImage(il_id);
-        //printf("unable to load: %s\n", fileName);
-        return NULL;
-    }
-
-    if(ilConvertImage(IL_RGBA, IL_UNSIGNED_BYTE) == IL_FALSE)
-    {
-        ilDeleteImage(il_id);
-        //printf("Unable to convert: %s\n", fileName);
-        return NULL;
-    }
-
-    w = ilGetInteger(IL_IMAGE_WIDTH);
-    h = ilGetInteger(IL_IMAGE_HEIGHT);
-
-    t = omeTextureCreate2D(w, h, ilGetData());
-
-    ilDeleteImage(il_id);
-
-    return t;
-}
 
 
 int main(void)
 {
-    int i = 0;
     omeCamera *camera;
     omeVector pos;
     omeVector target = 	{{0.f, 0.f, 0.f}};
@@ -78,7 +35,12 @@ int main(void)
     omeBool picked = OME_FALSE;
 
     // get OpenGL context
-    if(!glfwInit() || !glfwOpenWindow(width, height, 8, 8, 8, 8, 32, 0, GLFW_WINDOW))
+    if(!glfwInit())
+        return EXIT_FAILURE;
+
+    glfwOpenWindowHint(GLFW_FSAA_SAMPLES, 4);
+
+    if(!glfwOpenWindow(width, height, 8, 8, 8, 8, 32, 0, GLFW_WINDOW))
         return EXIT_FAILURE;
 
     glfwSetMouseWheel(0);
@@ -104,8 +66,8 @@ int main(void)
 
     // shader test
     shaderProgram = omeProgramCreate();
-    omeProgramAddShader(shaderProgram, omeShaderCreate("data/basic.vs"));
-    omeProgramAddShader(shaderProgram, omeShaderCreate("data/basic.ps"));
+    omeProgramAddShader(shaderProgram, omeShaderLoadFromFile("data/basic.vs"));
+    omeProgramAddShader(shaderProgram, omeShaderLoadFromFile("data/basic.ps"));
     omeProgramLink(shaderProgram);
     mesh->program = shaderProgram;
     mesh2->program = shaderProgram;
@@ -122,18 +84,18 @@ int main(void)
     renderTarget = omeRenderTargetCreate(256, 256);
 
     // texture test
-    mesh->material->diffuseTexture = renderTarget->colorBuffer;
-    mesh2->material->diffuseTexture = loadTexture(L"data/lena.jpg");
+    mesh->material->diffuseTexture = omeTextureLoadFromFile(L"data/lena.jpg"); //renderTarget->colorBuffer;
+    mesh2->material->diffuseTexture = omeTextureLoadFromFile(L"data/lena.jpg");
 
     while(glfwGetWindowParam(GLFW_OPENED) && !glfwGetKey(GLFW_KEY_ESC))
     {
         // move camera
-        angleStep = 3 * omeEngineGetFrameDuration();
+        angleStep = 3 * (float)omeEngineGetFrameDuration();
 
         // moving selected mesh
         if(pickedMesh)
         {
-            double step = omeEngineGetFrameDuration() * 10;
+            float step = (float)omeEngineGetFrameDuration() * 10;
             omeVector *v = &pickedMesh->entity.position;
 
             if(glfwGetKey(GLFW_KEY_UP))
@@ -183,9 +145,9 @@ int main(void)
         if(zoom < 0.1f)
             zoom = 0.1f;
 
-        pos.x = cos(phi) * cos(theta);
-        pos.y = cos(phi) * sin(theta);
-        pos.z = sin(phi);
+        pos.x = cosf(phi) * cosf(theta);
+        pos.y = cosf(phi) * sinf(theta);
+        pos.z = sinf(phi);
         omeVectorMultScal(&pos, zoom, &pos);
         omeCameraSetPosition(camera, &pos);
 
@@ -224,6 +186,7 @@ int main(void)
     omeMeshDestroy(&mesh);
     omeMeshDestroy(&mesh2);
     omeCameraDestroy(&camera);
+    omeProgramDestroy(&shaderProgram);
     omeEngineStop();
 
     return EXIT_SUCCESS;
