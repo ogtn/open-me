@@ -13,7 +13,7 @@
 #include "mesh.h"
 #include "engine.h"
 #include "scene.h"
-#include "shaderProgram.h"
+#include "program.h"
 #include <stdlib.h>
 #include <string.h>
 #include <GL/glew.h>

@@ -25,7 +25,8 @@
     <ClCompile Include="..\..\OpenMe\src\renderTarget.c" />
     <ClCompile Include="..\..\OpenMe\src\resourceManager.c" />
     <ClCompile Include="..\..\OpenMe\src\scene.c" />
-    <ClCompile Include="..\..\OpenMe\src\shaderProgram.c" />
+    <ClCompile Include="..\..\OpenMe\src\shader.c" />
+    <ClCompile Include="..\..\OpenMe\src\program.c" />
     <ClCompile Include="..\..\OpenMe\src\texture.c" />
     <ClCompile Include="..\..\OpenMe\src\utils.c" />
     <ClCompile Include="..\..\OpenMe\src\vector.c" />
@@ -40,7 +41,8 @@
     <ClInclude Include="..\..\OpenMe\include\pluginLoader.h" />
     <ClInclude Include="..\..\OpenMe\include\renderTarget.h" />
     <ClInclude Include="..\..\OpenMe\include\scene.h" />
-    <ClInclude Include="..\..\OpenMe\include\shaderProgram.h" />
+    <ClInclude Include="..\..\OpenMe\include\shader.h" />
+    <ClInclude Include="..\..\OpenMe\include\program.h" />
     <ClInclude Include="..\..\OpenMe\include\texture.h" />
     <ClInclude Include="..\..\OpenMe\include\utils.h" />
     <ClInclude Include="..\..\OpenMe\include\engine.h" />

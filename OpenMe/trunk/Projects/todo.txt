@@ -20,6 +20,8 @@
 -Cubemapping
 -Octree
 -Screenshot
+-Sprites
+-Text
 
 ======[Low priority]======
 -Plugin interface

@@ -9,7 +9,7 @@
 
 
 #include "resourceManager.h"
-#include "shaderProgram.h"
+#include "program.h"
 #include "texture.h"
 #include "logger.h"
 
@@ -17,10 +17,8 @@
 static omeResourceManager manager = {NULL};
 
 
-void omeResourceInitialize(void *resource, omeResourceType type, const char *name)
+void omeResourceInitialize(omeResource *r, omeResourceType type, const char *name)
 {
-    omeResource *r = resource;
-
     r->magic = OME_RESOURCE_MAGIC;
     r->type = type;
     r->refCount = 1;
@@ -60,19 +58,15 @@ void *omeResourceFind(const char *name)
 }
 
 
-void omeResourceAddRef(void *resource)
+void omeResourceAddRef(omeResource *r)
 {
-    omeResource *r = resource;
-
     if(omeResourceCheck(r))
         r->refCount++;
 }
 
 
-void omeResourceDelRef(void **resource)
+void omeResourceDelRef(omeResource *r)
 {
-    omeResource *r = *resource;
-
     if(omeResourceCheck(r))
     {
         r->refCount--;
@@ -85,11 +79,11 @@ void omeResourceDelRef(void **resource)
             switch(r->type)
             {
             case OME_RESOURCE_TEXTURE:
-                omeTextureDestroy((omeTexture**)resource);
+                omeTextureDestroy((omeTexture**)&r);
                 break;
             case OME_RESOURCE_PIXEL_SHADER:
             case OME_RESOURCE_VERTEX_SHADER:
-                omeShaderDestroy((omeShader**)resource);
+                omeShaderDestroy((omeShader**)&r);
                 break;
             case OME_RESOURCE_MATERIAL:
                 break;

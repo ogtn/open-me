@@ -12,7 +12,7 @@
 #include "camera.h"
 #include "geometry.h"
 #include "mesh.h"
-#include "shaderProgram.h"
+#include "program.h"
 #include "engine.h"
 #include "logger.h"
 #include <GL/glew.h>

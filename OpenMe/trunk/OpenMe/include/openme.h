@@ -24,7 +24,7 @@ extern "C" {
 #include "geometry.h"
 #include "mesh.h"
 #include "OBJLoader.h"
-#include "shaderProgram.h"
+#include "program.h"
 #include "material.h"
 #include "scene.h"
 #include "texture.h"

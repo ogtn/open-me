@@ -38,7 +38,7 @@ int main(void)
     if(!glfwInit())
         return EXIT_FAILURE;
 
-    glfwOpenWindowHint(GLFW_FSAA_SAMPLES, 4);
+    glfwOpenWindowHint(GLFW_FSAA_SAMPLES, 0);
 
     if(!glfwOpenWindow(width, height, 8, 8, 8, 8, 32, 0, GLFW_WINDOW))
         return EXIT_FAILURE;
@@ -81,10 +81,10 @@ int main(void)
     mesh2->material = mat;
 
     // render target test
-    renderTarget = omeRenderTargetCreate(256, 256);
+    renderTarget = omeRenderTargetCreate(128, 128);
 
     // texture test
-    mesh->material->diffuseTexture = omeTextureLoadFromFile(L"data/lena.jpg"); //renderTarget->colorBuffer;
+    mesh->material->diffuseTexture = renderTarget->colorBuffer;
     mesh2->material->diffuseTexture = omeTextureLoadFromFile(L"data/lena.jpg");
 
     while(glfwGetWindowParam(GLFW_OPENED) && !glfwGetKey(GLFW_KEY_ESC))

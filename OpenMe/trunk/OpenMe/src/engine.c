@@ -15,7 +15,7 @@
 #include "renderTarget.h"
 #include "camera.h"
 #include "mesh.h"
-#include "shaderProgram.h"
+#include "program.h"
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>

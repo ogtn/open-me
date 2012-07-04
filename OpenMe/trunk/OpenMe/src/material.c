@@ -11,7 +11,6 @@
 #include "material.h"
 #include <stdlib.h>
 #include <string.h>
-#include "shaderProgram.h"
 
 
 // default colors

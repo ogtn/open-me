@@ -62,11 +62,11 @@ typedef struct omeResourceManager
 } omeResourceManager;
 
 
-void omeResourceInitialize(void *resource, omeResourceType type, const char *name);
+void omeResourceInitialize(omeResource *r, omeResourceType type, const char *name);
 omeBool omeResourceCheck(omeResource *r);
 void *omeResourceFind(const char *name);
-void omeResourceAddRef(void *resource);
-void omeResourceDelRef(void **resource);
+void omeResourceAddRef(omeResource *r);
+void omeResourceDelRef(omeResource *r);
 
 
 #ifdef __cplusplus

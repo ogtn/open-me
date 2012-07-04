@@ -108,7 +108,7 @@ omeTexture *omeTextureLoadFromFile(const char *fileName)
 
     if(t != NULL)
     {
-        omeResourceAddRef(t);
+        omeResourceAddRef(&t->resource);
         return t;
     }
 

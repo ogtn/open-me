@@ -18,7 +18,7 @@ extern "C" {
 
 
 #include "utils.h"
-#include "resourceManager.h"
+#include "shader.h"
 #include <uthash.h>
 
 
@@ -29,30 +29,9 @@ typedef union omeVector omeVector;
 typedef union omeMatrix omeMatrix;
 
 
-#define OME_PROGRAM_LOG_LENGTH          2048
 // for uniforms and attributes names
 // TODO: dynamic solution instead because of concatenation for structs, enums...
 #define OME_PROGRAM_VAR_LENGTH          128
-
-
-typedef enum omeShaderType
-{
-    OME_SHADER_TYPE_PIXEL,
-    OME_SHADER_TYPE_VERTEX,
-    OME_SHADER_TYPE_MAX
-} omeShaderType;
-
-
-typedef struct omeShader
-{
-    // keep in first position
-    omeResource resource;
-
-    char *code;
-    omeShaderType type;
-    unsigned int id;
-    omeBool compiled;
-} omeShader;
 
 
 typedef enum omeProgramStatus
@@ -90,11 +69,6 @@ typedef struct omeProgram
     omeLocationHashTable *attributes;
 } omeProgram;
 
-
-omeShader *omeShaderCreate(omeShaderType type, char *code, const char *name);
-omeShader *omeShaderLoadFromFile(const char *fileName);
-void omeShaderDestroy(omeShader **s);
-omeStatus omeShaderCompile(omeShader *s);
 
 omeProgram *omeProgramCreate(void);
 void omeProgramDestroy(omeProgram **sp);

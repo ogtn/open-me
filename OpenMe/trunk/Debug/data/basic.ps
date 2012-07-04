@@ -10,8 +10,5 @@ varying vec2 texCoord;
 
 void main(void)
 {
-	//if(int(gl_FragCoord.x + gl_FragCoord.y) % 25 < 5)
-	//	discard;
-	//else
-		gl_FragColor = texture2D(texture, texCoord);
+	gl_FragColor = texture2D(texture, texCoord);
 }
