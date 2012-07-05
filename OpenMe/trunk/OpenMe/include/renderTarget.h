@@ -39,6 +39,7 @@ omeRenderTarget *omeRenderTargetCreate(int width, int height);
 void omeRenderTargetDestroy(omeRenderTarget **rt);
 void omeRenderTargetBind(omeRenderTarget *rt);
 void omeRenderTargetUnbind(void);
+void omeRenderTargetUpdateMipMaps(omeRenderTarget *rt);
 
 
 #ifdef __cplusplus

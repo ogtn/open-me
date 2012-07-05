@@ -43,7 +43,7 @@ typedef struct omeTexture
 } omeTexture;
 
 
-omeTexture *omeTextureCreate(omeTextureType type, int width, int height, int depth, void *data, const char *name);
+omeTexture *omeTextureCreate(omeTextureType type, int width, int height, int depth, void **data, const char *name);
 #define omeTextureCreate1D(width, data, name) omeTextureCreate(OME_TEXTURE_TYPE_1D, (width), 0, 0, (data), (name))
 #define omeTextureCreate2D(width, height, data, name) omeTextureCreate(OME_TEXTURE_TYPE_2D, (width), (height), 0, (data), (name))
 #define omeTextureCreate3D(width, heigt, depth, data, name) omeTextureCreate(OME_TEXTURE_TYPE_3D, (width), (height), (depth), (data), (name))

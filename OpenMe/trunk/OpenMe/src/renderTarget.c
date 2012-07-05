@@ -21,6 +21,7 @@ omeRenderTarget *omeRenderTargetCreate(int width, int height)
 {
     omeRenderTarget *rt;
     GLenum status;
+    void * null = NULL;
 
     rt = calloc(1, sizeof(omeRenderTarget));
     rt->width = width;
@@ -32,7 +33,7 @@ omeRenderTarget *omeRenderTargetCreate(int width, int height)
     rt->binded = OME_TRUE;
 
     // create and allocate color buffer
-    rt->colorBuffer = omeTextureCreate2D(width, height, NULL, NULL);
+    rt->colorBuffer = omeTextureCreate2D(width, height, &null, NULL);
 
     // create and allocate depth buffer
     glGenRenderbuffersEXT(1, &rt->depthBuffer);
@@ -84,4 +85,12 @@ void omeRenderTargetBind(omeRenderTarget *rt)
 void omeRenderTargetUnbind(void)
 {
     glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0);
+}
+
+
+void omeRenderTargetUpdateMipMaps(omeRenderTarget *rt)
+{
+    // TODO: omeTextureGenMipMaps() ?  GL_TEXTURE_2D hardcoded is a bad idea
+    omeTextureBind(rt->colorBuffer);
+    glGenerateMipmapEXT(GL_TEXTURE_2D);
 }

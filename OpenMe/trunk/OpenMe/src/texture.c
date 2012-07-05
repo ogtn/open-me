@@ -16,8 +16,20 @@
 #include <string.h>
 
 
-omeTexture *omeTextureCreate(omeTextureType type, int width, int height, int depth, void *data, const char *name)
+static const GLenum omeCubeMapFaces[] = 
 {
+    GL_TEXTURE_CUBE_MAP_NEGATIVE_X,
+    GL_TEXTURE_CUBE_MAP_POSITIVE_X,
+    GL_TEXTURE_CUBE_MAP_NEGATIVE_Y,
+    GL_TEXTURE_CUBE_MAP_POSITIVE_Y,
+    GL_TEXTURE_CUBE_MAP_NEGATIVE_Z,
+    GL_TEXTURE_CUBE_MAP_POSITIVE_Z
+};
+
+
+omeTexture *omeTextureCreate(omeTextureType type, int width, int height, int depth, void **data, const char *name)
+{
+    int i;
     GLenum format = GL_RGBA;
     omeTexture *t = calloc(1, sizeof(omeTexture));
 
@@ -35,21 +47,19 @@ omeTexture *omeTextureCreate(omeTextureType type, int width, int height, int dep
     switch(type)
     {
     case OME_TEXTURE_TYPE_1D:
-        omeLoggerLog("texture 1D not supported yet\n");
-        return NULL;
-        //glTexImage1D(GL_TEXTURE_1D, 0, GL_RGBA, width, height, 0, format, GL_UNSIGNED_BYTE, data);
+        glTexImage1D(GL_TEXTURE_1D, 0, GL_RGBA8, width, 0, format, GL_UNSIGNED_BYTE, data[0]);
         break;
     case OME_TEXTURE_TYPE_2D:
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, width, height, 0, format, GL_UNSIGNED_BYTE, data);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, width, height, 0, format, GL_UNSIGNED_BYTE, data[0]);
         break;
     case OME_TEXTURE_TYPE_3D:
+        //glTexImage3D(GL_TEXTURE_3D, 0, GL_RGBA8, width, height, depth, 0, format, GL_UNSIGNED_BYTE, data[0]);
         omeLoggerLog("texture 3D not supported yet\n");
         return NULL;
-        //glTexImage3D(GL_TEXTURE_3D, 0, GL_RGBA, width, height, depth, format, GL_UNSIGNED_BYTE, data);
         break;
     case OME_TEXTURE_TYPE_CUBE:
-        omeLoggerLog("Cubemap not supported yet\n");
-        return NULL;
+        for(i = 0; i < 6; i++)
+            glTexImage2D(omeCubeMapFaces[i], 0, GL_RGBA8, width, height, 0, format, GL_UNSIGNED_BYTE, data[i]);
         break;
     default:
         omeLoggerLog("invalid type of texture\n");
@@ -58,11 +68,28 @@ omeTexture *omeTextureCreate(omeTextureType type, int width, int height, int dep
     }
 
     // set minifying and magnifying filters
-    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameterf(t->type, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+    glTexParameterf(t->type, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
-    // TODO: cubemap
-    // TODO: mipmap
+    // mipmaps
+    // TODO: use glGenerateMipmap if GL > 3.0
+    glGenerateMipmapEXT(t->type);
+
+    // set wrap modes
+    switch(type)
+    {
+    case OME_TEXTURE_TYPE_3D:
+    case OME_TEXTURE_TYPE_CUBE:
+        glTexParameteri(t->type, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+        glTexParameteri(t->type, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+        glTexParameteri(t->type, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+        break;
+    case OME_TEXTURE_TYPE_2D:
+        glTexParameteri(t->type, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    case OME_TEXTURE_TYPE_1D:
+        glTexParameteri(t->type, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    }
+
     // TODO: extra parameter for hints (mipmaps, filters, internal & external format...) If NULL, default values used...
     // TODO: lot of things to check here: http://www.opengl.org/wiki/Common_Mistakes
     return t;
@@ -102,6 +129,7 @@ omeTexture *omeTextureLoadFromFile(const char *fileName)
     ILuint il_id;
     int w, h;
     omeTexture *t;
+    void *pixels;
 
     // texture already loaded
     t = omeResourceFind(fileName);
@@ -147,8 +175,9 @@ omeTexture *omeTextureLoadFromFile(const char *fileName)
 
     w = ilGetInteger(IL_IMAGE_WIDTH);
     h = ilGetInteger(IL_IMAGE_HEIGHT);
+    pixels = ilGetData();
 
-    t = omeTextureCreate2D(w, h, ilGetData(), fileName);
+    t = omeTextureCreate2D(w, h, &pixels, fileName);
 
     ilDeleteImage(il_id);
     ilShutDown();

@@ -1,7 +1,6 @@
 ======[High priority]======
 -Lights
 -Mesh and vertex attribute finalizing mechanism
--Mipmaping
 
 ======[Normal priority]======
 -FPS Camera (angles and position)
@@ -16,7 +15,6 @@
 	->Regeneration when changes occurs
 	->Find a way to allow integration of users shaders in it
 -Skyboxes/ skydomes
--Cubemapping
 -Octree
 -Screenshot
 -Sprites

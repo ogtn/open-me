@@ -15,7 +15,7 @@ attribute vec3 omeVertexPosition;
 attribute vec3 omeNormal;
 attribute vec2 omeTextCoord0;
 uniform omeMaterial mat;
-uniform vec3 omeMeshPosition;
+uniform mat4 omeMeshMatrix;
 uniform mat4 omeProjection;
 uniform mat4 omeModelview;
 uniform vec3 omeCameraPosition;
@@ -28,8 +28,7 @@ varying vec2 texCoord;
 
 void main(void)
 {
-	vec3 realPosition = omeVertexPosition + omeMeshPosition;
-	gl_Position = omeProjection * omeModelview * vec4(realPosition, 1.f);
+	gl_Position = omeProjection * omeModelview * omeMeshMatrix * vec4(omeVertexPosition, 1.f);
 	
 	//color = mat.ambiant;
 	//normal = omeNormal;

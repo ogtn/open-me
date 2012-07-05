@@ -191,6 +191,9 @@ void omeEngineRender(omeRenderTarget *rt)
 
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     omeSceneRender(engine.scene, engine.camera);
+
+    if(rt != NULL)
+        omeRenderTargetUpdateMipMaps(rt);
 }
 
 

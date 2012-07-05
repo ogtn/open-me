@@ -124,6 +124,19 @@ int main(void)
                 v->y += step * 0.1;
             if(glfwGetKey('D'))
                 v->z += step * 0.1;
+
+            // reset mesh
+            if(glfwGetKey(GLFW_KEY_SPACE))
+            {
+                v = &pickedMesh->entity.position;
+                v->x = v->y = v->z = 0;
+
+                v = &pickedMesh->entity.rotation;
+                v->x = v->y = v->z = 0;
+
+                v = &pickedMesh->entity.scaling;
+                v->x = v->y = v->z = 1;
+            }
         }
 
         // angle update using mouse
