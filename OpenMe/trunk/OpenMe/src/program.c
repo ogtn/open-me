@@ -305,14 +305,19 @@ void omeProgramSendUniformMaterial(omeProgram *p, omeMaterial *m, const char *na
     }
 }
 
-
+#include <math.h>
 void omeProgramSendUniformEntity(omeProgram *p, void *object)
 {
     omeEntity *e = object;
+    omeMatrix m;
+
     //OME_ENTITY_CHECK(e);
 
-    glUniform3fv(omeProgramLocateUniform(p, "omeMeshPosition"), 1, e->position.tab);
+    // TODO: add a cache for this to avoid computation on each frame?
+    omeMatrixMakeTransfo(&m, &e->position, &e->rotation, &e->scaling);
+    glUniformMatrix4fv(omeProgramLocateUniform(p, "omeMeshMatrix"), 1, GL_TRUE, m.tab);
 }
+
 
 void omeProgramSendUniformCamera(omeProgram *p, omeCamera *c)
 {

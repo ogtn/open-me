@@ -61,7 +61,7 @@ int main(void)
     
     // primitives test
     mesh = omePrimitiveCube(10, 1);
-    mesh->entity.position.z = -4;
+    //mesh->entity.position.z = -4;
     mesh2 = omePrimitiveSphere(8, 16);
 
     // shader test
@@ -106,6 +106,24 @@ int main(void)
                 v->x -= step;
             else if(glfwGetKey(GLFW_KEY_RIGHT))
                 v->x += step;
+
+            v = &pickedMesh->entity.rotation;
+
+            if(glfwGetKey('A'))
+                v->x += step * 5;
+            if(glfwGetKey('Z'))
+                v->y += step * 5;
+            if(glfwGetKey('E'))
+                v->z += step * 5;
+
+            v = &pickedMesh->entity.scaling;
+
+            if(glfwGetKey('Q'))
+                v->x += step * 0.1;
+            if(glfwGetKey('S'))
+                v->y += step * 0.1;
+            if(glfwGetKey('D'))
+                v->z += step * 0.1;
         }
 
         // angle update using mouse

@@ -21,7 +21,7 @@ omeTexture *omeTextureCreate(omeTextureType type, int width, int height, int dep
     GLenum format = GL_RGBA;
     omeTexture *t = calloc(1, sizeof(omeTexture));
 
-    omeResourceInitialize(t, OME_RESOURCE_TEXTURE, name);
+    omeResourceInitialize(&t->resource, OME_RESOURCE_TEXTURE, name);
 
     glGenTextures(1, &t->id);
     t->width = width;

@@ -42,10 +42,10 @@ omeRenderTarget *omeRenderTargetCreate(int width, int height)
     // attach buffers to the framebuffer object
     glFramebufferRenderbufferEXT(GL_FRAMEBUFFER_EXT, GL_DEPTH_ATTACHMENT_EXT, GL_RENDERBUFFER_EXT, rt->depthBuffer);
     glFramebufferTexture2DEXT(GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT0_EXT, GL_TEXTURE_2D, rt->colorBuffer->id, 0);
-    
+
     // check status
     status = glCheckFramebufferStatusEXT(GL_FRAMEBUFFER_EXT);
-    
+
     if(status != GL_FRAMEBUFFER_COMPLETE_EXT)
     {
         omeLoggerLog("Something went wrong with the render target\n");
@@ -67,7 +67,7 @@ void omeRenderTargetDestroy(omeRenderTarget **rt)
 
     glDeleteFramebuffersEXT(1, &(*rt)->FBO);
     glDeleteRenderbuffersEXT(1, &(*rt)->depthBuffer);
-    omeResourceDelRef(&(*rt)->colorBuffer);
+    omeResourceDelRef(&(*rt)->colorBuffer->resource);
 
     memset(*rt, 0, sizeof(omeRenderTarget));
     free(*rt);

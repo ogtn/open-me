@@ -22,11 +22,11 @@ omeShader *omeShaderCreate(omeShaderType type, char *code, const char *name)
     switch(type)
     {
     case OME_SHADER_TYPE_PIXEL:
-        omeResourceInitialize(s, OME_RESOURCE_PIXEL_SHADER, name);
+        omeResourceInitialize(&s->resource, OME_RESOURCE_PIXEL_SHADER, name);
         s->id = glCreateShader(GL_FRAGMENT_SHADER);
         break;
     case OME_SHADER_TYPE_VERTEX:
-        omeResourceInitialize(s, OME_RESOURCE_VERTEX_SHADER, name);
+        omeResourceInitialize(&s->resource, OME_RESOURCE_VERTEX_SHADER, name);
         s->id = glCreateShader(GL_VERTEX_SHADER);
         break;
     default:

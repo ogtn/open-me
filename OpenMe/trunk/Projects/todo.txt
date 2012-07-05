@@ -1,5 +1,4 @@
 ======[High priority]======
--Fully working meshes rotations
 -Lights
 -Mesh and vertex attribute finalizing mechanism
 -Mipmaping

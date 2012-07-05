@@ -116,7 +116,6 @@ void omeMatrixTranslate(omeMatrix *m, const omeVector *v)
 }
 
 
-// TODO: fix this function...
 void omeMatrixScale(omeMatrix *m, const omeVector *v)
 {
     omeMatrix m2;
@@ -131,7 +130,6 @@ void omeMatrixScale(omeMatrix *m, const omeVector *v)
 }
 
 
-// TODO: fix this function...
 void omeMatrixRotateAxis(omeMatrix *m, const omeVector *axis, float theta)
 {
     omeVector v;
@@ -164,23 +162,77 @@ void omeMatrixRotateAxis(omeMatrix *m, const omeVector *axis, float theta)
 
 void omeMatrixRotateAngles(omeMatrix *m, const omeVector *v)
 {
-    // TODO: find a less awful way to implement this...
-    static const omeVector vx = {{1, 0, 0}};
-    static const omeVector vy = {{0, 1, 0}};
-    static const omeVector vz = {{0, 0, 1}};
-    omeMatrix mx, my, mz;
+    omeVector sinv, cosv;
+    omeMatrix m2;
 
-    omeMatrixCopy(&mx, m);
-    omeMatrixCopy(&my, m);
-    omeMatrixCopy(&mz, m);
+    sinv.x = sinf(degToRad(v->x));
+    cosv.x = cosf(degToRad(v->x));
+    sinv.y = sinf(degToRad(v->y));
+    cosv.y = cosf(degToRad(v->y));
+    sinv.z = sinf(degToRad(v->z));
+    cosv.z = cosf(degToRad(v->z));
 
-    omeMatrixRotateAxis(&mx, &vx, v->x);
-    omeMatrixRotateAxis(&my, &vy, v->y);
-    omeMatrixRotateAxis(&mz, &vz, v->z);
+    omeMatrixMakeIdentity(&m2);
 
-    omeMatrixMultMatrix(m, &mx, m);
-    omeMatrixMultMatrix(m, &my, m);
-    omeMatrixMultMatrix(m, &mz, m);
+    m2.data[0][0] = cosv.y * cosv.z;
+    m2.data[0][1] = -cosv.x * sinv.z + sinv.x * sinv.y * cosv.z;
+    m2.data[0][2] = sinv.x * sinv.z + cosv.x * sinv.y * cosv.z;
+    
+    m2.data[1][0] = cosv.y * sinv.z;
+    m2.data[1][1] = cosv.x * cosv.z + sinv.x * sinv.y * sinv.z;
+    m2.data[1][2] = -sinv.x * cosv.z + cosv.x * sinv.y * sinv.z;
+    
+    m2.data[2][0] = -sinv.y;
+    m2.data[2][1] = sinv.x * cosv.y;
+    m2.data[2][2] = cosv.x * cosv.y;
+    
+    omeMatrixMultMatrix(m, &m2, m);
+}
+
+
+void omeMatrixMakeTransfo(omeMatrix *m, const omeVector *position, const omeVector *rotation, const omeVector *scaling)
+{
+    omeVector sinv, cosv;
+
+    sinv.x = sinf(degToRad(rotation->x));
+    cosv.x = cosf(degToRad(rotation->x));
+    sinv.y = sinf(degToRad(rotation->y));
+    cosv.y = cosf(degToRad(rotation->y));
+    sinv.z = sinf(degToRad(rotation->z));
+    cosv.z = cosf(degToRad(rotation->z));
+
+    // rotation
+    m->data[0][0] = cosv.y * cosv.z;
+    m->data[0][1] = -cosv.x * sinv.z + sinv.x * sinv.y * cosv.z;
+    m->data[0][2] = sinv.x * sinv.z + cosv.x * sinv.y * cosv.z;
+    
+    m->data[1][0] = cosv.y * sinv.z;
+    m->data[1][1] = cosv.x * cosv.z + sinv.x * sinv.y * sinv.z;
+    m->data[1][2] = -sinv.x * cosv.z + cosv.x * sinv.y * sinv.z;
+    
+    m->data[2][0] = -sinv.y;
+    m->data[2][1] = sinv.x * cosv.y;
+    m->data[2][2] = cosv.x * cosv.y;
+
+    // scaling
+    m->data[0][0] *= scaling->x;
+    m->data[1][0] *= scaling->x;
+    m->data[2][0] *= scaling->x;
+    m->data[0][1] *= scaling->y;
+    m->data[1][1] *= scaling->y;
+    m->data[2][1] *= scaling->y;
+    m->data[0][2] *= scaling->z;
+    m->data[1][2] *= scaling->z;
+    m->data[2][2] *= scaling->z;
+
+    // translation
+    m->data[0][3] = position->x;
+    m->data[1][3] = position->y;
+    m->data[2][3] = position->z;
+
+    // remaining data
+    m->data[3][0] = m->data[3][1] = m->data[3][2] = 0;
+    m->data[3][3] = 1;
 }
 
 
