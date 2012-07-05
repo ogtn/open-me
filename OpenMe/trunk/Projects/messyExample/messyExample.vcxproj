@@ -89,12 +89,6 @@
   <ItemGroup>
     <ClCompile Include="..\..\Examples\messyExample.c" />
   </ItemGroup>
-  <ItemGroup>
-    <None Include="..\..\Debug\data\basic.ps" />
-    <None Include="..\..\Debug\data\basic.vs" />
-    <None Include="..\..\Debug\data\picking.ps" />
-    <None Include="..\..\Debug\data\picking.vs" />
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

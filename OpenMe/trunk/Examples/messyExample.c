@@ -70,6 +70,11 @@ int main(void)
     omeProgramAddShader(shaderProgram, omeShaderLoadFromFile("data/basic.ps"));
     omeProgramLink(shaderProgram);
     mesh->program = shaderProgram;
+
+    shaderProgram = omeProgramCreate();
+    omeProgramAddShader(shaderProgram, omeShaderLoadFromFile("data/cubemap.vs"));
+    omeProgramAddShader(shaderProgram, omeShaderLoadFromFile("data/cubemap.ps"));
+    omeProgramLink(shaderProgram);
     mesh2->program = shaderProgram;
 
     // material test
@@ -84,8 +89,8 @@ int main(void)
     renderTarget = omeRenderTargetCreate(128, 128);
 
     // texture test
-    mesh->material->diffuseTexture = renderTarget->colorBuffer;
-    mesh2->material->diffuseTexture = omeTextureLoadFromFile(L"data/lena.jpg");
+    mesh->material->diffuseTexture = omeTextureLoadFromFile("data/lena.jpg");//renderTarget->colorBuffer;
+    mesh2->material->diffuseTexture = omeTextureCubeMapLoadFromFile("data/cloudy.omeCubeMap");
 
     while(glfwGetWindowParam(GLFW_OPENED) && !glfwGetKey(GLFW_KEY_ESC))
     {
@@ -206,7 +211,7 @@ int main(void)
 
         // render
         omeEngineUpdate(); // TODO: limit fps here?
-        omeEngineRender(renderTarget);
+        //omeEngineRender(renderTarget);
         omeEngineRender(NULL);
 
         glfwSleep(0.002);

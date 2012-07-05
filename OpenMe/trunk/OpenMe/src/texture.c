@@ -184,3 +184,98 @@ omeTexture *omeTextureLoadFromFile(const char *fileName)
 
     return t;
 }
+
+
+// TODO: extract image loading from this and omeTextureLoadFromFile()...
+// TODO: check image sizes
+omeTexture *omeTextureCubeMapLoadFromFile(const char *fileName)
+{
+    omeTexture *t;
+    ILuint il_id[6];
+    void *pixels[6];
+    char imgName[6][OME_NAME_MAXLEN];
+    char *endLine;
+    FILE *file;
+    int w, h;
+    int i;
+
+    // texture already loaded
+    t = omeResourceFind(fileName);
+
+    if(t != NULL)
+    {
+        omeResourceAddRef(&t->resource);
+        return t;
+    }
+
+    // fetching images names
+    file = fopen(fileName, "r");
+
+    if(file == NULL)
+    {
+        printf("Unable to open file: %s\n", fileName);
+        return NULL;
+    }
+    
+    for(i = 0; i < 6; i++)
+    {
+        fgets(imgName[i], OME_NAME_MAXLEN, file);
+        endLine = strchr(imgName[i], '\n');
+
+        if(endLine != NULL)
+            *endLine = '\0';
+    }
+    
+    fclose(file);
+
+    // init
+    ilInit();
+    ilOriginFunc(IL_ORIGIN_UPPER_LEFT);
+    ilEnable(IL_ORIGIN_SET);
+
+    // create images
+    ilGenImages(6, il_id);
+
+    for(i = 0; i < 6; i++)
+    {
+        ilBindImage(il_id[i]);
+
+        if(ilLoadImage(imgName[i]) == IL_FALSE)
+        {
+            // TODO: remove this and do it the proper way
+            switch(ilGetError())
+            {
+            case IL_COULD_NOT_OPEN_FILE: puts("IL_COULD_NOT_OPEN_FILE"); break;
+            case IL_ILLEGAL_OPERATION:puts("IL_ILLEGAL_OPERATION"); break;
+            case IL_INVALID_EXTENSION: puts("IL_INVALID_EXTENSION"); break;
+            case IL_INVALID_PARAM: puts("IL_INVALID_PARAM"); break;
+            default: break;
+            }
+
+            ilDeleteImage(il_id[i]);
+            printf("unable to load: %s\n", imgName[i]);
+
+            return NULL;
+        }
+
+        if(ilConvertImage(IL_RGBA, IL_UNSIGNED_BYTE) == IL_FALSE)
+        {
+            ilDeleteImage(il_id[i]);
+            printf("Unable to convert: %s\n", imgName[i]);
+            return NULL;
+        }
+
+        w = ilGetInteger(IL_IMAGE_WIDTH);
+        h = ilGetInteger(IL_IMAGE_HEIGHT);
+        pixels[i] = ilGetData();
+    }
+
+    t = omeTextureCreateCubeMap(w, h, pixels, fileName);
+
+    for(i = 0; i < 6; i++)
+        ilDeleteImage(il_id[i]);
+    
+    ilShutDown();
+
+    return t;
+}
