@@ -230,7 +230,7 @@ omeTexture *omeTextureCubeMapLoadFromFile(const char *fileName)
 
     // init
     ilInit();
-    ilOriginFunc(IL_ORIGIN_UPPER_LEFT);
+    ilOriginFunc(IL_ORIGIN_LOWER_LEFT);
     ilEnable(IL_ORIGIN_SET);
 
     // create images

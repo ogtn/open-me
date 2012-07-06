@@ -76,6 +76,8 @@ void omeEngineUpdate(void)
         engine.FPS = engine.frames / engine.FPSUpdateTime;
         engine.frames = 0;
     }
+
+    omeCameraUpdate(engine.camera);
 }
 
 

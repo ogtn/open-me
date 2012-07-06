@@ -27,7 +27,8 @@ omeCamera *omeCameraCreate(omeCameraType type)
     omeCamera *c = calloc(1, sizeof(omeCamera));
 
     c->type = type;
-    c->state = OME_CAMERA_STATE_OUTDATED;
+    c->projectionUpToDate = OME_FALSE;
+    c->viewUpToDate = OME_FALSE;
     omeVectorCopy(&c->pos, &defaultPosition);
     omeVectorCopy(&c->target, &defaultTarget);
     omeVectorCopy(&c->up, &defaultUp);
@@ -52,7 +53,10 @@ void omeCameraSetOrtho(omeCamera *c, float left, float right, float bottom, floa
         return;
     }
 
-    c->state = OME_CAMERA_STATE_OUTDATED;
+    // TODO: check if the view is modified by this...
+    c->projectionUpToDate = OME_FALSE;
+    c->viewUpToDate = OME_FALSE;
+
     c->left = left;
     c-> right = right;
     c-> bottom = bottom;
@@ -70,7 +74,7 @@ void omeCameraSetPerspective(omeCamera *c, float fov, float ratio, float near, f
         return;
     }
 
-    c->state = OME_CAMERA_STATE_OUTDATED;
+    c->projectionUpToDate = OME_FALSE;
     c->fov = fov;
     c->ratio = ratio;
     c->near = near;
@@ -86,7 +90,7 @@ void omeCameraSetLookAt(omeCamera *c, omeVector *pos, omeVector *target, omeVect
         return;
     }
 
-    c->state = OME_CAMERA_STATE_OUTDATED;
+    c->viewUpToDate = OME_FALSE;
     omeVectorCopy(&c->pos, pos);
     omeVectorCopy(&c->target, target);
     omeVectorCopy(&c->up, up);
@@ -101,7 +105,7 @@ void omeCameraSetPosition(omeCamera *c, omeVector *pos)
         return;
     }
 
-    c->state = OME_CAMERA_STATE_OUTDATED;
+    c->viewUpToDate = OME_FALSE;
     omeVectorCopy(&c->pos, pos);
 }
 
@@ -114,7 +118,7 @@ void omeCameraSetTarget(omeCamera *c, omeVector *target)
         return;
     }
 
-    c->state = OME_CAMERA_STATE_OUTDATED;
+    c->viewUpToDate = OME_FALSE;
     omeVectorCopy(&c->target, target);
 }
 
@@ -127,31 +131,37 @@ void omeCameraSetRatio(omeCamera *c, float ratio)
         return;
     }
 
-    c->state = OME_CAMERA_STATE_OUTDATED;
+    c->viewUpToDate = OME_FALSE;
     c->ratio = ratio;
 }
 
 
 void omeCameraUpdate(omeCamera *c)
 {
-    // TODO: add a boolean to avoid recomputation
     switch(c->type)
     {
     case OME_CAMERA_TYPE_PERPECTIVE:
-        glMatrixMode(GL_PROJECTION);
-        omeMatrixMakePerspective(&c->projection, c->fov, c->ratio, c->near, c->far);
+        if(c->projectionUpToDate == OME_FALSE)
+        {
+            omeMatrixMakePerspective(&c->projection, c->fov, c->ratio, c->near, c->far);
+            c->projectionUpToDate = OME_TRUE;
+        }
 
-        glMatrixMode(GL_MODELVIEW);
-        omeMatrixMakeLookAt(&c->modelview, &c->pos, &c->target, &c->up);
+        if(c->viewUpToDate == OME_FALSE)
+        {
+            omeMatrixMakeLookAt(&c->view, &c->pos, &c->target, &c->up);
+            c->viewUpToDate = OME_TRUE;
+        }
         break;
     case OME_CAMERA_TYPE_ORTHO:
-        glMatrixMode(GL_PROJECTION);
-        omeMatrixMakeOrtho(&c->projection, c->left, c->right, c->bottom, c->top, c->near, c->far);
+        if(c->projectionUpToDate == OME_FALSE)
+        {
+            omeMatrixMakeOrtho(&c->projection, c->left, c->right, c->bottom, c->top, c->near, c->far);
+            c->projectionUpToDate = OME_TRUE;
+        }
         break;
     default:
         omeLoggerLog("Unknown type of camera");
         return;
     }
-
-    c->state = OME_CAMERA_STATE_UP_TO_DATE;
 }

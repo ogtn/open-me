@@ -321,7 +321,7 @@ void omeProgramSendUniformEntity(omeProgram *p, void *object)
 
 void omeProgramSendUniformCamera(omeProgram *p, omeCamera *c)
 {
-    omeProgramSendUniformMatrix(p, &c->modelview, "omeModelview");
+    omeProgramSendUniformMatrix(p, &c->view, "omeView");
     omeProgramSendUniformMatrix(p, &c->projection, "omeProjection");
 }
 

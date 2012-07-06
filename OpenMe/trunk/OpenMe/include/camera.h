@@ -18,6 +18,7 @@ extern "C" {
 
 
 #include "matrix.h"
+#include "utils.h"
 
 
 typedef enum omeCameraType
@@ -28,20 +29,13 @@ typedef enum omeCameraType
 } omeCameraType;
 
 
-typedef enum omeCameraState
-{
-    OME_CAMERA_STATE_OUTDATED,
-    OME_CAMERA_STATE_UP_TO_DATE,
-    OME_CAMERA_STATE_MAX
-} omeCameraState;
-
-
 typedef struct omeCamera
 {
     omeMatrix projection;
-    omeMatrix modelview;
+    omeBool projectionUpToDate;
+    omeMatrix view;
+    omeBool viewUpToDate;
     omeCameraType type;
-    omeCameraState state;
     float near;
     float far;
     
