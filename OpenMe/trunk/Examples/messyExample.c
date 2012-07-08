@@ -60,9 +60,9 @@ int main(void)
     //mesh2 = omeMeshLoad("data/mesh1.omeMesh");
     
     // primitives test
-    mesh = omePrimitiveCube(10, 1);
-    //mesh->entity.position.z = -4;
+    mesh = omePrimitiveSphere(10, 4);
     mesh2 = omePrimitiveSphere(8, 16);
+    omePrimitiveGrid(16, 4);
 
     // shader test
     shaderProgram = omeProgramCreate();
@@ -90,7 +90,7 @@ int main(void)
 
     // texture test
     mesh->material->diffuseTexture = omeTextureLoadFromFile("data/lena.jpg");//renderTarget->colorBuffer;
-    mesh2->material->diffuseTexture = omeTextureCubeMapLoadFromFile("data/cloudy.omeCubeMap");
+    mesh2->material->diffuseTexture = omeTextureCubeMapLoadFromFile("data/cloudy.omeCubeMap");    
 
     while(glfwGetWindowParam(GLFW_OPENED) && !glfwGetKey(GLFW_KEY_ESC))
     {

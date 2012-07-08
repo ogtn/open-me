@@ -17,43 +17,18 @@ extern "C" {
 #endif
 
 
+#include "color.h"
+
+
 typedef struct omeTexture omeTexture;
-
-
-typedef union omeColori
-{
-    struct
-    {
-        unsigned char r;
-        unsigned char g;
-        unsigned char b;
-        unsigned char a;
-    };
-
-    unsigned char tab[4];
-} omeColori;
-
-
-typedef union omeColorf
-{
-    struct
-    {
-        float r;
-        float g;
-        float b;
-        float a;
-    };
-
-    float tab[4];
-} omeColorf;
 
 
 typedef struct omeMaterial
 {
-    omeColorf ambiantColor;
-    omeColorf diffuseColor;
-    omeColorf specularColor;
-    omeColorf emissiveColor;
+    omeColor ambiantColor;
+    omeColor diffuseColor;
+    omeColor specularColor;
+    omeColor emissiveColor;
     float shininess;
 
     // TODO: find a place for this one...?

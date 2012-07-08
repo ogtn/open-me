@@ -1,0 +1,14 @@
+#version 120
+#extension GL_EXT_gpu_shader4: enable
+
+// inputs
+uniform samplerCube texture;
+uniform vec3 omeCameraPosition;
+varying vec3 camPos;
+varying vec3 normal;
+varying vec3 position;
+
+void main(void)
+{
+	gl_FragColor = textureCube(texture, reflect(position - camPos, normalize(normal)));
+}

@@ -16,6 +16,7 @@
     <ClCompile Include="..\..\OpenMe\src\camera.c" />
     <ClCompile Include="..\..\OpenMe\src\engine.c" />
     <ClCompile Include="..\..\OpenMe\src\entity.c" />
+    <ClCompile Include="..\..\OpenMe\src\light.c" />
     <ClCompile Include="..\..\OpenMe\src\logger.c" />
     <ClCompile Include="..\..\OpenMe\src\material.c" />
     <ClCompile Include="..\..\OpenMe\src\matrix.c" />
@@ -32,9 +33,11 @@
     <ClCompile Include="..\..\OpenMe\src\vector.c" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\OpenMe\include\color.h" />
     <ClInclude Include="..\..\OpenMe\include\geometry.h" />
     <ClInclude Include="..\..\OpenMe\include\camera.h" />
     <ClInclude Include="..\..\OpenMe\include\entity.h" />
+    <ClInclude Include="..\..\OpenMe\include\light.h" />
     <ClInclude Include="..\..\OpenMe\include\material.h" />
     <ClInclude Include="..\..\OpenMe\include\mesh.h" />
     <ClInclude Include="..\..\OpenMe\include\OBJLoader.h" />

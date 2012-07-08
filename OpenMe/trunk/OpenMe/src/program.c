@@ -14,6 +14,7 @@
 #include "entity.h"
 #include "camera.h"
 #include "texture.h"
+#include "light.h"
 #include <GL/glew.h>
 #include <stdlib.h>
 #include <stdio.h>
@@ -295,7 +296,7 @@ void omeProgramSendUniformMaterial(omeProgram *p, omeMaterial *m, const char *na
     char fullName[OME_PROGRAM_VAR_LENGTH] = {'\0'};
 
     sprintf(fullName, "%s.ambiant", name);
-    glUniform3fv(omeProgramLocateUniform(p, fullName), 1, m->ambiantColor.tab); // /!\ omeColorf is made of 4 floats for the moment, only three are send here
+    glUniform3fv(omeProgramLocateUniform(p, fullName), 1, m->ambiantColor.tab); // /!\ omeColor is made of 4 floats for the moment, only three are send here
     
     if(m->diffuseTexture != NULL)
     {
@@ -329,4 +330,16 @@ void omeProgramSendUniformCamera(omeProgram *p, omeCamera *c)
 void omeProgramSendUniformMatrix(omeProgram *p, omeMatrix *m, const char *name)
 {
     glUniformMatrix4fv(omeProgramLocateUniform(p, name), 1, GL_TRUE, m->tab);
+}
+
+
+void omeProgramSendUniformLight(omeProgram *p, omeLight *l, const char *name)
+{
+    char fullName[OME_PROGRAM_VAR_LENGTH] = {'\0'};
+ 
+     sprintf(fullName, "%s.ambiant", name);
+     glUniform3fv(omeProgramLocateUniform(p, fullName), 1, l->ambiantColor.tab);
+
+     sprintf(fullName, "%s.position", name);
+     glUniform3fv(omeProgramLocateUniform(p, fullName), 1, l->entity.position.tab);
 }

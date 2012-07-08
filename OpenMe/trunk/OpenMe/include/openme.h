@@ -29,6 +29,7 @@ extern "C" {
 #include "scene.h"
 #include "texture.h"
 #include "renderTarget.h"
+#include "light.h"
 
 
 //TODO: avoid memset() calls in *Destroy functions in release

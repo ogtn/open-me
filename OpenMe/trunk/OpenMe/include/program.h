@@ -27,6 +27,7 @@ typedef struct omeMaterial omeMaterial;
 typedef struct omeCamera omeCamera;
 typedef union omeVector omeVector;
 typedef union omeMatrix omeMatrix;
+typedef struct omeLight omeLight;
 
 
 // for uniforms and attributes names
@@ -87,6 +88,7 @@ void omeProgramSendUniformMaterial(omeProgram *p, omeMaterial *m, const char *na
 void omeProgramSendUniformEntity(omeProgram *p, void *object);
 void omeProgramSendUniformCamera(omeProgram *p, omeCamera *c);
 void omeProgramSendUniformMatrix(omeProgram *p, omeMatrix *m, const char *name);
+void omeProgramSendUniformLight(omeProgram *p, omeLight *l, const char *name);
 
 omeLocation *omeLocationCreate(omeProgram *sp, const char *name, omeLocationType type);
 #define omeUniformLocationCreate(sp, name)  omeLocationCreate(sp, name, OME_LOCATION_TYPE_UNIFORM)

@@ -21,9 +21,16 @@
 #include <string.h>
 
 
+#include "light.h"
 omeScene *omeSceneCreate(void)
 {
+    omeLight *light;
+    omeVector lightPos = {{15, 15, 15}};
     omeScene *s = calloc(1, sizeof(omeScene));
+
+    light = omeLightCreateOmni();
+    light->entity.position = lightPos;
+    omeSceneAddLight(s, light);
 
     return s;
 }
@@ -31,7 +38,7 @@ omeScene *omeSceneCreate(void)
 
 void omeSceneDestroy(omeScene **s)
 {
-    // TODO: free geometries here???
+    // TODO: free geometries and lights here???
     memset(*s, 0, sizeof(omeScene));
     free(*s);
     *s = NULL;
@@ -47,10 +54,19 @@ void omeSceneAddGeometry(omeScene *s, omeGeometry *g)
 }
 
 
+void omeSceneAddLight(omeScene *s, omeLight *l)
+{
+    s->nbLights++;
+    s->lights = realloc(s->lights, s->nbLights);
+    s->lights[s->nbLights - 1] = l;
+}
+
+
 void omeSceneRender(omeScene *s, omeCamera *c)
 {
     omeGeometryListElement *geometryElt;
     omeProgram *p =  NULL;
+    int i;
 
     omeCameraUpdate(c);
 
@@ -74,9 +90,13 @@ void omeSceneRender(omeScene *s, omeCamera *c)
 
             // uniforms
             omeProgramSendUniformCamera(p, c);
-            omeProgramSendUniformMaterial(p, m, "mat");
+            
+            if(m)
+                omeProgramSendUniformMaterial(p, m, "mat");
+            
             omeProgramSendUniformEntity(p, meshElt->mesh);
             omeProgramSendUniformVec(p, &c->pos, "omeCameraPosition");
+            omeProgramSendUniformLight(p, s->lights[0], "light0");
 
             omeGeometryRender(g);
 
@@ -104,9 +124,11 @@ omeMesh *omeScenePick(omeScene *s, omeCamera *c, int x, int y)
         omeMeshListElement *meshElt;
         omeGeometry *g = geometryElt->geometry;    
 
+        // TODO: exclude non candidate meshes?
         DL_FOREACH(g->references, meshElt)
         {         
             // attributes
+            // TODO: only enable positions for picking...
             omeGeometryEnableAttributes(g, p);
             omeGeometrySendAttributes(g);
 

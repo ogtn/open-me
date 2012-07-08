@@ -63,6 +63,7 @@ omeMesh *omeMeshLoad(char *fileName);
 
 omeMesh *omePrimitiveCube(float size, int subdivisions);
 omeMesh *omePrimitiveSphere(float radius, int subdivisions);
+omeMesh *omePrimitiveGrid(int size, int level);
 
 
 #ifdef __cplusplus

@@ -11,16 +11,16 @@
 #include "mesh.h"
 #include "geometry.h"
 #include "logger.h"
+#include "color.h"
+#include "program.h"
 #include <stdlib.h>
 #include <string.h>
 #include <GL/glew.h>
 
 
-static int meshCpt = 0;
-
-
 omeMesh *omeMeshCreate(int nbBuffers)
 {
+    static int meshCpt = 0;
     char name[OME_NAME_MAXLEN];
     omeMesh *m = calloc(1, sizeof(omeMesh));
 
@@ -328,6 +328,67 @@ omeMesh *omePrimitiveSphere(float radius, int subdivisions)
         pos++;
         norm++;
     }
+
+    return m;
+}
+
+
+omeMesh *omePrimitiveGrid(int size, int level)
+{
+    int i, j;
+    omeMesh *m;
+    omeGeometry *g;
+    omeProgram *program;
+    omeVector2 *positions, *pos;
+    omeColor *colors, *col;
+    omeColor black = {{0, 0, 0, 1}};
+    omeColor grey = {{0.5f, 0.5f, 0.5f, 1}};
+    float start = - size / 2.f;
+    float end = -start;
+    int subdivisions = 1 << level;
+    float step = size / (float)subdivisions;
+    int nbVertices = (subdivisions + 1) * 2 * 2;
+    
+    pos = positions = malloc(nbVertices * sizeof(omeVector2));
+    col = colors = malloc(nbVertices * sizeof(omeColor));
+
+    for(i = 0; i <= subdivisions; i++)
+    {
+        float current = i * step - size / 2;
+
+        // x axis
+        pos->x = current;
+        pos->y = start;
+        pos++;
+
+        pos->x = current;
+        pos->y = end;
+        pos++;
+
+        // y axis
+        pos->x = start;
+        pos->y = current;
+        pos++;
+
+        pos->x = end;
+        pos->y = current;
+        pos++;
+
+        for(j = 0; j < 4; j++)
+            *col++ = i == subdivisions / 2 ? black : grey;
+    }
+
+    m = omeMeshCreate(1);
+    g = omeGeometryCreate(nbVertices, 2, OME_LINES);
+    omeGeometryAddAttrib(g, 2, OME_FLOAT, 0, OME_ATTRIB_TYPE_POSITION, positions);
+    omeGeometryAddAttrib(g, 4, OME_FLOAT, 0, OME_ATTRIB_TYPE_COLOR, colors);
+    omeMeshAddGeometry(m, g);
+
+    program = omeProgramCreate();
+    omeProgramAddShader(program, omeShaderLoadFromFile("data/grid.vs"));
+    omeProgramAddShader(program, omeShaderLoadFromFile("data/grid.ps"));
+    omeProgramLink(program);
+    m->program = program;
 
     return m;
 }

@@ -1,5 +1,4 @@
 ======[High priority]======
--Lights
 -Mesh and vertex attribute finalizing mechanism
 
 ======[Normal priority]======
@@ -19,6 +18,8 @@
 -Screenshot
 -Sprites
 -Text
+-Image as resource instead of texture?
+-Add model, wich are made of meshes, wich are made of geometry, wich are resources?
 
 ======[Low priority]======
 -Plugin interface
