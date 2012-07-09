@@ -15,6 +15,31 @@
 #include <math.h>
 
 
+void testString(omeMesh *m)
+{
+    int i, j;
+    omeGeometry *g;
+    omeString *str = omeStringCreateFromStr("#version 120\n\n");
+
+    omeStringAppendStr(str, "// input\n");
+
+    for(i = 0; i < m->nbBuffers; i++)
+    {
+        g = m->geometries[i];
+
+        for(j = 0; j < g->nbAttributes; j++)
+            omeStringAppendStr(str, "attribute vec3 %s;\n", g->attributes[j].name);
+    }
+
+    omeStringAppendStr(str, "void main(void)\n{\n");
+    omeStringAppendStr(str, "}\n");
+    
+    puts(str->str);
+
+    omeStringDestroy(&str);
+}
+
+
 int main(void)
 {
     omeCamera *camera;
@@ -91,6 +116,8 @@ int main(void)
     // texture test
     mesh->material->diffuseTexture = omeTextureLoadFromFile("data/lena.jpg");//renderTarget->colorBuffer;
     mesh2->material->diffuseTexture = omeTextureCubeMapLoadFromFile("data/cloudy.omeCubeMap");    
+
+    testString(mesh);
 
     while(glfwGetWindowParam(GLFW_OPENED) && !glfwGetKey(GLFW_KEY_ESC))
     {

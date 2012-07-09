@@ -77,11 +77,12 @@ void omeSceneRender(omeScene *s, omeCamera *c)
 
         DL_FOREACH(g->references, meshElt)
         {         
-            omeMaterial *m = meshElt->mesh->material;
+            omeMesh *mesh = meshElt->mesh;
 
-            if(p != meshElt->mesh->program)
+            // attributes
+            if(p != mesh->program)
             {
-                p = meshElt->mesh->program;
+                p = mesh->program;
 
                 omeProgramUse(p);
                 omeGeometryEnableAttributes(g, p);
@@ -91,10 +92,10 @@ void omeSceneRender(omeScene *s, omeCamera *c)
             // uniforms
             omeProgramSendUniformCamera(p, c);
             
-            if(m)
-                omeProgramSendUniformMaterial(p, m, "mat");
+            if(mesh->material)
+                omeProgramSendUniformMaterial(p, mesh->material, "mat");
             
-            omeProgramSendUniformEntity(p, meshElt->mesh);
+            omeProgramSendUniformEntity(p, mesh);
             omeProgramSendUniformVec(p, &c->pos, "omeCameraPosition");
             omeProgramSendUniformLight(p, s->lights[0], "light0");
 

@@ -69,3 +69,14 @@ char *omeGetGLError(void)
 
     return res;
 }
+
+
+int omeNextPowOfTwo(int n)
+{
+    int res = 1;
+
+    while(res < n)
+        res <<= 1;
+
+    return res;
+}

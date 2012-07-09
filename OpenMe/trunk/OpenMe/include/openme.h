@@ -30,6 +30,7 @@ extern "C" {
 #include "texture.h"
 #include "renderTarget.h"
 #include "light.h"
+#include "dstring.h"
 
 
 //TODO: avoid memset() calls in *Destroy functions in release

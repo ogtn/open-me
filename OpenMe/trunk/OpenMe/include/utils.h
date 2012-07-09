@@ -54,6 +54,7 @@ typedef enum omeType
 
 #define degToRadf(angle)    ((angle) * OME_PIF / 180)
 #define radToDegf(angle)    ((angle) / OME_PIF * 180)
+int omeNextPowOfTwo(int n);
 
 
 // macros and functions
