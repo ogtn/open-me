@@ -81,6 +81,15 @@ void omeStringRealloc(omeString *s, int needed)
 }
 
 
+omeString *omeStringClear(omeString *s)
+{
+    s->length = 0;
+    s->str[0] = '\0';
+
+    return s;
+}
+
+
 omeString *omeStringAppend(omeString *s, const omeString *s2)
 {
     s->length += s2->length;

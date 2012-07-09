@@ -23,12 +23,14 @@ void testString(omeMesh *m)
 
     omeStringAppendStr(str, "// input\n");
 
+    // attributes
     for(i = 0; i < m->nbBuffers; i++)
     {
         g = m->geometries[i];
 
-        for(j = 0; j < g->nbAttributes; j++)
-            omeStringAppendStr(str, "attribute vec3 %s;\n", g->attributes[j].name);
+        for(j = 0; j < OME_ATTRIB_MAX; j++)
+            if(g->attributes[j].actived)
+                omeStringAppendStr(str, "attribute %s %s;\n", g->attributes[j].glslType, g->attributes[j].name);
     }
 
     omeStringAppendStr(str, "void main(void)\n{\n");

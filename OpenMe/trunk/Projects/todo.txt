@@ -1,5 +1,9 @@
 ======[High priority]======
 -Mesh and vertex attribute finalizing mechanism
+-Generated shaders depending on the mesh?
+	->Regeneration when changes occurs
+	->Find a way to allow integration of users shaders in it
+-Text
 
 ======[Normal priority]======
 -FPS Camera (angles and position)
@@ -10,16 +14,15 @@
 	->compute index
 	->avoid redundancy
 	->turn quads into triangles?
--Generated shaders depending on the mesh?
-	->Regeneration when changes occurs
-	->Find a way to allow integration of users shaders in it
 -Skyboxes/ skydomes
 -Octree
 -Screenshot
 -Sprites
--Text
 -Image as resource instead of texture?
 -Add model, wich are made of meshes, wich are made of geometry, wich are resources?
+-Point sprites
+-Particles
+-Gamma correction
 
 ======[Low priority]======
 -Plugin interface

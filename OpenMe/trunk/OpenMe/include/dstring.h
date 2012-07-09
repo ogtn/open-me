@@ -30,6 +30,7 @@ omeString *omeStringCopy(const omeString *s);
 omeString *omeStringCreateFromStr(const char *format, ...);
 void omeStringDestroy(omeString **s);
 void omeStringRealloc(omeString *s, int needed);
+omeString *omeStringClear(omeString *s);
 omeString *omeStringAppend(omeString *s, const omeString *s2);
 omeString *omeStringAppendStr(omeString *s, const char *format, ...);
 const char *omeStringGetExtension(const omeString *s);

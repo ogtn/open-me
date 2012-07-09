@@ -115,6 +115,29 @@ int omeGeometryAddAttrib(omeGeometry *g, int nbElements, omeType type, int updat
     attr->size = g->nbVertices * nbElements * omeSizeOf(type);
     attr->actived = OME_TRUE;
     attr->name = omeAttribNames[geometryType];
+    
+    switch(type)
+    {
+        case OME_FLOAT:
+            if(nbElements == 1)
+                attr->glslType = "float";
+            else if(nbElements == 2)
+                attr->glslType = "vec2";
+            else if(nbElements == 3)
+                attr->glslType = "vec3";
+            else
+                attr->glslType = "unknown_type";
+        break;
+        case OME_BYTE:
+        case OME_UBYTE:
+        case OME_SHORT:
+        case OME_USHORT:
+        case OME_INT:
+        case OME_UINT:
+        case OME_DOUBLE:
+        default:
+        attr->glslType = "unknown_type";
+    }
 
     g->vertexSize += omeSizeOf(type) * nbElements;
     g->size += attr->size;

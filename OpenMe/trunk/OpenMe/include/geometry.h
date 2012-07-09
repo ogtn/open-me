@@ -73,6 +73,7 @@ typedef struct omeVertexAttrib
     omeBool enabled;
     int loc;
     const char *name;
+    const char *glslType;
 } omeVertexAttrib;
 
 

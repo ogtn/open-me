@@ -25,7 +25,6 @@
     <ClCompile Include="..\..\OpenMe\src\matrix.c" />
     <ClCompile Include="..\..\OpenMe\src\mesh.c" />
     <ClCompile Include="..\..\OpenMe\src\OBJLoader.c" />
-    <ClCompile Include="..\..\OpenMe\src\openme.c" />
     <ClCompile Include="..\..\OpenMe\src\pluginLoader.c" />
     <ClCompile Include="..\..\OpenMe\src\program.c" />
     <ClCompile Include="..\..\OpenMe\src\renderTarget.c" />
