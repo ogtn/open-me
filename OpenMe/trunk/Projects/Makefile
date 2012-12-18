@@ -13,7 +13,13 @@ all: ../Debug/messyExample
 
 runMessyExample: ../Debug/messyExample ../Debug/libOpenMe.so
 	@cd ../Debug; LD_LIBRARY_PATH=. ./messyExample
-	
+
+../Debug/test_string: ../Examples/test_string.c ../Debug/libOpenMe.so
+	gcc -Wall -Wextra -o ../Debug/test_string ../Examples/test_string.c -lOpenMe -I../OpenMe/include/ -L../Debug -lglfw -lIL
+
+runTests: ../Debug/test_string
+	@cd ../Debug;  echo -n "Testing strings:..." && LD_LIBRARY_PATH=. ./test_string && echo "OK"
+
 showTODOs:
 	@grep -rin --include *.[hc] TODO .. | sed -n 's%.*/\([^/]*:[^:]*:.*\)%\1%p'
 	@echo "There are `grep -ri --include *.[hc] TODO .. | wc -l` TODOs in the source code: still a lot of work!"
@@ -25,5 +31,5 @@ showTODOs:
 	gcc -Wall -Wextra -o ../Debug/libOpenMe.so -fPIC -shared -Wl,-soname,libOpenMe.so ../OpenMe/src/*.c -lm -lGLEW -I../OpenMe/include/
 
 clean:
-	@rm -rf ../Debug/libOpenMe.so ../Debug/messyExample
+	@rm -rf ../Debug/libOpenMe.so ../Debug/messyExample ../Debug/test_*
 	@echo "Clean complete"
