@@ -21,4 +21,4 @@ runMessyExample: ../Debug/messyExample ../Debug/libOpenMe.so
 	gcc -Wall -Wextra -o ../Debug/libOpenMe.so -fPIC -shared -Wl,-soname,libOpenMe.so ../OpenMe/src/*.c -lm -lGLEW -I../OpenMe/include/
 
 clean:
-	rm -rf ../Debug/libOpenMe.so ../Debug/libOpenMe.so
+	rm -rf ../Debug/libOpenMe.so ../Debug/messyExample

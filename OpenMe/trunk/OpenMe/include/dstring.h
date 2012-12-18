@@ -17,6 +17,9 @@ extern "C" {
 #endif
 
 
+#include <stdarg.h>
+
+
 typedef struct omeString
 {
     char *str;
@@ -26,14 +29,16 @@ typedef struct omeString
 
 
 omeString *omeStringCreate(int needed);
-omeString *omeStringCopy(const omeString *s);
 omeString *omeStringCreateFromStr(const char *format, ...);
+omeString *omeStringCopy(const omeString *s);
 void omeStringDestroy(omeString **s);
 void omeStringRealloc(omeString *s, int needed);
 omeString *omeStringClear(omeString *s);
 omeString *omeStringAppend(omeString *s, const omeString *s2);
 omeString *omeStringAppendStr(omeString *s, const char *format, ...);
 const char *omeStringGetExtension(const omeString *s);
+
+int countSprintf(const char *format, va_list ap);
 
 
 #ifdef __cplusplus

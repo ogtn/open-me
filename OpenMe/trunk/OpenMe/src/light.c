@@ -25,7 +25,7 @@ omeLight *omeLightCreate(omeLightType type)
     char name[OME_NAME_MAXLEN];
     omeLight *l = calloc(1, sizeof(omeLight));
 
-    sprintf(name, "light_", lightCpt++);
+    sprintf(name, "light_%d", lightCpt++);
     omeEntityInit(l, OME_ENTITY_OMNI_LIGHT, name);
     l->type = type;
     l->ambiantColor = defaultAmbiant;

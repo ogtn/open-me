@@ -66,7 +66,6 @@ void omeSceneRender(omeScene *s, omeCamera *c)
 {
     omeGeometryListElement *geometryElt;
     omeProgram *p =  NULL;
-    int i;
 
     omeCameraUpdate(c);
 

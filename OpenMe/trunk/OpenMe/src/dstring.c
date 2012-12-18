@@ -13,7 +13,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>
-#include <stdarg.h>
 #include <stdio.h>
 
 
@@ -50,7 +49,7 @@ omeString *omeStringCreateFromStr(const char *format, ...)
     omeString *s = calloc(1, sizeof (omeString));
 
     va_start(list, format);
-    s->length = _vscprintf(format, list);
+    s->length = countSprintf(format, list);
     va_end(list);
     
     omeStringRealloc(s, s->length + 1);
@@ -110,7 +109,7 @@ omeString *omeStringAppendStr(omeString *s, const char *format, ...)
     char *end = &s->str[s->length];
 
     va_start(list, format);
-    formaLen = _vscprintf(format, list);
+    formaLen = countSprintf(format, list);
     s->length += formaLen;
     va_end(list);
 
@@ -134,4 +133,17 @@ const char *omeStringGetExtension(const omeString *s)
             return c++;
 
     return NULL;
+}
+
+
+// TODO: find a better solution...
+// see http://stackoverflow.com/questions/5184459/msvc-linux-code-for-count-sprintf
+int countSprintf(const char *format, va_list ap)
+{
+#ifdef WIN32
+	return _vscprintf(format, ap);
+#else
+	char c;
+	return vsnprintf(&c, 1, format, ap);
+#endif
 }

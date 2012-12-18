@@ -64,7 +64,6 @@ omeTexture *omeTextureCreate(omeTextureType type, int width, int height, int dep
     default:
         omeLoggerLog("invalid type of texture\n");
         return NULL;
-        break;
     }
 
     // set minifying and magnifying filters
@@ -88,6 +87,9 @@ omeTexture *omeTextureCreate(omeTextureType type, int width, int height, int dep
         glTexParameteri(t->type, GL_TEXTURE_WRAP_T, GL_REPEAT);
     case OME_TEXTURE_TYPE_1D:
         glTexParameteri(t->type, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    default: // can't happen, just here to shut the compiler's mouth
+		omeLoggerLog("invalid type of texture\n");
+        return NULL;
     }
 
     // TODO: extra parameter for hints (mipmaps, filters, internal & external format...) If NULL, default values used...
