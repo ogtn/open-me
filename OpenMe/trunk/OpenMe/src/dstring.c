@@ -80,6 +80,12 @@ void omeStringRealloc(omeString *s, int needed)
 }
 
 
+void omeStringFit(omeString *s)
+{
+    /* TODO: implement this function */
+}
+
+
 omeString *omeStringClear(omeString *s)
 {
     s->length = 0;

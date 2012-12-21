@@ -31,5 +31,7 @@ showTODOs:
 	gcc -Wall -Wextra -o ../Debug/libOpenMe.so -fPIC -shared -Wl,-soname,libOpenMe.so ../OpenMe/src/*.c -lm -lGLEW -I../OpenMe/include/
 
 clean:
+	@echo "\033[0;31m****\033[0m"
+	@echo "\033[32m****\033[0m"
 	@rm -rf ../Debug/libOpenMe.so ../Debug/messyExample ../Debug/test_*
 	@echo "Clean complete"
