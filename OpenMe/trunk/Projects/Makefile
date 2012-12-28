@@ -17,11 +17,15 @@ runMessyExample: ../Debug/messyExample ../Debug/libOpenMe.so
 ../Debug/test_string: ../Examples/test_string.c ../Debug/libOpenMe.so
 	gcc -Wall -Wextra -o ../Debug/test_string ../Examples/test_string.c -lOpenMe -I../OpenMe/include/ -L../Debug -lglfw -lIL
 
-runTests: ../Debug/test_string
-	@cd ../Debug;  echo -n "Testing strings:..." && LD_LIBRARY_PATH=. ./test_string && echo "OK"
+../Debug/test_file: ../Examples/test_file.c ../Debug/libOpenMe.so
+	gcc -Wall -Wextra -o ../Debug/test_file ../Examples/test_file.c -lOpenMe -I../OpenMe/include/ -L../Debug -lglfw -lIL
+
+runTests: ../Debug/test_string ../Debug/test_file
+	@cd ../Debug;  echo -n "Testing strings:..." && LD_LIBRARY_PATH=. ./test_string && echo "\033[1;32mOK\033[0m"
+	@cd ../Debug;  echo -n "Testing files:..." && LD_LIBRARY_PATH=. ./test_string && echo "\033[1;32mOK\033[0m"
 
 showTODOs:
-	@grep -rin --include *.[hc] TODO .. | sed -n 's%.*/\([^/]*:[^:]*:.*\)%\1%p'
+	@grep -rin --color --include *.[hc] TODO ..
 	@echo "There are `grep -ri --include *.[hc] TODO .. | wc -l` TODOs in the source code: still a lot of work!"
 
 ../Debug/messyExample: ../Examples/messyExample.c ../Debug/libOpenMe.so
@@ -31,7 +35,9 @@ showTODOs:
 	gcc -Wall -Wextra -o ../Debug/libOpenMe.so -fPIC -shared -Wl,-soname,libOpenMe.so ../OpenMe/src/*.c -lm -lGLEW -I../OpenMe/include/
 
 clean:
-	@echo "\033[0;31m****\033[0m"
-	@echo "\033[32m****\033[0m"
 	@rm -rf ../Debug/libOpenMe.so ../Debug/messyExample ../Debug/test_*
-	@echo "Clean complete"
+	@echo "\033[1;32mClean complete\033[0m"
+
+# @echo "\033[1;32mThis text is green\033[0m"
+# @echo "\033[1;31mThat one is red\033[0m"
+# interesting for Visual Studio's compiler compatibiliy: -Wdeclaration-after-statement -Werror=declaration-after-statement
