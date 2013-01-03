@@ -14,6 +14,7 @@
 #elif _WIN32
 #include <windows.h>
 #endif
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -25,11 +26,22 @@ omePlugin *omePluginLoad(const char *name)
 
     p = calloc(1, sizeof(omePlugin));
 
-#ifdef __linux__
+#ifdef __linux
+    dlerror(); // clear previous error
+
+    // RTLD_NOW: no lazy opening, all symbols are loaded when dlopen() returns
+    // RTLD_GLOBAL: symbols loaded will be available even from libraries loaded after
     p->handle = dlopen(name, RTLD_NOW | RTLD_GLOBAL);
-    //TODO: check those weird flags...
+
+
+    if(p->handle == NULL)
+    {
+        const char *msg = dlerror();
+
+        fprintf(stderr, "Error occured while loading library %s: %s\n", name, msg ? msg : "unknown error");
+    }
 #elif _WIN32
-    //TODO: wchar_t for windows ... or use LoadLibraryA() (bad idea) 
+    //TODO: wchar_t for windows ... or use LoadLibraryA() (bad idea)
     p->handle = LoadLibrary(name);
 #endif
 
@@ -50,11 +62,18 @@ void omePluginUnload(omePlugin **p)
 
     quit = omePluginGetFunc(*p, "omePluginQuit");
 
-    if(quit)
+    if(quit != NULL)
         quit();
 
 #ifdef __linux__
-    dlclose((*p)->handle); 
+    dlerror(); // clear previous error
+
+    if(dlclose((*p)->handle))
+    {
+        const char *msg = dlerror();
+
+        fprintf(stderr, "Error occured while unloading library %s: %s\n", (*p)->name, msg ? msg : "unknown error");
+    }
 #elif _WIN32
     FreeLibrary((*p)->handle);
 #endif
@@ -67,12 +86,24 @@ void omePluginUnload(omePlugin **p)
 
 void *omePluginGetFunc(omePlugin *p, const char *funcName)
 {
+    void *res;
+
     if(!p->handle)
         return NULL;
 
 #ifdef __linux__
-    return dlsym(p->handle, funcName); 
+    dlerror(); // clear previous error
+    res = dlsym(p->handle, funcName);
+
+    if(res == NULL)
+    {
+        const char *msg = dlerror();
+
+        fprintf(stderr, "Error occured while loading symbol %s from library %s: %s\n", funcName, p->name, msg ? msg : "unknown error");
+    }
 #elif _WIN32
-    return GetProcAddress(p->handle, funcName);
+    res = GetProcAddress(p->handle, funcName);
 #endif
+
+    return res;
 }

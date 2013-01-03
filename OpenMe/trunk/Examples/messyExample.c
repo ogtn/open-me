@@ -15,7 +15,7 @@
 #include <math.h>
 
 
-void testString(omeMesh *m)
+static void testString(omeMesh *m)
 {
     int i, j;
     omeGeometry *g;

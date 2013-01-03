@@ -18,7 +18,7 @@ extern "C" {
 
 
 #include "dstring.h"
-#include "stdio.h"
+#include <stdio.h>
 
 
 // default allocated size for paths
@@ -60,7 +60,7 @@ void omeFileClose(omeFile *f);
 
 void omeFileGotoParent(omeFile *f);
 void omeFileOpenChild(omeFile *f, int child);
-???? omeFileGetContent(omeFile *f);
+//???? omeFileGetContent(omeFile *f);
 
 
 #ifdef __cplusplus

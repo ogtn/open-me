@@ -24,7 +24,7 @@ void omeLoggerStart(void)
 }
 
 
-void omeLoggerLog(char *format, ...) // TODO: add criticity levels, filters, current time and macros with __FILE__ and __LINE__ and __FUNCTION__!
+void omeLoggerLog(const char *format, ...) // TODO: add criticity levels, filters, current time and macros with __FILE__ and __LINE__ and __FUNCTION__!
 {
     va_list list;
 

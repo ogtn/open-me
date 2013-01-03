@@ -82,7 +82,8 @@ void omeStringRealloc(omeString *s, int needed)
 
 void omeStringFit(omeString *s)
 {
-    /* TODO: implement this function */
+    s->size = s->length + 1;
+    s->str = realloc(s->str, s->size);
 }
 
 

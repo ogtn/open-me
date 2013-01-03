@@ -18,7 +18,7 @@ extern "C" {
 
 
 #include "utils.h"
-#include <uthash.h>
+#include "uthash.h"
 
 
 #define OME_RESOURCE_MAGIC			0x42042042

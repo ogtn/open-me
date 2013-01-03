@@ -37,7 +37,7 @@ static const char *omeAttribNames[] =
 };
 
 
-GLenum omePolygonTypeToGL(omePolygonType polygonType)
+static GLenum omePolygonTypeToGL(omePolygonType polygonType)
 {
     switch(polygonType)
     {

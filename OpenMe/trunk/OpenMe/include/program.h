@@ -19,7 +19,7 @@ extern "C" {
 
 #include "utils.h"
 #include "shader.h"
-#include <uthash.h>
+#include "uthash.h"
 
 
 // forward declaration

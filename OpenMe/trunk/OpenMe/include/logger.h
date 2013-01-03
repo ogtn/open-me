@@ -37,7 +37,7 @@ typedef struct omeLogger
 
 
 void omeLoggerStart(void);
-void omeLoggerLog(char *format, ...);
+void omeLoggerLog(const char *format, ...);
 void omeLoggerStop(void);
 
 
