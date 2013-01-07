@@ -19,7 +19,7 @@
 -Screenshot
 -Sprites
 -Image as resource instead of texture?
--Add model, wich are made of meshes, wich are made of geometry, wich are resources?
+-Add models, wich are made of meshes, wich are made of geometry, wich are resources?
 -Point sprites
 -Particles
 -Gamma correction

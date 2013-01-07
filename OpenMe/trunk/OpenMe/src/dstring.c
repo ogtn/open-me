@@ -16,7 +16,7 @@
 #include <stdio.h>
 
 
-omeString *omeStringCreate(int needed)
+omeString *omeStringCreate(unsigned int needed)
 {
     omeString *s = calloc(1, sizeof (omeString));
 
@@ -73,7 +73,7 @@ void omeStringDestroy(omeString **s)
 }
 
 
-void omeStringRealloc(omeString *s, int needed)
+void omeStringRealloc(omeString *s, unsigned int needed)
 {
     s->size = omeNextPowOfTwo(needed);
     s->str = realloc(s->str, s->size);
@@ -145,7 +145,7 @@ const char *omeStringGetExtension(const omeString *s)
 
 // TODO: find a better solution...
 // see http://stackoverflow.com/questions/5184459/msvc-linux-code-for-count-sprintf
-int countSprintf(const char *format, va_list ap)
+unsigned int countSprintf(const char *format, va_list ap)
 {
 #ifdef WIN32
 	return _vscprintf(format, ap);

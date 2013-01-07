@@ -23,23 +23,23 @@ extern "C" {
 typedef struct omeString
 {
     char *str;
-    int size;
-    int length;
+    unsigned int size;
+    unsigned length;
 } omeString;
 
 
-omeString *omeStringCreate(int needed);
+omeString *omeStringCreate(unsigned int needed);
 omeString *omeStringCreateFromStr(const char *format, ...);
 omeString *omeStringCopy(const omeString *s);
 void omeStringDestroy(omeString **s);
-void omeStringRealloc(omeString *s, int needed);
+void omeStringRealloc(omeString *s, unsigned int needed);
 void omeStringFit(omeString *s);
 omeString *omeStringClear(omeString *s);
 omeString *omeStringAppend(omeString *s, const omeString *s2);
 omeString *omeStringAppendStr(omeString *s, const char *format, ...);
 const char *omeStringGetExtension(const omeString *s);
 
-int countSprintf(const char *format, va_list ap);
+unsigned int countSprintf(const char *format, va_list ap);
 
 
 #ifdef __cplusplus

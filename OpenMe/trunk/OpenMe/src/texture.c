@@ -62,7 +62,7 @@ omeTexture *omeTextureCreate(omeTextureType type, int width, int height, int dep
             glTexImage2D(omeCubeMapFaces[i], 0, GL_RGBA8, width, height, 0, format, GL_UNSIGNED_BYTE, data[i]);
         break;
     default:
-        omeLoggerLog("invalid type of texture\n");
+        omeLoggerLog("omeTextureCreate(): invalid type of texture\n");
         return NULL;
     }
 
@@ -87,8 +87,9 @@ omeTexture *omeTextureCreate(omeTextureType type, int width, int height, int dep
         glTexParameteri(t->type, GL_TEXTURE_WRAP_T, GL_REPEAT);
     case OME_TEXTURE_TYPE_1D:
         glTexParameteri(t->type, GL_TEXTURE_WRAP_S, GL_REPEAT);
+        break;
     default: // can't happen, just here to shut the compiler's mouth
-		omeLoggerLog("invalid type of texture\n");
+		omeLoggerLog("omeTextureCreate(): invalid type of texture\n");
         return NULL;
     }
 
@@ -143,6 +144,7 @@ omeTexture *omeTextureLoadFromFile(const char *fileName)
     }
 
     // init
+    // TODO: init only once
     ilInit();
     ilOriginFunc(IL_ORIGIN_LOWER_LEFT);
     ilEnable(IL_ORIGIN_SET);
@@ -153,25 +155,19 @@ omeTexture *omeTextureLoadFromFile(const char *fileName)
 
     if(ilLoadImage(fileName) == IL_FALSE)
     {
-        // TODO: remove this
-        switch(ilGetError())
-        {
-        case IL_COULD_NOT_OPEN_FILE: puts("IL_COULD_NOT_OPEN_FILE"); break;
-        case IL_ILLEGAL_OPERATION:puts("IL_ILLEGAL_OPERATION"); break;
-        case IL_INVALID_EXTENSION: puts("IL_INVALID_EXTENSION"); break;
-        case IL_INVALID_PARAM: puts("IL_INVALID_PARAM"); break;
-        default: break;
-        }
-
+        // TODO: remove this???
+        printf("unable to load: %s: %s\n", fileName, omeGetILError());
         ilDeleteImage(il_id);
-        printf("unable to load: %s\n", fileName);
+
         return NULL;
     }
 
     if(ilConvertImage(IL_RGBA, IL_UNSIGNED_BYTE) == IL_FALSE)
     {
+        // TODO: remove this???
+        printf("unable to convert: %s: %s\n", fileName, omeGetILError());
         ilDeleteImage(il_id);
-        printf("Unable to convert: %s\n", fileName);
+
         return NULL;
     }
 
@@ -245,25 +241,18 @@ omeTexture *omeTextureCubeMapLoadFromFile(const char *fileName)
         if(ilLoadImage(imgName[i]) == IL_FALSE)
         {
             // TODO: remove this and do it the proper way
-            switch(ilGetError())
-            {
-            case IL_COULD_NOT_OPEN_FILE: puts("IL_COULD_NOT_OPEN_FILE"); break;
-            case IL_ILLEGAL_OPERATION:puts("IL_ILLEGAL_OPERATION"); break;
-            case IL_INVALID_EXTENSION: puts("IL_INVALID_EXTENSION"); break;
-            case IL_INVALID_PARAM: puts("IL_INVALID_PARAM"); break;
-            default: break;
-            }
-
+            printf("unable to load: %s: %s\n", imgName[i], omeGetILError());
             ilDeleteImage(il_id[i]);
-            printf("unable to load: %s\n", imgName[i]);
 
             return NULL;
         }
 
         if(ilConvertImage(IL_RGBA, IL_UNSIGNED_BYTE) == IL_FALSE)
         {
+            // TODO: remove this and do it the proper way
+            printf("unable to convert: %s: %s\n", imgName[i], omeGetILError());
             ilDeleteImage(il_id[i]);
-            printf("Unable to convert: %s\n", imgName[i]);
+
             return NULL;
         }
 

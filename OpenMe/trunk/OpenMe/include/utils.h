@@ -58,10 +58,11 @@ int omeNextPowOfTwo(int n);
 
 
 // macros and functions
-#define OME_GEOMETRY_OFFSET(i) ((char *)NULL + i)
+#define OME_GEOMETRY_OFFSET(i) ((char *)NULL + (i))
 int omeSizeOf(omeType type);
 unsigned int omeTypeToGL(omeType type);
-char *omeGetGLError(void);
+const char *omeGetGLError(void);
+const char *omeGetILError(void);
 
 
 // other stuff...
