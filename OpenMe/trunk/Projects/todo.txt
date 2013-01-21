@@ -3,7 +3,8 @@
 -Generated shaders depending on the mesh?
 	->Regeneration when changes occurs
 	->Find a way to allow integration of users shaders in it
--Text
+-Text??
+-Documentation: nothing fancy, just a general oc for each file, and a specific one for some "tricky" functions
 
 ======[Normal priority]======
 -FPS Camera (angles and position)

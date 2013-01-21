@@ -28,7 +28,7 @@ CWARN=-Wall -Wextra -fno-common -Wdeclaration-after-statement \
 # easy version
 #CWARN=-Wall -Wextra
 
-CFLAGS=$(CWARN) -g
+CFLAGS=$(CWARN) -g -DDEBUG
 
 LDFLAGS=
 
