@@ -43,6 +43,7 @@ typedef struct omeLight
 
 omeLight *omeLightCreate(omeLightType type);
 #define omeLightCreateOmni() omeLightCreate(OME_LIGTH_TYPE_OMNI)
+void omeLightDestroy(omeLight **l);
 
 
 #ifdef __cplusplus

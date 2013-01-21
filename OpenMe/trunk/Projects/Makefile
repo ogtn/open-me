@@ -16,7 +16,7 @@ CC=LC_ALL=en_US.UTF-8 colorgcc
 # http://blogs.gnome.org/otte/2008/12/22/warning-options/
 # http://mces.blogspot.fr/2008/12/year-end-cleaning-ie-on-warning-options.html
 # http://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html
-CFLAGS=-Wall -Wextra -fno-common -Wdeclaration-after-statement \
+CWARN=-Wall -Wextra -fno-common -Wdeclaration-after-statement \
 -Wformat=2 -Winit-self -Winline -Wpacked -Wp,-D_FORTIFY_SOURCE=2 \
 -Wpointer-arith -Wlarger-than-65500 -Wmissing-declarations \
 -Wmissing-format-attribute -Wmissing-noreturn -Wmissing-prototypes \
@@ -26,7 +26,9 @@ CFLAGS=-Wall -Wextra -fno-common -Wdeclaration-after-statement \
 -Wwrite-strings #-ansi -pedantic
 
 # easy version
-#CFLAGS=-Wall -Wextra
+#CWARN=-Wall -Wextra
+
+CFLAGS=$(CWARN) -g
 
 LDFLAGS=
 
@@ -37,6 +39,9 @@ all: ../Debug/messyExample
 
 runMessyExample: ../Debug/messyExample ../Debug/libOpenMe.so
 	@cd ../Debug; LD_LIBRARY_PATH=. ./messyExample
+
+runMemCheck: ../Debug/messyExample ../Debug/libOpenMe.so
+	@cd ../Debug; LD_LIBRARY_PATH=. valgrind --tool=memcheck --leak-check=yes ./messyExample
 
 ../Debug/test_string: ../Examples/test_string.c ../Debug/libOpenMe.so
 	$(CC) $(CFLAGS) -o ../Debug/test_string ../Examples/test_string.c -lOpenMe -I$(UTHASH_INCLUDE) -I$(OPENME_INCLUDE) -L../Debug -lglfw -lIL

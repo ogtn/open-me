@@ -84,7 +84,7 @@ int main(void)
     //mesh = omeLoadOBJFromFile("data/chamfer.obj", OME_TRUE);
     //omeMeshSave("data/mesh1.omeMesh", mesh);
     //mesh = omeMeshLoad("data/mesh1.omeMesh");
-    //mesh2 = omeMeshLoad("data/mesh1.omeMesh");
+    mesh2 = omeMeshLoad("data/mesh1.omeMesh");
     
     // primitives test
     mesh = omePrimitiveSphere(10, 4);
@@ -249,7 +249,7 @@ int main(void)
 
     // free all the memory!!!
     omeMeshDestroy(&mesh);
-    omeMeshDestroy(&mesh2);
+    // omeMeshDestroy(&mesh2);
     omeCameraDestroy(&camera);
     omeProgramDestroy(&shaderProgram);
     omeEngineStop();

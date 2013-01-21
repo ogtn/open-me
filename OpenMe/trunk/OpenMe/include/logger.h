@@ -37,7 +37,17 @@ typedef struct omeLogger
 
 
 void omeLoggerStart(void);
-void omeLoggerLog(const char *format, ...);
+/*
+void omeLog(int level, const char *format, ...);
+#define omeLoggerLog(int level, int line, const char *file, const char* func, const char *format, ...); // fuckin' variadics...
+*/
+
+#ifdef __GNUC__
+void omeLoggerLog(const char *format, ...) __attribute((format(printf, 1, 2)));
+#else
+void omeLoggerLog(const char *format, ...)
+#endif
+
 void omeLoggerStop(void);
 
 

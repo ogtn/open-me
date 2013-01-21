@@ -58,8 +58,8 @@ void omeMeshDestroy(omeMesh **m);
 omeGeometry *omeMeshAddGeometry(omeMesh *m, omeGeometry *g);
 void omeMeshFinalize(omeMesh *m);
 void omeMeshBufferFinalized(omeMesh *m);
-void omeMeshSave(char *fileName, omeMesh *m);
-omeMesh *omeMeshLoad(char *fileName);
+void omeMeshSave(const char *fileName, omeMesh *m);
+omeMesh *omeMeshLoad(const char *fileName);
 
 omeMesh *omePrimitiveCube(float size, int subdivisions);
 omeMesh *omePrimitiveSphere(float radius, int subdivisions);

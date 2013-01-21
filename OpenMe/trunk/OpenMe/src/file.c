@@ -39,41 +39,41 @@ void omeFileDestroy(omeFile **f)
 }
 
 
-int omeFileIsValid(omeFile *f)
-{
-}
+// int omeFileIsValid(omeFile *f)
+// {
+// }
 
 
-int omeFileIsFile(omeFile *f)
-{
-}
+// int omeFileIsFile(omeFile *f)
+// {
+// }
 
 
-int omeFileIsDir(omeFile *f)
-{
-}
-
-
-
-void omeFileOpen(omeFile *f)
-{
-}
-
-
-void omeFileClose(omeFile *f)
-{
-}
+// int omeFileIsDir(omeFile *f)
+// {
+// }
 
 
 
-void omeFileGotoParent(omeFile *f)
-{
-}
+// void omeFileOpen(omeFile *f)
+// {
+// }
 
 
-void omeFileOpenChild(omeFile *f, int child)
-{
-}
+// void omeFileClose(omeFile *f)
+// {
+// }
+
+
+
+// void omeFileGotoParent(omeFile *f)
+// {
+// }
+
+
+// void omeFileOpenChild(omeFile *f, int child)
+// {
+// }
 
 /* TODO: implement this
 ???? omeFileGetContent(omeFile *f)

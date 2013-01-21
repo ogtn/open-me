@@ -238,10 +238,15 @@ omeTexture *omeTextureCubeMapLoadFromFile(const char *fileName)
     {
         ilBindImage(il_id[i]);
 
+        fflush(stdout);
+        printf("=== Loading '%s' ===\n", imgName[i]);
+        fflush(stdout);
+
         if(ilLoadImage(imgName[i]) == IL_FALSE)
         {
-            // TODO: remove this and do it the proper way
+            // TODO: remove this and do it the proper wa
             printf("unable to load: %s: %s\n", imgName[i], omeGetILError());
+            fflush(stdout);
             ilDeleteImage(il_id[i]);
 
             return NULL;

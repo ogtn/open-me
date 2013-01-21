@@ -29,18 +29,33 @@ typedef struct omeString
 
 
 omeString *omeStringCreate(unsigned int needed);
+
+#ifdef __GNUC__
+omeString *omeStringCreateFromStr(const char *format, ...) __attribute((format(printf, 1, 2)));
+#else
 omeString *omeStringCreateFromStr(const char *format, ...);
+#endif
+
 omeString *omeStringCopy(const omeString *s);
 void omeStringDestroy(omeString **s);
 void omeStringRealloc(omeString *s, unsigned int needed);
 void omeStringFit(omeString *s);
 omeString *omeStringClear(omeString *s);
 omeString *omeStringAppend(omeString *s, const omeString *s2);
+
+#ifdef __GNUC__
+omeString *omeStringAppendStr(omeString *s, const char *format, ...) __attribute((format(printf, 2, 3)));
+#else
 omeString *omeStringAppendStr(omeString *s, const char *format, ...);
+#endif
+
 const char *omeStringGetExtension(const omeString *s);
 
+#ifdef __GNUC__
+unsigned int countSprintf(const char *format, va_list ap) __attribute((format(printf, 1, 0)));
+#else
 unsigned int countSprintf(const char *format, va_list ap);
-
+#endif
 
 #ifdef __cplusplus
 }

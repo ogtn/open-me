@@ -85,7 +85,7 @@ void omeMeshBufferFinalized(omeMesh *m)
 
 
 //TODO: add a version number, to avoid failure when loading an obsolete file (maybe a header?)
-void omeMeshSave(char *fileName, omeMesh *m)
+void omeMeshSave(const char *fileName, omeMesh *m)
 {
     int i, j;
     FILE *file;
@@ -133,7 +133,7 @@ void omeMeshSave(char *fileName, omeMesh *m)
 }
 
 
-omeMesh *omeMeshLoad(char *fileName)
+omeMesh *omeMeshLoad(const char *fileName)
 {
     int i, j;
     int nbBuffers;

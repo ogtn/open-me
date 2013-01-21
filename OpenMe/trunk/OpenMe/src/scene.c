@@ -56,8 +56,9 @@ void omeSceneAddGeometry(omeScene *s, omeGeometry *g)
 
 void omeSceneAddLight(omeScene *s, omeLight *l)
 {
+    // TODO: change to something more efficient than a realloc for each call
     s->nbLights++;
-    s->lights = realloc(s->lights, s->nbLights);
+    s->lights = realloc(s->lights, s->nbLights * sizeof(omeLight *));
     s->lights[s->nbLights - 1] = l;
 }
 
