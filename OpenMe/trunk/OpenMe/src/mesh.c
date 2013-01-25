@@ -145,12 +145,17 @@ omeMesh *omeMeshLoad(const char *fileName)
     
     if(file == NULL)
     {
-		omeLoggerLog("Unable to load mesh: file %s missing\n", fileName);
+		omeLoggerLog("Unable to load mesh %s: file missing\n", fileName);
 		return NULL;
 	}
 
     // mesh info
-    fread(&nbBuffers, sizeof nbBuffers, 1, file);
+    if(fread(&nbBuffers, sizeof nbBuffers, 1, file) != 1)
+    {
+        omeLoggerLog("Unable to load mesh %s: missing buffers info\n", fileName);
+        goto error;
+    }
+
     m = omeMeshCreate(nbBuffers);
 
     for(i = 0; i < m->nbBuffers; i++)
@@ -162,10 +167,29 @@ omeMesh *omeMeshLoad(const char *fileName)
         void *data;
 
         // geometry info
-        fread(&nbVertices, sizeof nbVertices, 1, file);
-        fread(&nbAttributes, sizeof nbAttributes, 1, file);
-        fread(&polygonType, sizeof polygonType, 1, file);
-        fread(&indexed, sizeof indexed, 1, file);
+        if(fread(&nbVertices, sizeof nbVertices, 1, file) != 1)
+        {
+            omeLoggerLog("Unable to load mesh %s, buffer %d: missing vertices info\n", fileName, i);
+            goto error;
+        }
+
+        if(fread(&nbAttributes, sizeof nbAttributes, 1, file) != 1)
+        {
+            omeLoggerLog("Unable to load mesh %s, buffer %d: missing attributes info\n", fileName, i);
+            goto error;
+        }
+
+        if(fread(&polygonType, sizeof polygonType, 1, file) != 1)
+        {
+            omeLoggerLog("Unable to load mesh %s, buffer %d: missing polygon info\n", fileName, i);
+            goto error;
+        }
+
+        if(fread(&indexed, sizeof indexed, 1, file) != 1)
+        {
+            omeLoggerLog("Unable to load mesh %s, buffer %d: missing index info\n", fileName, i);
+            goto error;
+        }
 
         geometry = omeGeometryCreate(nbVertices, nbAttributes, polygonType);
         omeMeshAddGeometry(m, geometry);
@@ -175,13 +199,22 @@ omeMesh *omeMeshLoad(const char *fileName)
             omeVertexAttrib attr;
             
             // attribute info
-            fread(&attr, sizeof attr, 1, file);
+            if(fread(&attr, sizeof attr, 1, file) != 1)
+            {
+                omeLoggerLog("Unable to load mesh %s, buffer %d, attribute %d: attribute info\n", fileName, i, j);
+                goto error;
+            }
 
             // attribute data
             if(attr.actived)
             {
                 data = malloc(omeSizeOf(attr.type) * attr.nbElements * nbVertices);
-                fread(data, omeSizeOf(attr.type) * attr.nbElements, nbVertices, file);
+                
+                if(fread(data, omeSizeOf(attr.type) * attr.nbElements, nbVertices, file) != nbVertices)
+                {
+                    omeLoggerLog("Unable to load mesh %s, buffer %d, attribute %d: missing attribute data\n", fileName, i, j);
+                    goto error;
+                }
 
                 // TODO: an other omeGeometryAddAttrib() wich takes an attrib as parameter?
                 omeGeometryAddAttrib(geometry, attr.nbElements, attr.type, 0, attr.geometryType, data);
@@ -192,6 +225,12 @@ omeMesh *omeMeshLoad(const char *fileName)
     fclose(file);
 
     return m;
+
+    error:
+    fclose(file);
+    omeMeshDestroy(&m);
+
+    return NULL;
 }
 
 

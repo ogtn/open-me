@@ -28,43 +28,51 @@ CWARN=-Wall -Wextra -fno-common -Wdeclaration-after-statement \
 # easy version
 #CWARN=-Wall -Wextra
 
+# release by default
+ifdef DEBUG
 CFLAGS=$(CWARN) -g -DDEBUG
+OUTDIR=../Debug
+else
+CFLAGS=$(CWARN) -O3
+OUTDIR=../Release
+endif
 
 LDFLAGS=
 
 OPENME_INCLUDE=../OpenMe/include
 UTHASH_INCLUDE=../uthash
 
-all: ../Debug/messyExample
+all: $(OUTDIR)/messyExample
 
-runMessyExample: ../Debug/messyExample ../Debug/libOpenMe.so
-	@cd ../Debug; LD_LIBRARY_PATH=. ./messyExample
+runMessyExample: $(OUTDIR)/messyExample $(OUTDIR)/libOpenMe.so
+	@cd $(OUTDIR); LD_LIBRARY_PATH=. ./messyExample
 
-runMemCheck: ../Debug/messyExample ../Debug/libOpenMe.so
-	@cd ../Debug; LD_LIBRARY_PATH=. valgrind --tool=memcheck --leak-check=yes ./messyExample
+runMemCheck: $(OUTDIR)/messyExample $(OUTDIR)/libOpenMe.so
+	@cd $(OUTDIR); LD_LIBRARY_PATH=. valgrind --tool=memcheck --leak-check=yes ./messyExample
 
-../Debug/test_string: ../Examples/test_string.c ../Debug/libOpenMe.so
-	$(CC) $(CFLAGS) -o ../Debug/test_string ../Examples/test_string.c -lOpenMe -I$(UTHASH_INCLUDE) -I$(OPENME_INCLUDE) -L../Debug -lglfw -lIL
+$(OUTDIR)/test_string: ../Examples/test_string.c $(OUTDIR)/libOpenMe.so
+	$(CC) $(CFLAGS) -o $(OUTDIR)/test_string ../Examples/test_string.c -lOpenMe -I$(UTHASH_INCLUDE) -I$(OPENME_INCLUDE) -L$(OUTDIR) -lglfw -lIL
 
-../Debug/test_file: ../Examples/test_file.c ../Debug/libOpenMe.so
-	$(CC) $(CFLAGS) -o ../Debug/test_file ../Examples/test_file.c -lOpenMe -I$(UTHASH_INCLUDE) -I$(OPENME_INCLUDE) -L../Debug -lglfw -lIL
+$(OUTDIR)/test_file: ../Examples/test_file.c $(OUTDIR)/libOpenMe.so
+	$(CC) $(CFLAGS) -o $(OUTDIR)/test_file ../Examples/test_file.c -lOpenMe -I$(UTHASH_INCLUDE) -I$(OPENME_INCLUDE) -L$(OUTDIR) -lglfw -lIL
 
-runTests: ../Debug/test_string #../Debug/test_file
-	@cd ../Debug;  echo -n "Testing strings:..." && LD_LIBRARY_PATH=. ./test_string && echo "\033[1;32mOK\033[0m"
-#@cd ../Debug;  echo -n "Testing files:..." && LD_LIBRARY_PATH=. ./test_string && echo "\033[1;32mOK\033[0m"
+runTests: $(OUTDIR)/test_string #$(OUTDIR)/test_file
+	@cd $(OUTDIR);  echo -n "Testing strings:..." && LD_LIBRARY_PATH=. ./test_string && echo "\033[1;32mOK\033[0m"
+#@cd $(OUTDIR);  echo -n "Testing files:..." && LD_LIBRARY_PATH=. ./test_string && echo "\033[1;32mOK\033[0m"
 
 showTODOs:
 	@grep -rin --color --include *.[hc] TODO ..
-	@echo "\n\033[1;31m### There are `grep -ri --include *.[hc] TODO .. | wc -l` TODOs in the source code: still a lot of work! ###\033[0m"
+	@echo "\n\033[1;31mThere are `grep -ri --include *.[hc] TODO .. | wc -l` TODOs in the source code: still a lot of work!\033[0m"
 
-../Debug/messyExample: ../Examples/messyExample.c ../Debug/libOpenMe.so
-	$(CC) $(CFLAGS) -o ../Debug/messyExample ../Examples/messyExample.c -lOpenMe -I$(UTHASH_INCLUDE) -I$(OPENME_INCLUDE) -L../Debug -lglfw -lIL
+$(OUTDIR)/messyExample: ../Examples/messyExample.c $(OUTDIR)/libOpenMe.so
+	$(CC) $(CFLAGS) -o $(OUTDIR)/messyExample ../Examples/messyExample.c -lOpenMe -I$(UTHASH_INCLUDE) -I$(OPENME_INCLUDE) -L$(OUTDIR) -lglfw -lIL
 
-../Debug/libOpenMe.so: ../OpenMe/include/*.h ../OpenMe/src/*.c
-	$(CC) $(CFLAGS) -o ../Debug/libOpenMe.so -fPIC -shared -Wl,-soname,libOpenMe.so ../OpenMe/src/*.c -lm -lGLEW -I$(UTHASH_INCLUDE) -I$(OPENME_INCLUDE)
+$(OUTDIR)/libOpenMe.so: ../OpenMe/include/*.h ../OpenMe/src/*.c
+	$(CC) $(CFLAGS) -o $(OUTDIR)/libOpenMe.so -fPIC -shared -Wl,-soname,libOpenMe.so ../OpenMe/src/*.c -lm -lGLEW -I$(UTHASH_INCLUDE) -I$(OPENME_INCLUDE)
 
 clean:
 	@rm -rf ../Debug/libOpenMe.so ../Debug/messyExample ../Debug/test_*
+	@rm -rf ../Release/libOpenMe.so ../Release/messyExample ../Release/test_*
 	@echo "\033[1;32mClean complete\033[0m"
 
 .PHONY: all clean

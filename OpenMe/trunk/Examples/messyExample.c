@@ -81,10 +81,10 @@ int main(void)
     omeEngineSetActiveCamera(camera);
 
     // obj loading test
-    //mesh = omeLoadOBJFromFile("data/chamfer.obj", OME_TRUE);
-    //omeMeshSave("data/mesh1.omeMesh", mesh);
-    //mesh = omeMeshLoad("data/mesh1.omeMesh");
-    mesh2 = omeMeshLoad("data/mesh1.omeMesh");
+    // mesh = omeLoadOBJFromFile("data/chamfer.obj", OME_TRUE);
+    // omeMeshSave("data/mesh1.omeMesh", mesh);
+    // mesh = omeMeshLoad("data/mesh1.omeMesh");
+    // mesh2 = omeMeshLoad("data/mesh1.omeMesh");
     
     // primitives test
     mesh = omePrimitiveSphere(10, 4);
@@ -119,7 +119,7 @@ int main(void)
     mesh->material->diffuseTexture = omeTextureLoadFromFile("data/lena.jpg");//renderTarget->colorBuffer;
     mesh2->material->diffuseTexture = omeTextureCubeMapLoadFromFile("data/cloudy.omeCubeMap");    
 
-    testString(mesh);
+    // testString(mesh);
 
     while(glfwGetWindowParam(GLFW_OPENED) && !glfwGetKey(GLFW_KEY_ESC))
     {
