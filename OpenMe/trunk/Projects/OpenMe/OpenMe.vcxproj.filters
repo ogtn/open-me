@@ -12,6 +12,9 @@
     <Filter Include="Others">
       <UniqueIdentifier>{7f24c9a8-a53e-4986-8aba-dbd600ea156d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="uthash">
+      <UniqueIdentifier>{7840fea4-ca2a-43b9-96df-4d6dc610640b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <Text Include="..\todo.txt">
@@ -146,6 +149,18 @@
     </ClInclude>
     <ClInclude Include="..\..\OpenMe\include\vector.h">
       <Filter>Fichiers d%27en-tête</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\uthash\utarray.h">
+      <Filter>uthash</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\uthash\uthash.h">
+      <Filter>uthash</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\uthash\utlist.h">
+      <Filter>uthash</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\uthash\utstring.h">
+      <Filter>uthash</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

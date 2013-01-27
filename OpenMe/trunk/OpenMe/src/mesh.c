@@ -145,9 +145,9 @@ omeMesh *omeMeshLoad(const char *fileName)
     
     if(file == NULL)
     {
-		omeLoggerLog("Unable to load mesh %s: file missing\n", fileName);
-		return NULL;
-	}
+        omeLoggerLog("Unable to load mesh %s: file missing\n", fileName);
+        return NULL;
+    }
 
     // mesh info
     if(fread(&nbBuffers, sizeof nbBuffers, 1, file) != 1)
@@ -160,7 +160,7 @@ omeMesh *omeMeshLoad(const char *fileName)
 
     for(i = 0; i < m->nbBuffers; i++)
     {
-        int nbVertices;
+        size_t nbVertices;
         int nbAttributes;
         omePolygonType polygonType;
         omeBool indexed;

@@ -45,7 +45,7 @@ omePlugin *omePluginLoad(const char *name)
     p->handle = LoadLibrary(name);
 #endif
 
-    init = omePluginGetFunc(p, "omePluginInit");
+    init = (omePluginInitFunc)omePluginGetFunc(p, "omePluginInit");
 
     if(init)
         p->type = init();
@@ -60,7 +60,7 @@ void omePluginUnload(omePlugin **p)
 {
     omePluginQuitFunc quit;
 
-    quit = omePluginGetFunc(*p, "omePluginQuit");
+    quit = (omePluginQuitFunc)omePluginGetFunc(*p, "omePluginQuit");
 
     if(quit != NULL)
         quit();

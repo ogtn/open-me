@@ -30,7 +30,11 @@ void omeResourceInitialize(omeResource *r, omeResourceType type, const char *nam
     {
         r->anonymous = OME_FALSE;
         strncpy(r->hashKey, name, OME_NAME_MAXLEN);
+
+       // __pragma(warning(push))
+        //__pragma(warning(disable:4127))
         HASH_ADD_STR(manager.resources, hashKey, r);
+        //__pragma(warning(pop))
     }
 }
 

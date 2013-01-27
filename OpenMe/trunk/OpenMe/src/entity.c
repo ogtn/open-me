@@ -38,7 +38,7 @@ void omeEntitySetPosition(void *object, const omeVector *pos)
     omeEntity *e = object;
     OME_ENTITY_CHECK(e);
 
-	e->position = *pos;
+    e->position = *pos;
 }
 
 
@@ -47,5 +47,5 @@ void omeEntityMove(void *object, const omeVector *displacement)
     omeEntity *e = object;
     OME_ENTITY_CHECK(e);
 
-	omeVectorAddVector(&e->position, displacement, &e->position);
+    omeVectorAddVector(&e->position, displacement, &e->position);
 }

@@ -64,6 +64,12 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
    when compiling c++ code), this code uses whatever method is needed
    or, for VS2008 where neither is available, uses casting workarounds. */
 #ifdef _MSC_VER            /* MS compiler */
+#define MULTI_LINE_MACRO_BEGIN do { 
+#define MULTI_LINE_MACRO_END        \
+    __pragma(warning(push))         \
+    __pragma(warning(disable:4127)) \
+    } while(0)                      \
+    __pragma(warning(pop))
 #if _MSC_VER >= 1600 && defined(__cplusplus)  /* VS2010 or newer in C++ mode */
 #define LDECLTYPE(x) decltype(x)
 #else                     /* VS2008 or older (or VS2010 in C mode) */
@@ -71,6 +77,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define LDECLTYPE(x) char*
 #endif
 #else                      /* GNU, Sun and other compilers */
+#define MULTI_LINE_MACRO_BEGIN do { 
+#define MULTI_LINE_MACRO_END } while(0)
 #define LDECLTYPE(x) __typeof(x)
 #endif
 
@@ -103,7 +111,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
     LL_SORT2(list, cmp, next)
 
 #define LL_SORT2(list, cmp, next)                                                              \
-do {                                                                                           \
+MULTI_LINE_MACRO_BEGIN                                                                         \
   LDECLTYPE(list) _ls_p;                                                                       \
   LDECLTYPE(list) _ls_q;                                                                       \
   LDECLTYPE(list) _ls_e;                                                                       \
@@ -160,14 +168,14 @@ do {                                                                            
       _ls_insize *= 2;                                                                         \
     }                                                                                          \
   } else _tmp=NULL; /* quiet gcc unused variable warning */                                    \
-} while (0)
+MULTI_LINE_MACRO_END
 
 
 #define DL_SORT(list, cmp)                                                                     \
     DL_SORT2(list, cmp, prev, next)
 
 #define DL_SORT2(list, cmp, prev, next)                                                        \
-do {                                                                                           \
+MULTI_LINE_MACRO_BEGIN                                                                         \
   LDECLTYPE(list) _ls_p;                                                                       \
   LDECLTYPE(list) _ls_q;                                                                       \
   LDECLTYPE(list) _ls_e;                                                                       \
@@ -226,13 +234,13 @@ do {                                                                            
       _ls_insize *= 2;                                                                         \
     }                                                                                          \
   } else _tmp=NULL; /* quiet gcc unused variable warning */                                    \
-} while (0)
+MULTI_LINE_MACRO_END
 
 #define CDL_SORT(list, cmp)                                                                    \
     CDL_SORT2(list, cmp, prev, next)
 
 #define CDL_SORT2(list, cmp, prev, next)                                                       \
-do {                                                                                           \
+MULTI_LINE_MACRO_BEGIN                                                                         \
   LDECLTYPE(list) _ls_p;                                                                       \
   LDECLTYPE(list) _ls_q;                                                                       \
   LDECLTYPE(list) _ls_e;                                                                       \
@@ -303,7 +311,7 @@ do {                                                                            
       _ls_insize *= 2;                                                                         \
     }                                                                                          \
   } else _tmp=NULL; /* quiet gcc unused variable warning */                                    \
-} while (0)
+MULTI_LINE_MACRO_END
 
 /******************************************************************************
  * singly linked list macros (non-circular)                                   *
@@ -312,16 +320,16 @@ do {                                                                            
     LL_PREPEND2(head,add,next)
 
 #define LL_PREPEND2(head,add,next)                                                             \
-do {                                                                                           \
+MULTI_LINE_MACRO_BEGIN                                                                         \
   (add)->next = head;                                                                          \
   head = add;                                                                                  \
-} while (0)
+MULTI_LINE_MACRO_END
 
 #define LL_CONCAT(head1,head2)                                                                 \
     LL_CONCAT2(head1,head2,next)
 
 #define LL_CONCAT2(head1,head2,next)                                                           \
-do {                                                                                           \
+MULTI_LINE_MACRO_BEGIN                                                                         \
   LDECLTYPE(head1) _tmp;                                                                       \
   if (head1) {                                                                                 \
     _tmp = head1;                                                                              \
@@ -330,13 +338,13 @@ do {                                                                            
   } else {                                                                                     \
     (head1)=(head2);                                                                           \
   }                                                                                            \
-} while (0)
+MULTI_LINE_MACRO_END
 
 #define LL_APPEND(head,add)                                                                    \
     LL_APPEND2(head,add,next)
 
 #define LL_APPEND2(head,add,next)                                                              \
-do {                                                                                           \
+MULTI_LINE_MACRO_BEGIN                                                                         \
   LDECLTYPE(head) _tmp;                                                                        \
   (add)->next=NULL;                                                                            \
   if (head) {                                                                                  \
@@ -346,13 +354,13 @@ do {                                                                            
   } else {                                                                                     \
     (head)=(add);                                                                              \
   }                                                                                            \
-} while (0)
+MULTI_LINE_MACRO_END
 
 #define LL_DELETE(head,del)                                                                    \
     LL_DELETE2(head,del,next)
 
 #define LL_DELETE2(head,del,next)                                                              \
-do {                                                                                           \
+MULTI_LINE_MACRO_BEGIN                                                                         \
   LDECLTYPE(head) _tmp;                                                                        \
   if ((head) == (del)) {                                                                       \
     (head)=(head)->next;                                                                       \
@@ -365,14 +373,14 @@ do {                                                                            
       _tmp->next = ((del)->next);                                                              \
     }                                                                                          \
   }                                                                                            \
-} while (0)
+MULTI_LINE_MACRO_END
 
 /* Here are VS2008 replacements for LL_APPEND and LL_DELETE */
 #define LL_APPEND_VS2008(head,add)                                                             \
     LL_APPEND2_VS2008(head,add,next)
 
 #define LL_APPEND2_VS2008(head,add,next)                                                       \
-do {                                                                                           \
+MULTI_LINE_MACRO_BEGIN                                                                         \
   if (head) {                                                                                  \
     (add)->next = head;     /* use add->next as a temp variable */                             \
     while ((add)->next->next) { (add)->next = (add)->next->next; }                             \
@@ -381,13 +389,13 @@ do {                                                                            
     (head)=(add);                                                                              \
   }                                                                                            \
   (add)->next=NULL;                                                                            \
-} while (0)
+MULTI_LINE_MACRO_END
 
 #define LL_DELETE_VS2008(head,del)                                                             \
     LL_DELETE2_VS2008(head,del,next)
 
 #define LL_DELETE2_VS2008(head,del,next)                                                       \
-do {                                                                                           \
+MULTI_LINE_MACRO_BEGIN                                                                         \
   if ((head) == (del)) {                                                                       \
     (head)=(head)->next;                                                                       \
   } else {                                                                                     \
@@ -403,7 +411,7 @@ do {                                                                            
       *_head_alias = _tmp;                                                                     \
     }                                                                                          \
   }                                                                                            \
-} while (0)
+MULTI_LINE_MACRO_END
 #ifdef NO_DECLTYPE
 #undef LL_APPEND
 #define LL_APPEND LL_APPEND_VS2008
@@ -434,24 +442,24 @@ do {                                                                            
     LL_SEARCH_SCALAR2(head,out,field,val,next)
 
 #define LL_SEARCH_SCALAR2(head,out,field,val,next)                                             \
-do {                                                                                           \
+MULTI_LINE_MACRO_BEGIN                                                                         \
     LL_FOREACH2(head,out,next) {                                                               \
       if ((out)->field == (val)) break;                                                        \
     }                                                                                          \
-} while(0) 
+MULTI_LINE_MACRO_END
 
 #define LL_SEARCH(head,out,elt,cmp)                                                            \
     LL_SEARCH2(head,out,elt,cmp,next)
 
 #define LL_SEARCH2(head,out,elt,cmp,next)                                                      \
-do {                                                                                           \
+MULTI_LINE_MACRO_BEGIN                                                                         \
     LL_FOREACH2(head,out,next) {                                                               \
       if ((cmp(out,elt))==0) break;                                                            \
     }                                                                                          \
-} while(0) 
+MULTI_LINE_MACRO_END
 
 #define LL_REPLACE_ELEM(head, el, add)                                                         \
-do {                                                                                           \
+MULTI_LINE_MACRO_BEGIN                                                                         \
  LDECLTYPE(head) _tmp;                                                                         \
  assert(head != NULL);                                                                         \
  assert(el != NULL);                                                                           \
@@ -468,10 +476,10 @@ do {                                                                            
     _tmp->next = (add);                                                                        \
   }                                                                                            \
  }                                                                                             \
-} while (0)
+MULTI_LINE_MACRO_END
 
 #define LL_PREPEND_ELEM(head, el, add)                                                         \
-do {                                                                                           \
+MULTI_LINE_MACRO_BEGIN                                                                         \
  LDECLTYPE(head) _tmp;                                                                         \
  assert(head != NULL);                                                                         \
  assert(el != NULL);                                                                           \
@@ -488,7 +496,7 @@ do {                                                                            
     _tmp->next = (add);                                                                        \
   }                                                                                            \
  }                                                                                             \
-} while (0)                                                                                    \
+MULTI_LINE_MACRO_END
 
 
 /******************************************************************************
@@ -498,7 +506,7 @@ do {                                                                            
     DL_PREPEND2(head,add,prev,next)
 
 #define DL_PREPEND2(head,add,prev,next)                                                        \
-do {                                                                                           \
+MULTI_LINE_MACRO_BEGIN                                                                         \
  (add)->next = head;                                                                           \
  if (head) {                                                                                   \
    (add)->prev = (head)->prev;                                                                 \
@@ -507,13 +515,13 @@ do {                                                                            
    (add)->prev = (add);                                                                        \
  }                                                                                             \
  (head) = (add);                                                                               \
-} while (0)
+MULTI_LINE_MACRO_END
 
 #define DL_APPEND(head,add)                                                                    \
     DL_APPEND2(head,add,prev,next)
 
 #define DL_APPEND2(head,add,prev,next)                                                         \
-do {                                                                                           \
+MULTI_LINE_MACRO_BEGIN                                                                         \
   if (head) {                                                                                  \
       (add)->prev = (head)->prev;                                                              \
       (head)->prev->next = (add);                                                              \
@@ -524,13 +532,13 @@ do {                                                                            
       (head)->prev = (head);                                                                   \
       (head)->next = NULL;                                                                     \
   }                                                                                            \
-} while (0) 
+MULTI_LINE_MACRO_END
 
 #define DL_CONCAT(head1,head2)                                                                 \
     DL_CONCAT2(head1,head2,prev,next)
 
 #define DL_CONCAT2(head1,head2,prev,next)                                                      \
-do {                                                                                           \
+MULTI_LINE_MACRO_BEGIN                                                                         \
   LDECLTYPE(head1) _tmp;                                                                       \
   if (head2) {                                                                                 \
     if (head1) {                                                                               \
@@ -542,13 +550,13 @@ do {                                                                            
         (head1)=(head2);                                                                       \
     }                                                                                          \
   }                                                                                            \
-} while (0) 
+MULTI_LINE_MACRO_END
 
 #define DL_DELETE(head,del)                                                                    \
     DL_DELETE2(head,del,prev,next)
 
 #define DL_DELETE2(head,del,prev,next)                                                         \
-do {                                                                                           \
+MULTI_LINE_MACRO_BEGIN                                                                         \
   assert((del)->prev != NULL);                                                                 \
   if ((del)->prev == (del)) {                                                                  \
       (head)=NULL;                                                                             \
@@ -563,7 +571,7 @@ do {                                                                            
           (head)->prev = (del)->prev;                                                          \
       }                                                                                        \
   }                                                                                            \
-} while (0) 
+MULTI_LINE_MACRO_END
 
 
 #define DL_FOREACH(head,el)                                                                    \
@@ -586,7 +594,7 @@ do {                                                                            
 #define DL_SEARCH2 LL_SEARCH2
 
 #define DL_REPLACE_ELEM(head, el, add)                                                         \
-do {                                                                                           \
+MULTI_LINE_MACRO_BEGIN                                                                         \
  assert(head != NULL);                                                                         \
  assert(el != NULL);                                                                           \
  assert(add != NULL);                                                                          \
@@ -609,10 +617,10 @@ do {                                                                            
    (add)->next->prev = (add);                                                                  \
   }                                                                                            \
  }                                                                                             \
-} while (0)
+MULTI_LINE_MACRO_END
 
 #define DL_PREPEND_ELEM(head, el, add)                                                         \
-do {                                                                                           \
+MULTI_LINE_MACRO_BEGIN                                                                         \
  assert(head != NULL);                                                                         \
  assert(el != NULL);                                                                           \
  assert(add != NULL);                                                                          \
@@ -624,7 +632,7 @@ do {                                                                            
  } else {                                                                                      \
   (add)->prev->next = (add);                                                                   \
  }                                                                                             \
-} while (0)                                                                                    \
+MULTI_LINE_MACRO_END
 
 
 /******************************************************************************
@@ -634,7 +642,7 @@ do {                                                                            
     CDL_PREPEND2(head,add,prev,next)
 
 #define CDL_PREPEND2(head,add,prev,next)                                                       \
-do {                                                                                           \
+MULTI_LINE_MACRO_BEGIN                                                                         \
  if (head) {                                                                                   \
    (add)->prev = (head)->prev;                                                                 \
    (add)->next = (head);                                                                       \
@@ -645,13 +653,13 @@ do {                                                                            
    (add)->next = (add);                                                                        \
  }                                                                                             \
 (head)=(add);                                                                                  \
-} while (0)
+MULTI_LINE_MACRO_END
 
 #define CDL_DELETE(head,del)                                                                   \
     CDL_DELETE2(head,del,prev,next)
 
 #define CDL_DELETE2(head,del,prev,next)                                                        \
-do {                                                                                           \
+MULTI_LINE_MACRO_BEGIN                                                                         \
   if ( ((head)==(del)) && ((head)->next == (head))) {                                          \
       (head) = 0L;                                                                             \
   } else {                                                                                     \
@@ -659,7 +667,7 @@ do {                                                                            
      (del)->prev->next = (del)->next;                                                          \
      if ((del) == (head)) (head)=(del)->next;                                                  \
   }                                                                                            \
-} while (0) 
+MULTI_LINE_MACRO_END
 
 #define CDL_FOREACH(head,el)                                                                   \
     CDL_FOREACH2(head,el,next)
@@ -679,24 +687,24 @@ do {                                                                            
     CDL_SEARCH_SCALAR2(head,out,field,val,next)
 
 #define CDL_SEARCH_SCALAR2(head,out,field,val,next)                                            \
-do {                                                                                           \
+MULTI_LINE_MACRO_BEGIN                                                                         \
     CDL_FOREACH2(head,out,next) {                                                              \
       if ((out)->field == (val)) break;                                                        \
     }                                                                                          \
-} while(0) 
+MULTI_LINE_MACRO_END
 
 #define CDL_SEARCH(head,out,elt,cmp)                                                           \
     CDL_SEARCH2(head,out,elt,cmp,next)
 
 #define CDL_SEARCH2(head,out,elt,cmp,next)                                                     \
-do {                                                                                           \
+MULTI_LINE_MACRO_BEGIN                                                                         \
     CDL_FOREACH2(head,out,next) {                                                              \
       if ((cmp(out,elt))==0) break;                                                            \
     }                                                                                          \
-} while(0) 
+MULTI_LINE_MACRO_END
 
 #define CDL_REPLACE_ELEM(head, el, add)                                                        \
-do {                                                                                           \
+MULTI_LINE_MACRO_BEGIN                                                                         \
  assert(head != NULL);                                                                         \
  assert(el != NULL);                                                                           \
  assert(add != NULL);                                                                          \
@@ -713,10 +721,10 @@ do {                                                                            
    (head) = (add);                                                                             \
   }                                                                                            \
  }                                                                                             \
-} while (0)
+MULTI_LINE_MACRO_END
 
 #define CDL_PREPEND_ELEM(head, el, add)                                                        \
-do {                                                                                           \
+MULTI_LINE_MACRO_BEGIN                                                                         \
  assert(head != NULL);                                                                         \
  assert(el != NULL);                                                                           \
  assert(add != NULL);                                                                          \
@@ -727,7 +735,7 @@ do {                                                                            
  if ((head) == (el)) {                                                                         \
   (head) = (add);                                                                              \
  }                                                                                             \
-} while (0)                                                                                    \
+MULTI_LINE_MACRO_END
 
 #endif /* UTLIST_H */
 

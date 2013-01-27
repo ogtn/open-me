@@ -44,7 +44,7 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>$(VCInstallDir)include\uah;$(SolutionDir)\OpenMe\include\;$(IncludePath)</IncludePath>
+    <IncludePath>$(VCInstallDir)include\uah;$(SolutionDir)\OpenMe\include\;C:\Users\MouleMan\Documents\Visual Studio 2012\Projects\OpenMe\uthash;$(IncludePath)</IncludePath>
     <LibraryPath>$(SolutionDir)\lib\;$(WindowsSdkDir)\lib\;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
