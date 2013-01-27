@@ -58,6 +58,10 @@
     <ClInclude Include="..\..\OpenMe\include\texture.h" />
     <ClInclude Include="..\..\OpenMe\include\utils.h" />
     <ClInclude Include="..\..\OpenMe\include\vector.h" />
+    <ClInclude Include="..\..\uthash\utarray.h" />
+    <ClInclude Include="..\..\uthash\uthash.h" />
+    <ClInclude Include="..\..\uthash\utlist.h" />
+    <ClInclude Include="..\..\uthash\utstring.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCTargetsPath Condition="'$(VCTargetsPath11)' != '' and '$(VSVersion)' == '' and '$(VisualStudioVersion)' == ''">$(VCTargetsPath11)</VCTargetsPath>
@@ -92,7 +96,7 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Static Debug|Win32'">
-    <IncludePath>$(VCInstallDir)include\uah;C:\Users\MouleMan\Documents\Visual Studio 2012\Projects\OpenMe\OpenMe\include;$(IncludePath)</IncludePath>
+    <IncludePath>C:\Users\MouleMan\Documents\Visual Studio 2012\Projects\OpenMe\uthash;$(VCInstallDir)include\uah;C:\Users\MouleMan\Documents\Visual Studio 2012\Projects\OpenMe\OpenMe\include;$(IncludePath)</IncludePath>
     <TargetName>$(ProjectName)_dbg</TargetName>
     <OutDir>$(SolutionDir)\lib\</OutDir>
   </PropertyGroup>

@@ -153,11 +153,11 @@ int main(void)
             v = &pickedMesh->entity.scaling;
 
             if(glfwGetKey('Q'))
-                v->x += step * 0.1;
+                v->x += step * 0.1F;
             if(glfwGetKey('S'))
-                v->y += step * 0.1;
+                v->y += step * 0.1F;
             if(glfwGetKey('D'))
-                v->z += step * 0.1;
+                v->z += step * 0.1F;
 
             // reset mesh
             if(glfwGetKey(GLFW_KEY_SPACE))

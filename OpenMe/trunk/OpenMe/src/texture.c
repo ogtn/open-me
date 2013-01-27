@@ -89,7 +89,7 @@ omeTexture *omeTextureCreate(omeTextureType type, int width, int height, int dep
         glTexParameteri(t->type, GL_TEXTURE_WRAP_S, GL_REPEAT);
         break;
     default: // can't happen, just here to shut the compiler's mouth
-		omeLoggerLog("omeTextureCreate(): invalid type of texture\n");
+        omeLoggerLog("omeTextureCreate(): invalid type of texture\n");
         return NULL;
     }
 

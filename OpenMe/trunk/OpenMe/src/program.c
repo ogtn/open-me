@@ -210,8 +210,8 @@ int omeProgramLocateUniform(omeProgram *sp, const char *name)
         loc = omeUniformLocationCreate(sp, name);
 
         if(loc == NULL)
-			return -1;
-			
+            return -1;
+            
         HASH_ADD_STR(sp->uniforms, key, loc);
     }
 
@@ -221,21 +221,21 @@ int omeProgramLocateUniform(omeProgram *sp, const char *name)
 
 int omeProgramLocateAttribute(omeProgram *sp, const char *name)
 {
-	omeLocation *loc;
-	
-	HASH_FIND_STR(sp->attributes, name, loc);
-	
-	if(loc == NULL)
-	{
-		loc = omeAttribLocationCreate(sp, name);
-		
-		if(loc == NULL)
-			return -1;
-			
-		HASH_ADD_STR(sp->attributes, key, loc);
-	}
-	
-	return loc->location;
+    omeLocation *loc;
+    
+    HASH_FIND_STR(sp->attributes, name, loc);
+    
+    if(loc == NULL)
+    {
+        loc = omeAttribLocationCreate(sp, name);
+        
+        if(loc == NULL)
+            return -1;
+            
+        HASH_ADD_STR(sp->attributes, key, loc);
+    }
+    
+    return loc->location;
 }
 
 

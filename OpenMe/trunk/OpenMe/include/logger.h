@@ -45,7 +45,7 @@ void omeLog(int level, const char *format, ...);
 #ifdef __GNUC__
 void omeLoggerLog(const char *format, ...) __attribute((format(printf, 1, 2)));
 #else
-void omeLoggerLog(const char *format, ...)
+void omeLoggerLog(const char *format, ...);
 #endif
 
 void omeLoggerStop(void);
