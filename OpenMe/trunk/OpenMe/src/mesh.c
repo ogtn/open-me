@@ -41,6 +41,8 @@ void omeMeshDestroy(omeMesh **m)
     for(i = 0; i < (*m)->nbBuffers; i++)
         omeGeometryDelRef((*m)->geometries[i], *m);
 
+    free((*m)->geometries);
+
     memset(*m, 0, sizeof(omeMesh));
     free(*m);
     *m = NULL;

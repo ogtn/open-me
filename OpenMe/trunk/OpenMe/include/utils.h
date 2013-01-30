@@ -63,6 +63,7 @@ int omeSizeOf(omeType type);
 unsigned int omeTypeToGL(omeType type);
 const char *omeGetGLError(void);
 const char *omeGetILError(void);
+void omeCleanString(char *str);
 
 
 // other stuff...

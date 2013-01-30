@@ -8,7 +8,9 @@
 //  http://sam.zoy.org/projects/COPYING.WTFPL for more details.
 
 
+#define OME_IMPL
 #include "texture.h"
+
 #include "logger.h"
 #include <GL/glew.h>
 #include <IL/il.h>
@@ -156,7 +158,7 @@ omeTexture *omeTextureLoadFromFile(const char *fileName)
     if(ilLoadImage(fileName) == IL_FALSE)
     {
         // TODO: remove this???
-        printf("unable to load: %s: %s\n", fileName, omeGetILError());
+        omeLoggerLog("unable to load: %s: %s\n", fileName, omeGetILError());
         ilDeleteImage(il_id);
 
         return NULL;
@@ -165,7 +167,7 @@ omeTexture *omeTextureLoadFromFile(const char *fileName)
     if(ilConvertImage(IL_RGBA, IL_UNSIGNED_BYTE) == IL_FALSE)
     {
         // TODO: remove this???
-        printf("unable to convert: %s: %s\n", fileName, omeGetILError());
+        omeLoggerLog("unable to convert: %s: %s\n", fileName, omeGetILError());
         ilDeleteImage(il_id);
 
         return NULL;
@@ -192,7 +194,6 @@ omeTexture *omeTextureCubeMapLoadFromFile(const char *fileName)
     ILuint il_id[6];
     void *pixels[6];
     char imgName[6][OME_NAME_MAXLEN];
-    char *endLine;
     FILE *file;
     int w, h;
     int i;
@@ -211,17 +212,14 @@ omeTexture *omeTextureCubeMapLoadFromFile(const char *fileName)
 
     if(file == NULL)
     {
-        printf("Unable to open file: %s\n", fileName);
+        omeLoggerLog("Unable to open file: %s\n", fileName);
         return NULL;
     }
     
     for(i = 0; i < 6; i++)
     {
         fgets(imgName[i], OME_NAME_MAXLEN, file);
-        endLine = strchr(imgName[i], '\n');
-
-        if(endLine != NULL)
-            *endLine = '\0';
+        omeCleanString(imgName[i]);
     }
     
     fclose(file);
@@ -238,14 +236,12 @@ omeTexture *omeTextureCubeMapLoadFromFile(const char *fileName)
     {
         ilBindImage(il_id[i]);
 
-        fflush(stdout);
-        printf("=== Loading '%s' ===\n", imgName[i]);
-        fflush(stdout);
+        omeLoggerLog("Loading \"%s\"\n", imgName[i]);
 
         if(ilLoadImage(imgName[i]) == IL_FALSE)
         {
-            // TODO: remove this and do it the proper wa
-            printf("unable to load: %s: %s\n", imgName[i], omeGetILError());
+            // TODO: remove this and do it the proper way
+            omeLoggerLog("Unable to load: %s: %s\n", imgName[i], omeGetILError());
             fflush(stdout);
             ilDeleteImage(il_id[i]);
 
@@ -255,7 +251,7 @@ omeTexture *omeTextureCubeMapLoadFromFile(const char *fileName)
         if(ilConvertImage(IL_RGBA, IL_UNSIGNED_BYTE) == IL_FALSE)
         {
             // TODO: remove this and do it the proper way
-            printf("unable to convert: %s: %s\n", imgName[i], omeGetILError());
+            omeLoggerLog("Unable to convert: %s: %s\n", imgName[i], omeGetILError());
             ilDeleteImage(il_id[i]);
 
             return NULL;
