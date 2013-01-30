@@ -57,6 +57,7 @@ void omeProgramDestroy(omeProgram **sp)
 
     glDeleteProgram((*sp)->id);
     memset(*sp, 0, sizeof(omeProgram));
+    free(*sp);
     *sp = NULL;
 }
 
