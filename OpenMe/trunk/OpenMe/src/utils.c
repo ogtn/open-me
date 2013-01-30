@@ -11,6 +11,7 @@
 #include "utils.h"
 #include <IL/il.h>
 #include <GL/glew.h>
+#include <ctype.h>
 
 
 int omeSizeOf(omeType type)
@@ -135,4 +136,18 @@ int omeNextPowOfTwo(int n)
         res <<= 1;
 
     return res;
+}
+
+void omeCleanString(char *str)
+{
+    while(*str)
+    {
+        if(*str == '\n' || *str == '\r')
+        {
+            *str = '\0';
+            return;
+        }
+
+        str++;
+    }
 }
