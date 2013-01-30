@@ -53,7 +53,7 @@ runMessyExample: $(OUTDIR)/messyExample $(OUTDIR)/libOpenMe.so
 	@cd $(OUTDIR); LD_LIBRARY_PATH=. ./messyExample
 
 runMemCheck: $(OUTDIR)/messyExample $(OUTDIR)/libOpenMe.so
-	@cd $(OUTDIR); LD_LIBRARY_PATH=. valgrind --tool=memcheck --leak-check=yes --track-origins=yes ./messyExample
+	@cd $(OUTDIR); LD_LIBRARY_PATH=. valgrind --tool=memcheck --leak-check=yes --track-origins=yes -v ./messyExample
 
 $(OUTDIR)/test_string: ../Examples/test_string.c $(OUTDIR)/libOpenMe.so
 	$(CC) $(CFLAGS) -o $(OUTDIR)/test_string ../Examples/test_string.c -lOpenMe -I$(UTHASH_INCLUDE) -I$(OPENME_INCLUDE) -L$(OUTDIR) -lglfw -lIL

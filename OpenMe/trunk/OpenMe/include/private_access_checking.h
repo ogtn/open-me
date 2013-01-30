@@ -10,13 +10,14 @@
 #ifndef OME_PRIVACY_START
 	#define OME_PRIVACY_START
 	#if defined(OME_CHECK_PRIVACY) && !defined(OME_IMPL)
-		#define ome_cst const
+		#define private const
 	#else
-		#define ome_cst
+		#define private
 	#endif
 	#define public
 #else
-	#undef ome_cst
+	#undef private
 	#undef public
 	#undef OME_IMPL
+	#undef OME_PRIVACY_START
 #endif
