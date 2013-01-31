@@ -25,8 +25,7 @@ typedef enum omeTextureType
     OME_TEXTURE_TYPE_1D,
     OME_TEXTURE_TYPE_2D,
     OME_TEXTURE_TYPE_3D,
-    OME_TEXTURE_TYPE_CUBE,
-    OME_TEXTURE_TYPE_MAX
+    OME_TEXTURE_TYPE_CUBE
 } omeTextureType;
 
 
