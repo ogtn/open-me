@@ -29,6 +29,7 @@ omeShader *omeShaderCreate(omeShaderType type, char *code, const char *name)
         omeResourceInitialize(&s->resource, OME_RESOURCE_VERTEX_SHADER, name);
         s->id = glCreateShader(GL_VERTEX_SHADER);
         break;
+    case OME_SHADER_TYPE_MAX:
     default:
         omeLoggerLog("Shader type is not valid\n");
         free(s);

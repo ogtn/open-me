@@ -25,8 +25,7 @@ extern "C" {
 typedef enum omeCameraType
 {
     OME_CAMERA_TYPE_ORTHO,
-    OME_CAMERA_TYPE_PERPECTIVE,
-    OME_CAMERA_TYPE_MAX
+    OME_CAMERA_TYPE_PERPECTIVE
 } omeCameraType;
 
 
