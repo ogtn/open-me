@@ -218,8 +218,14 @@ omeTexture *omeTextureCubeMapLoadFromFile(const char *fileName)
     
     for(i = 0; i < 6; i++)
     {
-        fgets(imgName[i], OME_NAME_MAXLEN, file);
-        omeCleanString(imgName[i]);
+        if(!fgets(imgName[i], OME_NAME_MAXLEN, file))
+        {
+            fclose(file);
+            omeLoggerLog("Unable to load the cubemap texture: file %s is ill-formed\n", fileName);
+            return NULL;
+        }
+        else
+            omeCleanString(imgName[i]);
     }
     
     fclose(file);

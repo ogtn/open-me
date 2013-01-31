@@ -17,6 +17,7 @@ extern "C" {
 #endif
 
 
+#include "utils.h"
 #include <stdio.h>
 
 
@@ -42,11 +43,7 @@ void omeLog(int level, const char *format, ...);
 #define omeLoggerLog(int level, int line, const char *file, const char* func, const char *format, ...); // fuckin' variadics...
 */
 
-#ifdef __GNUC__
-void omeLoggerLog(const char *format, ...) __attribute((format(printf, 1, 2)));
-#else
-void omeLoggerLog(const char *format, ...);
-#endif
+void omeLoggerLog(const char *format, ...) OME_CHK_FMT(1);
 
 void omeLoggerStop(void);
 

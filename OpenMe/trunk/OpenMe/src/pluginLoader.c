@@ -11,7 +11,7 @@
 #include "pluginLoader.h"
 #ifdef __linux__
 #include <dlfcn.h>
-#elif _WIN32
+#elif defined(_WIN32)
 #include <windows.h>
 #endif
 #include <stdio.h>
@@ -40,7 +40,7 @@ omePlugin *omePluginLoad(const char *name)
 
         fprintf(stderr, "Error occured while loading library %s: %s\n", name, msg ? msg : "unknown error");
     }
-#elif _WIN32
+#elif defined(_WIN32)
     //TODO: wchar_t for windows ... or use LoadLibraryA() (bad idea)
     p->handle = LoadLibrary(name);
 #endif
@@ -74,7 +74,7 @@ void omePluginUnload(omePlugin **p)
 
         fprintf(stderr, "Error occured while unloading library %s: %s\n", (*p)->name, msg ? msg : "unknown error");
     }
-#elif _WIN32
+#elif defined(_WIN32)
     FreeLibrary((*p)->handle);
 #endif
 
@@ -101,7 +101,7 @@ void *omePluginGetFunc(omePlugin *p, const char *funcName)
 
         fprintf(stderr, "Error occured while loading symbol %s from library %s: %s\n", funcName, p->name, msg ? msg : "unknown error");
     }
-#elif _WIN32
+#elif defined(_WIN32)
     res = GetProcAddress(p->handle, funcName);
 #endif
 
