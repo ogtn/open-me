@@ -21,6 +21,7 @@ extern "C" {
 #include "utils.h"
 
 
+// All the different types of camera propose by OpenMe
 typedef enum omeCameraType
 {
     OME_CAMERA_TYPE_ORTHO,

@@ -69,6 +69,16 @@ void omeCleanString(char *str);
 // other stuff...
 #define OME_NAME_MAXLEN     256  
 
+#ifdef __GNUC__
+    #define OME_CHK_FMT(fmt_pos) __attribute((format(printf, (fmt_pos), (fmt_pos + 1))))
+    #define OME_INLINE __inline__
+#elif defined(_MSC_VER)
+    #define OME_CHK_FMT(fmt_pos)
+    #define OME_INLINE __inline
+#else
+    #define OME_CHK_FMT(fmt_pos)
+    #define OME_INLINE
+#endif
 
 #ifdef __cplusplus
 }
