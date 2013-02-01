@@ -67,7 +67,6 @@ void omeSceneRender(omeScene *s, omeCamera *c)
 {
     omeGeometryListElement *geometryElt;
     omeProgram *p =  NULL;
-
     omeCameraUpdate(c);
 
     DL_FOREACH(s->geometries, geometryElt)

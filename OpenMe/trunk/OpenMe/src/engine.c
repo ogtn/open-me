@@ -157,6 +157,7 @@ void omeEngineStop(void)
     omeSceneDestroy(&engine.scene);
 
     omeLoggerLog("Engine stopped, status = %s\n", engine.state == OME_ENGINE_STATE_DEFECT ? "KO" : "OK");
+    omeLoggerLog("Last OpenGL error: %s\n", omeGetGLError());
     omeLoggerLog("%d frames rendered\n", engine.totalFrames);
     
     omeLoggerStop();
