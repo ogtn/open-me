@@ -60,7 +60,7 @@ int main(void)
     omeMaterial *mat;
     omeRenderTarget *renderTarget;
     omeBool picked = OME_FALSE;
-    int maxFrameCpt = 0;
+    int maxFrameCpt = 10;
 
     // get OpenGL context
     if(!glfwInit())
@@ -119,7 +119,7 @@ int main(void)
     // texture test
     mesh->material->diffuseTexture = omeTextureLoadFromFile("data/lena.jpg");//renderTarget->colorBuffer;
     mesh2->material->diffuseTexture = omeTextureCubeMapLoadFromFile("data/cloudy.omeCubeMap");
-
+    mesh->entity.position.z += 10;
     // testString(mesh);
 
     while(glfwGetWindowParam(GLFW_OPENED) && !glfwGetKey(GLFW_KEY_ESC) && maxFrameCpt-- > 0)

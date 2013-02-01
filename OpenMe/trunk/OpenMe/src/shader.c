@@ -127,7 +127,7 @@ omeStatus omeShaderCompile(omeShader *s)
     GLsizei size;
 
     // send source code
-    glShaderSource(s->id, 1, &s->code, NULL);
+    glShaderSource(s->id, 1, (const char **)&s->code, NULL);
 
     // compiling and testing
     glCompileShader(s->id);

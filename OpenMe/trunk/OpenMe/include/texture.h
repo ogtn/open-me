@@ -36,7 +36,7 @@ typedef enum omeTextureType
 typedef struct omeTexture
 {
     // keep in first position
-    private omeResource resource;
+    omeResource resource;
 
     private unsigned int type;  // OpenGL type of texture
     private int width;          // texture width
