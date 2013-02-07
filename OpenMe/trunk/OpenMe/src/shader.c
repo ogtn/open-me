@@ -115,7 +115,7 @@ void omeShaderDestroy(omeShader **s)
 {
     glDeleteShader((*s)->id);
     free((*s)->code);
-    memset(*s, 0, sizeof(omeShader));
+    omeDbgClearMem(*s, sizeof(omeShader));
     free(*s);
     *s = NULL;
 }

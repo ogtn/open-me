@@ -65,6 +65,9 @@ const char *omeGetGLError(void);
 const char *omeGetILError(void);
 void omeCleanString(char *str);
 
+// TODO get rid of this header?
+#include <stdlib.h>
+void omeDbgClearMem(void *ptr, size_t size);
 
 // other stuff...
 #define OME_NAME_MAXLEN     256  

@@ -39,7 +39,7 @@ omeScene *omeSceneCreate(void)
 void omeSceneDestroy(omeScene **s)
 {
     // TODO: free geometries and lights here???
-    memset(*s, 0, sizeof(omeScene));
+    omeDbgClearMem(*s, sizeof(omeScene));
     free(*s);
     *s = NULL;
 }

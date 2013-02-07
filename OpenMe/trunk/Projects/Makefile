@@ -23,7 +23,7 @@ CWARN=-Wall -Wextra -fno-common -Wdeclaration-after-statement \
 -Wnested-externs -Wold-style-definition -Wredundant-decls \
 -Wsign-compare -Wstrict-aliasing=2 -Wstrict-prototypes -Wswitch-enum \
 -Wundef -Wunreachable-code -Wunsafe-loop-optimizations \
--Wwrite-strings #-pedantic #-ansi -pedantic
+-Wwrite-strings #-pedantic-errors #-ansi -pedantic
 
 # easy version
 #CWARN=-Wall -Wextra

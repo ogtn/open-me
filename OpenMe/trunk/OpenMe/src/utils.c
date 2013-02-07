@@ -138,6 +138,7 @@ int omeNextPowOfTwo(int n)
     return res;
 }
 
+
 void omeCleanString(char *str)
 {
     while(*str)
@@ -150,4 +151,12 @@ void omeCleanString(char *str)
 
         str++;
     }
+}
+
+
+void omeDbgClearMem(void *ptr, size_t size)
+{
+#ifdef DEBUG
+    memset(ptr, 0, size);
+#endif
 }

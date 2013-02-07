@@ -43,7 +43,7 @@ void omeMeshDestroy(omeMesh **m)
 
     free((*m)->geometries);
 
-    memset(*m, 0, sizeof(omeMesh));
+    omeDbgClearMem(*m, sizeof(omeMesh));
     free(*m);
     *m = NULL;
 }

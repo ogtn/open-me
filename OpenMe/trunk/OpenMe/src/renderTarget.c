@@ -69,8 +69,7 @@ void omeRenderTargetDestroy(omeRenderTarget **rt)
     glDeleteFramebuffersEXT(1, &(*rt)->FBO);
     glDeleteRenderbuffersEXT(1, &(*rt)->depthBuffer);
     omeResourceDelRef(&(*rt)->colorBuffer->resource);
-
-    memset(*rt, 0, sizeof(omeRenderTarget));
+    omeDbgClearMem(*rt, sizeof(omeRenderTarget));
     free(*rt);
     *rt = NULL;
 }
