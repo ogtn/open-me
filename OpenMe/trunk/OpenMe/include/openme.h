@@ -33,7 +33,6 @@ extern "C" {
 #include "dstring.h"
 
 
-//TODO: avoid memset() calls in *Destroy functions in release
 //TODO: test *alloc() return in debug mode, through "overloading"?
 //TODO: add an omeBool field in structures, so they can know if they are dynamic ok not and avoid calling free()??? Not sure if stupid....
 //TODO: make sure all static stuffs are const, to allow multithreading

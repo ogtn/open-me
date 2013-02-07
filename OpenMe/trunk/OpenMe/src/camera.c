@@ -39,7 +39,7 @@ omeCamera *omeCameraCreate(omeCameraType type)
 
 void omeCameraDestroy(omeCamera **c)
 {
-    memset(*c, 0, sizeof(omeCamera));
+    omeDbgClearMem(*c, sizeof(omeCamera));
     free(*c);
     *c = NULL;
 }

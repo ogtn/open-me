@@ -60,7 +60,7 @@ int main(void)
     omeMaterial *mat;
     omeRenderTarget *renderTarget;
     omeBool picked = OME_FALSE;
-    int maxFrameCpt = 10;
+    int maxFrameCpt = 0;
 
     // get OpenGL context
     if(!glfwInit())

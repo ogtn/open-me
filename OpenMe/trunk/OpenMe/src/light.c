@@ -38,7 +38,8 @@ omeLight *omeLightCreate(omeLightType type)
 
 void omeLightDestroy(omeLight **l)
 {
-    memset(*l, 0, sizeof(omeLight));
+    omeDbgClearMem(*l, sizeof(omeLight));
+
     free(*l);
     *l = NULL;
 }

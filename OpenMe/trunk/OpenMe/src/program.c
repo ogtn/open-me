@@ -56,7 +56,7 @@ void omeProgramDestroy(omeProgram **sp)
     }
 
     glDeleteProgram((*sp)->id);
-    memset(*sp, 0, sizeof(omeProgram));
+    omeDbgClearMem(*sp, sizeof(omeProgram));
     free(*sp);
     *sp = NULL;
 }
@@ -275,7 +275,7 @@ omeLocation *omeLocationCreate(omeProgram *sp, const char *name, omeLocationType
 
 void omeLocationDestroy(omeLocation **loc)
 {
-    memset(*loc, 0, sizeof(omeLocation));
+    omeDbgClearMem(*loc, sizeof(omeLocation));
     free(*loc);
     *loc = NULL;
 }

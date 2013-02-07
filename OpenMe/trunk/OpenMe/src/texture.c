@@ -104,7 +104,7 @@ omeTexture *omeTextureCreate(omeTextureType type, int width, int height, int dep
 void omeTextureDestroy(omeTexture **t)
 {
     glDeleteTextures(1, &(*t)->id);
-    memset(*t, 0, sizeof(omeTexture));
+    omeDbgClearMem(*t, sizeof(omeTexture));
     free(*t);
     *t = NULL;
 }

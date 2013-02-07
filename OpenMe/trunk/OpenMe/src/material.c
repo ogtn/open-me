@@ -39,7 +39,7 @@ void omeMaterialDestroy(omeMaterial **m)
 {
     // TODO: decrement texture ref here
 
-    memset(*m, 0, sizeof(omeMaterial));
+    omeDbgClearMem(*m, sizeof(omeMaterial));
     free(*m);
     *m = NULL;
 }

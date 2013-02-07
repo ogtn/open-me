@@ -83,7 +83,7 @@ omeGeometry *omeGeometryCreate(int nbVertices, int nbAttributes, omePolygonType 
 void omeGeometryDestroy(omeGeometry **g)
 {
     //TODO: figure out what else do we need to free here -> add flags
-    memset(*g, 0, sizeof(omeGeometry));
+    omeDbgClearMem(*g, sizeof(omeGeometry));
     free(*g);
     *g = NULL;
 }

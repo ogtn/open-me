@@ -67,7 +67,7 @@ void omeStringDestroy(omeString **s)
     if((*s)->size != 0)
         free((*s)->str);
 
-    memset(*s, 0, sizeof(omeString));
+    omeDbgClearMem(*s, sizeof(omeString));
     free(*s);
     *s = NULL;
 }
