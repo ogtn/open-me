@@ -82,10 +82,13 @@ int main(void)
     omeEngineSetActiveCamera(camera);
 
     // obj loading test
-    // mesh = omeLoadOBJFromFile("data/chamfer.obj", OME_TRUE);
-    // omeMeshSave("data/mesh1.omeMesh", mesh);
-    // mesh = omeMeshLoad("data/mesh1.omeMesh");
-    // mesh2 = omeMeshLoad("data/mesh1.omeMesh");
+    mesh = omeLoadOBJFromFile("data/bunny69k.obj", OME_TRUE);
+    omeMeshSave("data/mesh1.omeMesh", mesh);
+    mesh = omeMeshLoad("data/mesh1.omeMesh");
+    mesh2 = omeMeshLoad("data/mesh1.omeMesh");
+
+    omeMeshDestroy(&mesh);
+    omeMeshDestroy(&mesh2);
     
     // primitives test
     mesh = omePrimitiveSphere(10, 4);
