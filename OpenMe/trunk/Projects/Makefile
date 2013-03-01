@@ -1,6 +1,7 @@
 #  ome: Open Minimalistic Engine
 #
-#  Copyright: (c) 2012 Olivier Guittonneau <OpenMEngine@gmail.com>
+#  Copyright: (c) 2012-2013
+#  Olivier Guittonneau <OpenMEngine@gmail.com>
 #
 #  This program is free software; you can redistribute it and/or
 #  modify it under the terms of the Do What The Fuck You Want To
