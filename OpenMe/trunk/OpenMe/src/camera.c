@@ -71,7 +71,7 @@ void omeCameraSetPerspective(omeCamera *c, float fov, float ratio, float near, f
 {
     if(c->type != OME_CAMERA_TYPE_PERPECTIVE)
     {
-        omeLoggerLog("This is not a perspective camera");
+        omeLoggerLog("this is not a perspective camera");
         return;
     }
 
