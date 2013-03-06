@@ -13,7 +13,7 @@
 CC=LC_ALL=en_US.UTF-8 colorgcc
 #CC=gcc
 
-# hardcore mode, I save it for later :)
+# hardcore mode :)
 # http://blogs.gnome.org/otte/2008/12/22/warning-options/
 # http://mces.blogspot.fr/2008/12/year-end-cleaning-ie-on-warning-options.html
 # http://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html
@@ -48,7 +48,8 @@ LDFLAGS=
 OPENME_INCLUDE=../OpenMe/include
 UTHASH_INCLUDE=../uthash
 
-all: $(OUTDIR)/messyExample
+all: $(OUTDIR)/messyExample $(OUTDIR)/test_string $(OUTDIR)/test_interp
+	@echo "\033[1;32m======[build complete]=======\033[0m"
 
 runMessyExample: $(OUTDIR)/messyExample $(OUTDIR)/libOpenMe.so
 	@cd $(OUTDIR); LD_LIBRARY_PATH=. ./messyExample
@@ -57,13 +58,21 @@ runMemCheck: $(OUTDIR)/messyExample $(OUTDIR)/libOpenMe.so
 	@cd $(OUTDIR); LD_LIBRARY_PATH=. valgrind --tool=memcheck --leak-check=yes --track-origins=yes ./messyExample
 
 $(OUTDIR)/test_string: ../Examples/test_string.c $(OUTDIR)/libOpenMe.so
-	$(CC) $(CFLAGS) -o $(OUTDIR)/test_string ../Examples/test_string.c -lOpenMe -I$(UTHASH_INCLUDE) -I$(OPENME_INCLUDE) -L$(OUTDIR) -lglfw -lIL
+	@echo "\033[1;32m===[building test_string]====\033[0m"
+	@$(CC) $(CFLAGS) -o $(OUTDIR)/test_string ../Examples/test_string.c -lOpenMe -I$(UTHASH_INCLUDE) -I$(OPENME_INCLUDE) -L$(OUTDIR) -lglfw -lIL
+#@echo "\033[1;32m======[build complete]=======\033[0m"
 
-$(OUTDIR)/test_file: ../Examples/test_file.c $(OUTDIR)/libOpenMe.so
-	$(CC) $(CFLAGS) -o $(OUTDIR)/test_file ../Examples/test_file.c -lOpenMe -I$(UTHASH_INCLUDE) -I$(OPENME_INCLUDE) -L$(OUTDIR) -lglfw -lIL
+$(OUTDIR)/test_interp: ../Examples/test_interp.c $(OUTDIR)/libOpenMe.so
+	@echo "\033[1;32m===[building test interp]====\033[0m"
+	@$(CC) $(CFLAGS) -o $(OUTDIR)/test_interp ../Examples/test_interp.c -lOpenMe -I$(UTHASH_INCLUDE) -I$(OPENME_INCLUDE) -L$(OUTDIR) -lglfw -lIL
+#@echo "\033[1;32m======[build complete]=======\033[0m"
 
-runTests: $(OUTDIR)/test_string #$(OUTDIR)/test_file
+#$(OUTDIR)/test_file: ../Examples/test_file.c $(OUTDIR)/libOpenMe.so
+#	$(CC) $(CFLAGS) -o $(OUTDIR)/test_file ../Examples/test_file.c -lOpenMe -I$(UTHASH_INCLUDE) -I$(OPENME_INCLUDE) -L$(OUTDIR) -lglfw -lIL
+
+runTests: $(OUTDIR)/test_string $(OUTDIR)/test_interp #$(OUTDIR)/test_file
 	@cd $(OUTDIR);  echo -n "Testing strings:..." && LD_LIBRARY_PATH=. ./test_string && echo "\033[1;32mOK\033[0m"
+	@cd $(OUTDIR);  echo -n "Testing interpreter:..." && LD_LIBRARY_PATH=. ./test_interp && echo "\033[1;32mOK\033[0m"
 #@cd $(OUTDIR);  echo -n "Testing files:..." && LD_LIBRARY_PATH=. ./test_string && echo "\033[1;32mOK\033[0m"
 
 showTODOs:
@@ -71,10 +80,14 @@ showTODOs:
 	@echo "\n\033[1;31mThere are `grep -ri --include *.[hc] TODO .. | wc -l` TODOs in the source code: still a lot of work!\033[0m"
 
 $(OUTDIR)/messyExample: ../Examples/messyExample.c $(OUTDIR)/libOpenMe.so
-	$(CC) $(CFLAGS) -o $(OUTDIR)/messyExample ../Examples/messyExample.c -lOpenMe -I$(UTHASH_INCLUDE) -I$(OPENME_INCLUDE) -L$(OUTDIR) -lglfw -lIL
+	@echo "\033[1;32m===[building messyExample]===\033[0m"
+	@$(CC) $(CFLAGS) -o $(OUTDIR)/messyExample ../Examples/messyExample.c -lOpenMe -I$(UTHASH_INCLUDE) -I$(OPENME_INCLUDE) -L$(OUTDIR) -lglfw -lIL
+#@echo "\033[1;32m======[build complete]=======\033[0m"
 
 $(OUTDIR)/libOpenMe.so: ../OpenMe/include/*.h ../OpenMe/src/*.c
-	$(CC) $(CFLAGS) -o $(OUTDIR)/libOpenMe.so -fPIC -shared -Wl,-soname,libOpenMe.so ../OpenMe/src/*.c -lm -lGLEW -I$(UTHASH_INCLUDE) -I$(OPENME_INCLUDE)
+	@echo "\033[1;32m====[building libOpenMe]=====\033[0m"
+	@$(CC) $(CFLAGS) -o $(OUTDIR)/libOpenMe.so -fPIC -shared -Wl,-soname,libOpenMe.so ../OpenMe/src/*.c -lm -lGLEW -I$(UTHASH_INCLUDE) -I$(OPENME_INCLUDE)
+#@echo "\033[1;32m======[build complete]=======\033[0m"
 
 clean:
 	@rm -rf ../Debug/libOpenMe.so ../Debug/messyExample ../Debug/test_*
