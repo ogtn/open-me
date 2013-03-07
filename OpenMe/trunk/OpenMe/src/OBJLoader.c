@@ -19,7 +19,7 @@
 #include <stdio.h>
 
 
-omeMesh *omeLoadOBJFromFile(char *fileName, omeBool swapYZ)
+omeMesh *omeLoadOBJFromFile(const char *fileName, omeBool swapYZ)
 {
     FILE *file;
     char line[1024];

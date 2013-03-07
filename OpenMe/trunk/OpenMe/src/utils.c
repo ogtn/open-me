@@ -13,6 +13,7 @@
 #include <IL/il.h>
 #include <GL/glew.h>
 #include <ctype.h>
+#include <string.h>
 
 
 int omeSizeOf(omeType type)
@@ -155,9 +156,31 @@ void omeCleanString(char *str)
 }
 
 
+omeBool omeIsBlank(char c)
+{
+    return c == ' ';
+}
+
+
+void omeSkipBlanks(char **str)
+{
+    while(**str && omeIsBlank(**str))
+        (*str)++;
+}
+
+
+// TODO: maybe replace this thing by a macro which would stand for: 
+// omeDbgClearMem(ptr, size), free(ptr) and *ptr = NULL
+// In a non debug context, only the free could be kept
+// However, the impact on performances is probably negligeable
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wunused-parameter"
+
 void omeDbgClearMem(void *ptr, size_t size)
 {
 #ifdef DEBUG
     memset(ptr, 0, size);
 #endif
 }
+
+#pragma GCC diagnostic pop
