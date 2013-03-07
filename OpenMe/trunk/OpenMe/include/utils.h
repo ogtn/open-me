@@ -69,6 +69,8 @@ void omeCleanString(char *str);
 // TODO get rid of this header?
 #include <stdlib.h>
 void omeDbgClearMem(void *ptr, size_t size);
+omeBool omeIsBlank(char c);
+void omeSkipBlanks(char **str);
 
 // other stuff...
 #define OME_NAME_MAXLEN     256  

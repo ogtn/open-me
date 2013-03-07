@@ -25,9 +25,9 @@ extern "C" {
 typedef struct omeMesh omeMesh;
 
 
-omeMesh *omeLoadOBJFromFile(char *fileName, omeBool swapYZ);
-void omeSaveOmeMeshToFile(char *filename, omeMesh *m);
-omeMesh *omeLoadOmeMeshFromFile(char *filename);
+omeMesh *omeLoadOBJFromFile(const char *fileName, omeBool swapYZ);
+void omeSaveOmeMeshToFile(const char *filename, omeMesh *m);
+omeMesh *omeLoadOmeMeshFromFile(const char *filename);
 
 
 #ifdef __cplusplus
