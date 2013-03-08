@@ -1,6 +1,7 @@
 //  ome: Open Minimalistic Engine
 //
-//  Copyright: (c) 2012 Olivier Guittonneau <OpenMEngine@gmail.com>
+//  Copyright: (c) 2012-2013
+//  Olivier Guittonneau <OpenMEngine@gmail.com>
 //
 //  This program is free software; you can redistribute it and/or
 //  modify it under the terms of the Do What The Fuck You Want To
@@ -8,7 +9,7 @@
 //  http://sam.zoy.org/projects/COPYING.WTFPL for more details.
 
 
-#include "interp.h"
+#include "console.h"
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
@@ -18,119 +19,118 @@
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wunused-parameter"
 
-
-static void test_cb_1(const cmd_line *cmdline, cmd_env *env, void *data)
+static void test_cb_1(omeConsole *c, void *data)
 {
-	assert(cmdline != NULL);
-	assert(env != NULL);
+	assert(c != NULL);
 	assert(data != NULL);
 	assert(*(int *)data == 123456789);
-
 	*(int *)data = 42;
-	puts("test_cb_1()");
 }
 
 
-static void test_cb_2(const cmd_line *cmdline, cmd_env *env, void *data)
+static void test_cb_2(omeConsole *c, void *data)
 {
-	assert(cmdline != NULL);
-	assert(env != NULL);
+	assert(c != NULL);
 	assert(data != NULL);
 	assert(*(int *)data == 42);
-
 	*(int *)data = 666;
-	puts("test_cb_2()");
 }
 
 
-static void test_cb_3(const cmd_line *cmdline, cmd_env *env, void *data)
+static void test_cb_3(omeConsole *c, void *data)
 {
-	assert(cmdline != NULL);
-	assert(env != NULL);
+	assert(c != NULL);
 	assert(data == NULL);
-
-	puts("test_cb_3()");
 }
-
 
 #pragma GCC diagnostic pop
 
 
 static void test_main(void)
 {
-	char line[CMD_MAX_LINE_SIZE] = {'\0'};
-	cmd_var test_int, test_float;
-	cmd_line cmdline;
-	cmd_var *res;
-	static cmd_env env; /* TODO: provide a cmd_env_create function to avoid the need of static initialization */
+	omeConsole *c;
+	
+	int int_1 = 42;
+	int int_2 = 666;
+	
+	float float_1 = 1.333f;
+	float float_2 = 3.111f;
 
-	puts("=====[begin tests]=====");
+	char str_1[OME_CONSOLE_MAX_LINE_SIZE] = "abc";
+	char str_2[OME_CONSOLE_MAX_LINE_SIZE] = "xyz";
+
+	c = omeConsoleCreate();
 
 	/* create and add vars to the environment */
 	{
-		strncpy(test_int.name, "test_int", CMD_MAX_NAME);
-		test_int.type = CMD_VAR_TYPE_INT;
-		test_int.data.i = 42;
-		cmd_env_create_var(&env, &test_int);
+		assert(omeConsoleRegisterInt(c, "test_int", &int_1) == OME_CONSOLE_STATUS_NO_ERROR);
+		assert(omeConsoleRegisterFloat(c, "test_float", &float_1) == OME_CONSOLE_STATUS_NO_ERROR);
+		assert(omeConsoleRegisterString(c, "test_string", str_1) == OME_CONSOLE_STATUS_NO_ERROR);
 
-		/* //cmd_env_create_var_int(&env, "test_int", 42); */
+		assert(omeConsoleRegisterInt(c, "test_int", &int_2) == OME_CONSOLE_STATUS_DUPLICATED_VARIABLE);
+		assert(omeConsoleRegisterFloat(c, "test_float", &float_2) == OME_CONSOLE_STATUS_DUPLICATED_VARIABLE);
+		assert(omeConsoleRegisterString(c, "test_string", str_2) == OME_CONSOLE_STATUS_DUPLICATED_VARIABLE);
 
-		strncpy(test_float.name, "test_float", CMD_MAX_NAME);
-		test_float.type = CMD_VAR_TYPE_FLOAT;
-		test_float.data.f = 1.333;
-		cmd_env_create_var(&env, &test_float);
+		assert(omeConsoleRegisterInt(c, "", &int_2) == OME_CONSOLE_STATUS_INVALID_NAME);
+		assert(omeConsoleRegisterFloat(c, "", &float_2) == OME_CONSOLE_STATUS_INVALID_NAME);
+		assert(omeConsoleRegisterString(c, "", str_2) == OME_CONSOLE_STATUS_INVALID_NAME);
 	}
 
 	/* print them */
 	{
-		assert(cmd_var_print(&test_int) == CMD_STATUS_NO_ERROR);
-		assert(cmd_var_print(&test_float) == CMD_STATUS_NO_ERROR);
+		// TODO: implement this...
+		// assert(omeConsoleVarPrint(c, "test_int") == CMD_STATUS_NO_ERROR);
+		// assert(omeConsoleVarPrint(c, "test_float") == CMD_STATUS_NO_ERROR);
+		// assert(omeConsoleVarPrint(c, "test_string") == CMD_STATUS_NO_ERROR);
 	}
 
 	/* retreive the vars from the environment */
 	{
-		assert(cmd_env_get_var(&env, "test_int", &res) == CMD_STATUS_NO_ERROR);
-		assert(memcmp(&test_int, res, sizeof(cmd_var)) == 0);
+		assert(omeConsoleGetInt(c, "test_int", &int_2) == OME_CONSOLE_STATUS_NO_ERROR);
+		assert(int_1 == int_2);
 
-		assert(cmd_env_get_var(&env, "test_float", &res) == CMD_STATUS_NO_ERROR);
-		assert(memcmp(&test_float, res, sizeof(cmd_var)) == 0);
+		assert(omeConsoleGetFloat(c, "test_float", &float_2) == OME_CONSOLE_STATUS_NO_ERROR);
+		assert(float_1 == float_2);
 
-		assert(cmd_env_get_var(&env, "crazy undefined var name", &res) == CMD_STATUS_NOT_FOUND);
+		assert(omeConsoleGetString(c, "test_string", str_2) == OME_CONSOLE_STATUS_NO_ERROR);
+		assert(strcmp(str_1, str_2) == 0);
+
+		assert(omeConsoleGetFloat(c, "test_int", &float_2) == OME_CONSOLE_STATUS_BAD_TYPE);
+		assert(omeConsoleGetInt(c, "crazy undefined var name", &int_2) == OME_CONSOLE_STATUS_NOT_FOUND);
 	}
 
 	/* create commands and register their associated callbacks */
 	{
 		int n = 123456789;
 
-		strncpy(line, "cb_1", CMD_MAX_LINE_SIZE);
-		assert(cmd_line_parse(line, &cmdline) == CMD_STATUS_NO_ERROR);
-		assert(cmd_line_interpret(&cmdline, &env) == CMD_STATUS_INVALID_CMD);
+		assert(omeConsoleProcess(c,
+			"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\
+			aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\
+			aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\
+			aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+			) == OME_CONSOLE_STATUS_LINE_OVERFLOW);
+
+		assert(omeConsoleProcess(c, "cb_1") == OME_CONSOLE_STATUS_INVALID_CMD);
 		
-		assert(cmd_env_register_cb(&env, test_cb_1, "cb_1", &n) == CMD_STATUS_NO_ERROR);
-		assert(cmd_line_parse(line, &cmdline) == CMD_STATUS_NO_ERROR);
-		assert(cmd_line_interpret(&cmdline, &env) == CMD_STATUS_NO_ERROR);
+		assert(omeConsoleRegisterCallback(c, test_cb_1, "cb_1", &n) == OME_CONSOLE_STATUS_NO_ERROR);
+		assert(omeConsoleProcess(c, "cb_1") == OME_CONSOLE_STATUS_NO_ERROR);
 
-		assert(cmd_env_register_cb(&env, test_cb_1, "cb_1", &n) == CMD_STATUS_DUPLICATED_COMMAND);
-		assert(cmd_env_register_cb(&env, test_cb_2, "cb_2", &n) == CMD_STATUS_NO_ERROR);
-		assert(cmd_env_register_cb(&env, test_cb_3, "cb_3", NULL) == CMD_STATUS_NO_ERROR);
+		assert(omeConsoleRegisterCallback(c, test_cb_1, "cb_1", &n) == OME_CONSOLE_STATUS_DUPLICATED_COMMAND);
+		assert(omeConsoleRegisterCallback(c, test_cb_2, "cb_2", &n) == OME_CONSOLE_STATUS_NO_ERROR);
+		assert(omeConsoleRegisterCallback(c, test_cb_3, "cb_3", NULL) == OME_CONSOLE_STATUS_NO_ERROR);
 
-		strncpy(line, "cb_2", CMD_MAX_LINE_SIZE);
-		assert(cmd_line_parse(line, &cmdline) == CMD_STATUS_NO_ERROR);
-		assert(cmd_line_interpret(&cmdline, &env) == CMD_STATUS_NO_ERROR);
-
-		strncpy(line, "cb_3", CMD_MAX_LINE_SIZE);
-		assert(cmd_line_parse(line, &cmdline) == CMD_STATUS_NO_ERROR);
-		assert(cmd_line_interpret(&cmdline, &env) == CMD_STATUS_NO_ERROR);
+		assert(omeConsoleProcess(c, "cb_2") == OME_CONSOLE_STATUS_NO_ERROR);
+		assert(omeConsoleProcess(c, "cb_3") == OME_CONSOLE_STATUS_NO_ERROR);
 	}
 
-	puts("=====[end tests]=====");
+	omeConsoleDestroy(&c);
 }
 
 
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wunused-parameter"
 
-
+/*
 static void cb_quit(const cmd_line *cmdline, cmd_env *env, void *user_data)
 {
 	*(int *)user_data = 1;
@@ -197,23 +197,20 @@ static void cb_create(const cmd_line *cmdline, cmd_env *env, void *user_data)
 	strncpy(var.name, cmdline->args[1], CMD_MAX_NAME);
 	cmd_env_create_var(env, &var);
 }
-
+*/
 
 #pragma GCC diagnostic pop
 
 
 int main(void)
 {
-	char line[CMD_MAX_LINE_SIZE] = {'\0'};
-	static cmd_env env; /* TODO: provide a cmd_env_create function to avoid the need of static initialization */
-	cmd_line cmdline;
+	char line[OME_CONSOLE_MAX_LINE_SIZE] = {'\0'};
+	char titi[OME_CONSOLE_MAX_VAR_NAME] = "Coucou";
 	int stop = 0;
-	cmd_var var;
-	char titi[CMD_MAX_NAME] = "Coucou";
 
 	test_main();
-
-	/* setting env variables */
+/*
+	// setting env variables
 	strncpy(var.name, "toto", CMD_MAX_NAME);
 	var.type = CMD_VAR_TYPE_INT;
 	var.data.i = 42;
@@ -229,7 +226,7 @@ int main(void)
 	var.data.str = titi;
 	cmd_env_create_var(&env, &var);
 
-	/* setting env commands */
+	// setting env commands
 	cmd_env_register_cb(&env, cb_quit, "q", &stop);
 	cmd_env_register_cb(&env, cb_quit, "quit", &stop);
 	cmd_env_register_cb(&env, cb_get, "get", NULL);
@@ -253,6 +250,6 @@ int main(void)
 			cmd_line_print(&cmdline);
 		}
 	}
-
+*/
 	return EXIT_SUCCESS;
 }

@@ -1,6 +1,7 @@
 //  ome: Open Minimalistic Engine
 //
-//  Copyright: (c) 2012 Olivier Guittonneau <OpenMEngine@gmail.com>
+//  Copyright: (c) 2012-2013
+//  Olivier Guittonneau <OpenMEngine@gmail.com>
 //
 //  This program is free software; you can redistribute it and/or
 //  modify it under the terms of the Do What The Fuck You Want To
@@ -49,7 +50,7 @@ omeConsoleStatus omeConsoleProcess(omeConsole *c, const char *cmdLine)
 {
 	omeConsoleStatus status;
 
-	if(strlen(cmdLine) > OME_CONSOLE_VAR_TYPE_STRING)
+	if(strlen(cmdLine) > OME_CONSOLE_MAX_LINE_SIZE)
 		return OME_CONSOLE_STATUS_LINE_OVERFLOW;
 
 	strcpy(c->cmdLine.str, cmdLine);
@@ -164,7 +165,7 @@ omeConsoleStatus omeConsoleRegisterString(omeConsole *c, const char *name, char 
 }
 
 
-omeConsoleStatus omeConsoleRegisterVar(omeConsole *c, const char *name, omeConsoleVarType type, void *data)
+omeConsoleStatus omeConsoleRegisterVar(omeConsole *c, const char *name, omeConsoleVarType type, void *value)
 {
 	omeConsoleVar *v;
 	size_t size = strlen(name);
@@ -177,8 +178,106 @@ omeConsoleStatus omeConsoleRegisterVar(omeConsole *c, const char *name, omeConso
 	if(v != NULL)
 		return OME_CONSOLE_STATUS_DUPLICATED_VARIABLE;
 
-	v = omeConsoleVarCreate(name, type, data);
+	v = omeConsoleVarCreate(name, type, value);
 	HASH_ADD_STR(c->variables, key, v);
+
+	return OME_CONSOLE_STATUS_NO_ERROR;
+}
+
+
+omeConsoleStatus omeConsoleGetInt(omeConsole *c, const char *name, int *value)
+{
+	return omeConsoleGetVar(c, name, OME_CONSOLE_VAR_TYPE_INT, value);
+}
+
+
+omeConsoleStatus omeConsoleGetFloat(omeConsole *c, const char *name, float *value)
+{
+	return omeConsoleGetVar(c, name, OME_CONSOLE_VAR_TYPE_FLOAT, value);
+}
+
+
+omeConsoleStatus omeConsoleGetString(omeConsole *c, const char *name, char *value)
+{
+	return omeConsoleGetVar(c, name, OME_CONSOLE_VAR_TYPE_STRING, value);
+}
+
+
+omeConsoleStatus omeConsoleGetVar(omeConsole *c, const char *name, omeConsoleVarType type, void *value)
+{
+	omeConsoleVar *v;
+
+	HASH_FIND_STR(c->variables, name, v);
+
+	if(v == NULL)
+		return OME_CONSOLE_STATUS_NOT_FOUND;
+
+	if(v->type != type)
+		return OME_CONSOLE_STATUS_BAD_TYPE;
+
+	if(type == OME_CONSOLE_VAR_TYPE_STRING)
+		strncpy(value, v->value, OME_CONSOLE_MAX_LINE_SIZE);
+	else
+		memcpy(value, v->value, sizeof(int));	// TODO: works for ints and floats, but pretty crappy, get rid of this
+
+	return OME_CONSOLE_STATUS_NO_ERROR;
+}
+
+
+omeConsoleStatus omeConsoleSetInt(omeConsole *c, const char *name, int value)
+{
+	return omeConsoleSetVar(c, name, OME_CONSOLE_VAR_TYPE_INT, &value);
+}
+
+
+omeConsoleStatus omeConsoleSetFloat(omeConsole *c, const char *name, float value)
+{
+	return omeConsoleSetVar(c, name, OME_CONSOLE_VAR_TYPE_FLOAT, &value);
+}
+
+
+omeConsoleStatus omeConsoleSetString(omeConsole *c, const char *name, char *value)
+{
+	return omeConsoleSetVar(c, name, OME_CONSOLE_VAR_TYPE_STRING, value);
+}
+
+
+omeConsoleStatus omeConsoleSetVar(omeConsole *c, const char *name, omeConsoleVarType type, void *value)
+{
+	omeConsoleVar *v;
+
+	HASH_FIND_STR(c->variables, name, v);
+
+	if(v != NULL)
+		return OME_CONSOLE_STATUS_NOT_FOUND;
+
+	if(v->type != type)
+		return OME_CONSOLE_STATUS_BAD_TYPE;
+
+	if(type == OME_CONSOLE_VAR_TYPE_STRING)
+		strncpy(v->value, value, OME_CONSOLE_MAX_LINE_SIZE);
+	else
+		memcpy(v->value, value, sizeof(int));	// TODO: works for ints and floats, but pretty crappy, get rid of this
+
+	return OME_CONSOLE_STATUS_NO_ERROR;
+}
+
+
+omeConsoleStatus omeConsoleRegisterCallback(omeConsole *c, const char *name, omeConsoleCallback cb, void *userData)
+{
+	omeConsoleCmd *cmd;
+	size_t size = strlen(name);
+
+	if(size == 0 || size > OME_CONSOLE_MAX_VAR_NAME)
+		return OME_CONSOLE_STATUS_INVALID_NAME;
+
+	HASH_FIND_STR(c->commands, name, cmd);
+
+	if(cmd != NULL)
+		return OME_CONSOLE_STATUS_DUPLICATED_COMMAND;
+
+	cmd = omeConsoleCmdCreate(name, cb, userData);
+	HASH_ADD_STR(c->commands, key, cmd);
 
 	return OME_CONSOLE_STATUS_NO_ERROR;
 }
@@ -225,12 +324,19 @@ omeConsoleStatus omeConsoleVarPrint(const omeConsoleVar *v)
 }
 
 
-omeConsoleCmd *omeConsoleCmdCreate(omeConsoleCallback cb, void *userData)
+omeConsoleStatus omeConsolePrint(const omeConsole *c)
+{
+	
+}
+
+
+omeConsoleCmd *omeConsoleCmdCreate(const char *name, omeConsoleCallback cb, void *userData)
 {
 	omeConsoleCmd *cmd = calloc(1, sizeof(omeConsoleCmd));
 
 	cmd->cb = cb;
 	cmd->userData = userData;
+	strncpy(cmd->key, name, OME_CONSOLE_MAX_VAR_NAME);
 
 	return cmd;
 }
