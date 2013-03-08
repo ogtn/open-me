@@ -71,6 +71,7 @@ $(OUTDIR)/test_interp: ../Examples/test_interp.c $(OUTDIR)/libOpenMe.so
 #	$(CC) $(CFLAGS) -o $(OUTDIR)/test_file ../Examples/test_file.c -lOpenMe -I$(UTHASH_INCLUDE) -I$(OPENME_INCLUDE) -L$(OUTDIR) -lglfw -lIL
 
 runTests: $(OUTDIR)/test_string $(OUTDIR)/test_interp #$(OUTDIR)/test_file
+	@echo "\033[1;32m=======[running tests]=======\033[0m"
 	@cd $(OUTDIR);  echo -n "Testing strings:..." && LD_LIBRARY_PATH=. ./test_string && echo "\033[1;32mOK\033[0m"
 	@cd $(OUTDIR);  echo -n "Testing interpreter:..." && LD_LIBRARY_PATH=. ./test_interp && echo "\033[1;32mOK\033[0m"
 #@cd $(OUTDIR);  echo -n "Testing files:..." && LD_LIBRARY_PATH=. ./test_string && echo "\033[1;32mOK\033[0m"
