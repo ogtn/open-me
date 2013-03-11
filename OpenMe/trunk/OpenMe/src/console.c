@@ -10,7 +10,6 @@
 
 
 #include "console.h"
-#include "utils.h"
 #include "logger.h"
 #include <stdio.h>
 
@@ -18,6 +17,7 @@
 omeConsole *omeConsoleCreate(void)
 {
 	omeConsole *c = calloc(1, sizeof(omeConsole));
+	c->printCb = printf;
 
 	return c;
 }
@@ -138,7 +138,7 @@ omeConsoleStatus omeConsoleInterpret(omeConsole *c)
 
 	if(v != NULL)
 	{
-		omeConsoleVarPrint(v);
+		omeConsoleVarPrint(c, v);
 
 		return OME_CONSOLE_STATUS_NO_ERROR;
 	}
@@ -271,6 +271,9 @@ omeConsoleStatus omeConsoleRegisterCallback(omeConsole *c, const char *name, ome
 	if(size == 0 || size > OME_CONSOLE_MAX_VAR_NAME)
 		return OME_CONSOLE_STATUS_INVALID_NAME;
 
+	if(cb == NULL)
+		return OME_CONSOLE_STATUS_INVALID_CB;
+
 	HASH_FIND_STR(c->commands, name, cmd);
 
 	if(cmd != NULL)
@@ -280,6 +283,44 @@ omeConsoleStatus omeConsoleRegisterCallback(omeConsole *c, const char *name, ome
 	HASH_ADD_STR(c->commands, key, cmd);
 
 	return OME_CONSOLE_STATUS_NO_ERROR;
+}
+
+
+omeConsoleStatus omeConsoleRegisterPrintCallback(omeConsole *c, omeConsolePrintFunc cb)
+{
+	if(cb == NULL)
+		return OME_CONSOLE_STATUS_INVALID_CB;
+
+	c->printCb = cb;
+
+	return OME_CONSOLE_STATUS_NO_ERROR;
+}
+
+
+const char *omeConsoleErr2Str(omeConsoleStatus status)
+{
+	
+	static const char *errMsgs[OME_MAX_CONSOLE_STATUS + 1] = {
+		"No error",
+		"Bad type",
+		"Environment full",
+		"Identifier not found",
+		"Invalid callback",
+		"Too much argugments",
+		"Command already exists",
+		"Variable already exists",
+		"Invalid command",
+		"Line too long",
+		"Unable to convert the value",
+		"Invalid identifier",
+
+		"Unknown error"
+	};
+
+	if(status >= OME_MAX_CONSOLE_STATUS)
+		status = OME_MAX_CONSOLE_STATUS;
+
+	return errMsgs[status];
 }
 
 
@@ -303,18 +344,18 @@ void omeConsoleVarDestroy(omeConsoleVar **v)
 }
 
 
-omeConsoleStatus omeConsoleVarPrint(const omeConsoleVar *v)
+omeConsoleStatus omeConsoleVarPrint(const omeConsole *c, const omeConsoleVar *v)
 {
 	switch(v->type)
 	{
 		case OME_CONSOLE_VAR_TYPE_INT:
-			printf("int %s = %d\n", v->key, *(int *)v->value);
+			c->printCb("int %s = %d\n", v->key, *(int *)v->value);
 			break;
 		case OME_CONSOLE_VAR_TYPE_FLOAT:
-			printf("float %s = %f\n", v->key, *(float *)v->value);
+			c->printCb("float %s = %f\n", v->key, *(float *)v->value);
 			break;
 		case OME_CONSOLE_VAR_TYPE_STRING:
-			printf("string %s = \"%s\"\n", v->key, (char *)v->value);
+			c->printCb("string %s = \"%s\"\n", v->key, (char *)v->value);
 			break;
 		default:
 			return OME_CONSOLE_STATUS_BAD_TYPE;
@@ -326,7 +367,20 @@ omeConsoleStatus omeConsoleVarPrint(const omeConsoleVar *v)
 
 omeConsoleStatus omeConsolePrint(const omeConsole *c)
 {
-	
+	omeConsoleVar *v;
+	omeConsoleCmd *cmd;
+
+	c->printCb("%d variables :\n", HASH_COUNT(c->variables));
+
+	for(v = c->variables; v != NULL; v = v->hh.next)
+		omeConsoleVarPrint(c, v);
+
+	c->printCb("%d commands :\n", HASH_COUNT(c->commands));
+
+	for(cmd = c->commands; cmd != NULL; cmd = cmd->hh.next)
+		c->printCb("%s()\n", cmd->key);
+
+	return OME_CONSOLE_STATUS_NO_ERROR;
 }
 
 

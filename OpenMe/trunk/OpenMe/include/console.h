@@ -19,6 +19,7 @@ extern "C" {
 
 
 #include "uthash.h"
+#include "utils.h"
 
 
 // Fixed limits of the console
@@ -41,7 +42,10 @@ typedef enum omeConsoleStatus
 	OME_CONSOLE_STATUS_INVALID_CMD,
 	OME_CONSOLE_STATUS_LINE_OVERFLOW,
 	OME_CONSOLE_STATUS_CANT_CONVERT,
-	OME_CONSOLE_STATUS_INVALID_NAME
+	OME_CONSOLE_STATUS_INVALID_NAME,
+
+	// keep in last position
+	OME_MAX_CONSOLE_STATUS
 } omeConsoleStatus;
 
 
@@ -90,12 +94,15 @@ typedef struct omeConsoleCmd
 } omeConsoleCmd, omeConsoleCmdHashTable;
 
 
+typedef int(*omeConsolePrintFunc)(const char *, ...) OME_CHK_FMT(1);
+
 // Hold the context of the console
 struct omeConsole
 {
 	omeConsoleVarHashTable *variables;	// hashmap of registered variables
 	omeConsoleCmdHashTable *commands;	// hashmap of registred commands
 	omeConsoleCmdLine cmdLine; 			// current command line
+	omeConsolePrintFunc printCb;		// printf-like to use for print tasks
 	// TODO: use a circular buffer to store a command history
 };
 
@@ -127,8 +134,8 @@ omeConsoleStatus omeConsoleSetString(omeConsole *c, const char *name, char *valu
 // Print the environment
 omeConsoleStatus omeConsolePrint(const omeConsole *c);
 
-// Print a variable (name, type and value)
-omeConsoleStatus omeConsoleVarPrint(const omeConsoleVar *v);
+// Print a variable
+omeConsoleStatus omeConsoleVarPrint(const omeConsole *c, const omeConsoleVar *v);
 
 // Register a callback to be called upon a given command
 omeConsoleStatus omeConsoleRegisterCallback(omeConsole *c, const char *name, omeConsoleCallback cb, void *userData);
@@ -136,11 +143,14 @@ omeConsoleStatus omeConsoleRegisterCallback(omeConsole *c, const char *name, ome
 // TODO: Register a callback called when a variable name is entered as a command
 // omeConsoleStatus omeConsoleRegisterOnVarCallback(omeConsole *c, omeConsoleCallback cb, void *userData);
 
-// TODO: Register the printf-like function used by omeConsoleVarPrint()
-// omeConsoleStatus omeConsoleRegisterPrintCallback(omeConsole *c, omeConsoleCallback cb, void *userData);
+// Register the printf-like function used by omeConsoleVarPrint()
+omeConsoleStatus omeConsoleRegisterPrintCallback(omeConsole *c, omeConsolePrintFunc cb);
 
 // TODO: Remove a callback from the environment?
 // omeConsoleStatus omeConsoleUnregisterCallback(omeConsole *c, const char *name);
+
+// Return the string associated with the given error code
+const char *omeConsoleErr2Str(omeConsoleStatus status);
 
 //////////////////////// [Private functions] ////////////////////////
 
