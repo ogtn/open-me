@@ -12,6 +12,7 @@
 
 CC=LC_ALL=en_US.UTF-8 colorgcc
 #CC=gcc
+#CC=clang
 
 # hardcore mode :)
 # http://blogs.gnome.org/otte/2008/12/22/warning-options/
@@ -29,13 +30,14 @@ CWARN=-Wall -Wextra -fno-common -Wdeclaration-after-statement \
 # easy version
 #CWARN=-Wall -Wextra
 
-# release by default
-ifdef DEBUG
-CFLAGS=$(CWARN) -g -DDEBUG
-OUTDIR=../Debug
-else
+# debug by default
+ifdef RELEASE
 CFLAGS=$(CWARN) -O3
 OUTDIR=../Release
+NOCHECK=1
+else
+CFLAGS=$(CWARN) -g -DDEBUG
+OUTDIR=../Debug
 endif
 
 # private access checking activated by default
@@ -80,6 +82,9 @@ showTODOs:
 	@grep -rin --color --include *.[hc] TODO ..
 	@echo "\n\033[1;31mThere are `grep -ri --include *.[hc] TODO .. | wc -l` TODOs in the source code: still a lot of work!\033[0m"
 
+showLines:
+	@find ../OpenMe/ -name "*.[hc]" | xargs wc -l | sort -n
+
 $(OUTDIR)/messyExample: ../Examples/messyExample.c $(OUTDIR)/libOpenMe.so
 	@echo "\033[1;32m===[building messyExample]===\033[0m"
 	@$(CC) $(CFLAGS) -o $(OUTDIR)/messyExample ../Examples/messyExample.c -lOpenMe -I$(UTHASH_INCLUDE) -I$(OPENME_INCLUDE) -L$(OUTDIR) -lglfw -lIL
@@ -95,7 +100,7 @@ clean:
 	@rm -rf ../Release/libOpenMe.so ../Release/messyExample ../Release/test_*
 	@echo "\033[1;32mClean complete\033[0m"
 
-.PHONY: all clean
+.PHONY: all clean runTests showTODOs showLines runMessyExample runMemCheck
 
 # @echo "\033[1;32mThis text is green\033[0m"
 # @echo "\033[1;31mThat one is red\033[0m"
