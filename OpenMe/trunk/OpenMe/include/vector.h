@@ -17,7 +17,8 @@
 extern "C" {
 #endif
 
-    
+
+// Three dimensional vector, single precision 
 typedef union omeVector
 {
     struct
@@ -31,6 +32,7 @@ typedef union omeVector
 } omeVector;
 
 
+// Two dimensional vector, single precision
 typedef union omeVector2
 {
     struct
@@ -43,18 +45,34 @@ typedef union omeVector2
 } omeVector2;
 
 
+// Copy a vector into another
 void omeVectorCopy(omeVector *dst, const omeVector *src);
-void omeVector2Copy(omeVector2 *dst, const omeVector2 *src);
+
+// Return the length of the given vector
 float omeVectorLength(const omeVector *v);
+
+// Return the dot product of two vectors
+float omeVectorDot(const omeVector *v, const omeVector *v2);
+
+// Normalize the given vector
 void omeVectorNormalize(omeVector *v);
+
+// For the following operations, the result is stored into a res vector, and the other 
+// parameters are unchanged. 
+// However, it is safe to pass several time the same vector to make a +=, *= etc...
 void omeVectorAddVector(const omeVector *v, const omeVector *v2, omeVector *res);
-void omeVector2AddVector(const omeVector2 *v, const omeVector2 *v2, omeVector2 *res);
 void omeVectorSubVector(const omeVector *v, const omeVector *v2, omeVector *res);
 void omeVectorMultVector(const omeVector *v, const omeVector *v2, omeVector *res);
 void omeVectorMultScal(const omeVector *v, float f, omeVector *res);
-void omeVector2MultScal(const omeVector2 *v, float f, omeVector2 *res);
-float omeVectorDot(const omeVector *v, const omeVector *v2);
+
+// Return the cross product of two vectors. 
+// Do NOT pass the same vector to v or v2 to res.
 void omeVectorCross(const omeVector *v, const omeVector *v2, omeVector *res);
+
+// 2D equivalents of the above functions
+void omeVector2Copy(omeVector2 *dst, const omeVector2 *src);
+void omeVector2AddVector(const omeVector2 *v, const omeVector2 *v2, omeVector2 *res);
+void omeVector2MultScal(const omeVector2 *v, float f, omeVector2 *res);
 
 
 #ifdef __cplusplus

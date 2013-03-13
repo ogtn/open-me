@@ -357,8 +357,11 @@ omeConsoleStatus omeConsoleVarPrint(const omeConsole *c, const omeConsoleVar *v)
 		case OME_CONSOLE_VAR_TYPE_STRING:
 			c->printCb("string %s = \"%s\"\n", v->key, (char *)v->value);
 			break;
+		
+		#ifdef DEBUG
 		default:
 			return OME_CONSOLE_STATUS_BAD_TYPE;
+		#endif
 	};
 
 	return OME_CONSOLE_STATUS_NO_ERROR;

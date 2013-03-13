@@ -30,8 +30,11 @@ int omeSizeOf(omeType type)
         return sizeof(float);
     case OME_DOUBLE:
         return sizeof(double);
+
+    #ifdef DEBUG
     default:
         return OME_FAILURE;
+    #endif
     }
 }
 
@@ -48,8 +51,11 @@ unsigned int omeTypeToGL(omeType type)
     case OME_UINT:      return GL_UNSIGNED_INT;
     case OME_FLOAT:     return GL_FLOAT;
     case OME_DOUBLE:    return GL_DOUBLE;
+
+    #ifdef DEBUG
     default:
         return (unsigned int)OME_FAILURE;
+    #endif
     }
 }
 

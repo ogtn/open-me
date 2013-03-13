@@ -94,8 +94,6 @@ void omeResourceDelRef(omeResource *r)
                 break;
             case OME_RESOURCE_GEOMETRY:
                 break;
-            default:
-                break;
             }
         }
     }

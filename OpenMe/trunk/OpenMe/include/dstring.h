@@ -18,45 +18,52 @@ extern "C" {
 #endif
 
 
+#include "utils.h"
 #include <stdarg.h>
+#include <stddef.h>
 
 
+// dynamic string
 typedef struct omeString
 {
-    char *str;
-    unsigned int size;
-    unsigned length;
+    char *str;		// content of the string
+    size_t size;	// allocated size
+    size_t length;	// length of the string currently stored
 } omeString;
 
 
-omeString *omeStringCreate(unsigned int needed);
+//////////////////////// [Public interface] ////////////////////////
 
-#ifdef __GNUC__
-omeString *omeStringCreateFromStr(const char *format, ...) __attribute((format(printf, 1, 2)));
-#else
-omeString *omeStringCreateFromStr(const char *format, ...);
-#endif
-
+// Constructors and destructor
+omeString *omeStringCreate(size_t needed);
+omeString *omeStringCreateFromStr(const char *format, ...) OME_CHK_FMT_AND_ARGS(1);
 omeString *omeStringCopy(const omeString *s);
 void omeStringDestroy(omeString **s);
-void omeStringRealloc(omeString *s, unsigned int needed);
+
+// Reduce the allocated size to the minimum, without losing any character
 void omeStringFit(omeString *s);
+
+// Empty the string, wihout freeing memory 
 omeString *omeStringClear(omeString *s);
+
+// Append another omeString, or c string
 omeString *omeStringAppend(omeString *s, const omeString *s2);
+omeString *omeStringAppendStr(omeString *s, const char *format, ...) OME_CHK_FMT_AND_ARGS(2);
 
-#ifdef __GNUC__
-omeString *omeStringAppendStr(omeString *s, const char *format, ...) __attribute((format(printf, 2, 3)));
-#else
-omeString *omeStringAppendStr(omeString *s, const char *format, ...);
-#endif
+// Compare two strings
+int omeStringCmp(omeString *s, omeString *s2);
 
+// Return the extension if the string contain a filename, NULL instead TODO: move this somewhere else?
 const char *omeStringGetExtension(const omeString *s);
 
-#ifdef __GNUC__
-unsigned int countSprintf(const char *format, va_list ap) __attribute((format(printf, 1, 0)));
-#else
-unsigned int countSprintf(const char *format, va_list ap);
-#endif
+//////////////////////// [Private functions] ////////////////////////
+
+// Realloc the string with a power of two size
+void omeStringResize(omeString *s, size_t needed);
+
+// Compute the size need for holding the result of a vprintf call
+size_t countSprintf(const char *format, va_list ap) OME_CHK_FMT(1);
+
 
 #ifdef __cplusplus
 }

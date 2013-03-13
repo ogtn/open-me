@@ -63,14 +63,21 @@ typedef struct omeCamera
 } omeCamera;
 
 
+// Constructor and destructor
 omeCamera *omeCameraCreate(omeCameraType type);
 void omeCameraDestroy(omeCamera **c);
+
+// setters of the different properties
+// type check is performed
+// those functions mark the camera as out of date, so a call to omeCameraUpdate() is needed before further use
 void omeCameraSetOrtho(omeCamera *c, float left, float right, float bottom, float top, float near, float far);
 void omeCameraSetPerspective(omeCamera *c, float fov, float ratio, float near, float far);
 void omeCameraSetLookAt(omeCamera *c, omeVector *pos, omeVector *target, omeVector *up);
 void omeCameraSetPosition(omeCamera *c, omeVector *pos);
 void omeCameraSetTarget(omeCamera *c, omeVector *target);
 void omeCameraSetRatio(omeCamera *c, float ratio);
+
+// Update the internal matrices
 void omeCameraUpdate(omeCamera *c);
 
 

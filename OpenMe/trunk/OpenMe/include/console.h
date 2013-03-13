@@ -94,7 +94,7 @@ typedef struct omeConsoleCmd
 } omeConsoleCmd, omeConsoleCmdHashTable;
 
 
-typedef int(*omeConsolePrintFunc)(const char *, ...) OME_CHK_FMT(1);
+typedef int(*omeConsolePrintFunc)(const char *, ...) OME_CHK_FMT_AND_ARGS(1);
 
 // Hold the context of the console
 struct omeConsole

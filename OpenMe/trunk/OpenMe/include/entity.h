@@ -18,10 +18,6 @@ extern "C" {
 #endif
 
 
-// forward declaration
-typedef union omeMatrix omeMatrix;
-
-
 #include "vector.h"
 #include "utils.h"
 

@@ -161,8 +161,8 @@ void omeCameraUpdate(omeCamera *c)
             c->projectionUpToDate = OME_TRUE;
         }
         break;
-    default:
+    /*default:
         omeLoggerLog("Unknown type of camera");
-        return;
+        return;*/
     }
 }

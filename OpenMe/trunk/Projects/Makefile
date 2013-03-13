@@ -10,9 +10,9 @@
 
 # I hate makefiles, this is why that one is so crappy
 
-CC=LC_ALL=en_US.UTF-8 colorgcc
+CC=LC_ALL=en_US.UTF-8 colorgcc -Wunsafe-loop-optimizations
 #CC=gcc
-#CC=clang
+#CC=clang -Wno-typedef-redefinition -Wparentheses
 
 # hardcore mode :)
 # http://blogs.gnome.org/otte/2008/12/22/warning-options/
@@ -24,8 +24,8 @@ CWARN=-Wall -Wextra -fno-common -Wdeclaration-after-statement \
 -Wmissing-format-attribute -Wmissing-noreturn -Wmissing-prototypes \
 -Wnested-externs -Wold-style-definition -Wredundant-decls \
 -Wsign-compare -Wstrict-aliasing=2 -Wstrict-prototypes -Wswitch-enum \
--Wundef -Wunreachable-code -Wunsafe-loop-optimizations \
--Wwrite-strings #-pedantic-errors #-ansi -pedantic
+-Wundef -Wunreachable-code -Wwrite-strings \
+#-ansi #-pedantic #-pedantic-errors
 
 # easy version
 #CWARN=-Wall -Wextra

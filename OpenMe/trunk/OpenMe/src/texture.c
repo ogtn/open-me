@@ -59,14 +59,16 @@ omeTexture *omeTextureCreate(omeTextureType type, int width, int height, int dep
         //glTexImage3D(GL_TEXTURE_3D, 0, GL_RGBA8, width, height, depth, 0, format, GL_UNSIGNED_BYTE, data[0]);
         omeLoggerLog("texture 3D not supported yet\n");
         return NULL;
-        break;
     case OME_TEXTURE_TYPE_CUBE:
         for(i = 0; i < 6; i++)
             glTexImage2D(omeCubeMapFaces[i], 0, GL_RGBA8, width, height, 0, format, GL_UNSIGNED_BYTE, data[i]);
         break;
+
+    #ifdef DEBUG
     default:
         omeLoggerLog("omeTextureCreate(): invalid type of texture\n");
         return NULL;
+    #endif
     }
 
     // set minifying and magnifying filters
@@ -91,9 +93,12 @@ omeTexture *omeTextureCreate(omeTextureType type, int width, int height, int dep
     case OME_TEXTURE_TYPE_1D:
         glTexParameteri(t->type, GL_TEXTURE_WRAP_S, GL_REPEAT);
         break;
+
+    #ifdef DEBUG
     default: // can't happen, just here to shut the compiler's mouth
         omeLoggerLog("omeTextureCreate(): invalid type of texture\n");
         return NULL;
+    #endif
     }
 
     // TODO: extra parameter for hints (mipmaps, filters, internal & external format...) If NULL, default values used...
@@ -125,7 +130,10 @@ unsigned int omeTextureGetGLType(omeTextureType type)
     case OME_TEXTURE_TYPE_2D:   return GL_TEXTURE_2D;
     case OME_TEXTURE_TYPE_3D:   return GL_TEXTURE_3D;
     case OME_TEXTURE_TYPE_CUBE: return GL_TEXTURE_CUBE_MAP;
+
+    #ifdef DEBUG
     default:                    return 0;
+    #endif
     }
 }
 
