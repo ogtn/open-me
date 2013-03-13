@@ -10,6 +10,7 @@
 
 
 #include "vector.h"
+#include "logger.h"
 #include <math.h>
 #include <string.h>
 
@@ -99,6 +100,11 @@ float omeVectorDot(const omeVector *v, const omeVector *v2)
 
 void omeVectorCross(const omeVector *v, const omeVector *v2, omeVector *res)
 {
+    #ifdef DEBUG
+    if(v == res || v2 == res)
+        omeLoggerLog("Bad use of omeVectorCross()");
+    #endif
+
     res->x = v->y * v2->z - v->z * v2->y;
     res->y = v->z * v2->x - v->x * v2->z;
     res->z = v->x * v2->y - v->y * v2->x;

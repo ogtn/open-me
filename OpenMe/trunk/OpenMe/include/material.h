@@ -24,6 +24,8 @@ extern "C" {
 typedef struct omeTexture omeTexture;
 
 
+// hold the representation of an OpenGL material
+// Some components are stored in two forms: color and textures
 typedef struct omeMaterial
 {
     omeColor ambiantColor;
@@ -33,7 +35,7 @@ typedef struct omeMaterial
     float shininess;
 
     // TODO: find a place for this one...?
-    //omeTexture *ambiantTexture;
+    //omeTexture *ambiantTexture; // could be a cubemap texture?
     omeTexture *diffuseTexture;
     omeTexture *specularTexture;
     omeTexture *emissiveTexture;
@@ -41,6 +43,7 @@ typedef struct omeMaterial
 } omeMaterial;
 
 
+// Constructor and destructor
 omeMaterial *omeMaterialCreate(void);
 void omeMaterialDestroy(omeMaterial **m);
 

@@ -53,8 +53,8 @@ typedef enum omeType
 #define degToRad(angle)     ((angle) * OME_PI / 180)
 #define radToDeg(angle)     ((angle) / OME_PI * 180)
 
-#define degToRadf(angle)    ((angle) * OME_PIF / 180)
-#define radToDegf(angle)    ((angle) / OME_PIF * 180)
+#define degToRadf(angle)    ((angle) * OME_PIF / 180.f)
+#define radToDegf(angle)    ((angle) / OME_PIF * 180.f)
 int omeNextPowOfTwo(int n);
 
 
@@ -76,12 +76,15 @@ void omeSkipBlanks(char **str);
 #define OME_NAME_MAXLEN     256  
 
 #ifdef __GNUC__
-    #define OME_CHK_FMT(fmt_pos) __attribute((format(printf, (fmt_pos), (fmt_pos + 1))))
+    #define OME_CHK_FMT_AND_ARGS(fmt_pos) __attribute((format(printf, (fmt_pos), (fmt_pos + 1))))
+    #define OME_CHK_FMT(fmt_pos) __attribute((format(printf, (fmt_pos), 0)))
     #define OME_INLINE __inline__
 #elif defined(_MSC_VER)
+    #define OME_CHK_FMT_AND_ARGS(fmt_pos)
     #define OME_CHK_FMT(fmt_pos)
     #define OME_INLINE __inline
 #else
+    #define OME_CHK_FMT_AND_ARGS(fmt_pos)
     #define OME_CHK_FMT(fmt_pos)
     #define OME_INLINE
 #endif

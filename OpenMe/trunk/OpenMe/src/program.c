@@ -126,9 +126,12 @@ omeStatus omeProgramLink(omeProgram *sp)
         break;
     case OME_PROGRAM_STATUS_BROKEN:
         return OME_FAILURE;
+
+    #ifdef DEBUG
     default:
         omeLoggerLog("Invalid status in shader program\n");
         return OME_FAILURE;
+    #endif
     }
 
     // linking
@@ -253,9 +256,12 @@ omeLocation *omeLocationCreate(omeProgram *sp, const char *name, omeLocationType
     case OME_LOCATION_TYPE_ATTRIB:
         loc->location = glGetAttribLocation(sp->id, name);
         break;
+
+    #ifdef DEBUG
     default:
         omeLoggerLog("You shouldn't be here\n");
         return NULL;
+    #endif
     }
 
     //TODO: this function sucks, not garanted to be null terminated and can't be sure that the whole string was copied...
@@ -298,7 +304,7 @@ void omeProgramSendUniformMaterial(omeProgram *p, omeMaterial *m, const char *na
     char fullName[OME_PROGRAM_VAR_LENGTH] = {'\0'};
 
     sprintf(fullName, "%s.ambiant", name);
-    glUniform3fv(omeProgramLocateUniform(p, fullName), 1, m->ambiantColor.tab); // /!\ omeColor is made of 4 floats for the moment, only three are send here
+    glUniform3fv(omeProgramLocateUniform(p, fullName), 1, m->ambiantColor.tab); // TODO: fix this: /!\ omeColor is made of 4 floats for the moment, only three are send here
     
     if(m->diffuseTexture != NULL)
     {

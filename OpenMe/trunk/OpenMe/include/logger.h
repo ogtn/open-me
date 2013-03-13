@@ -44,7 +44,7 @@ void omeLog(int level, const char *format, ...);
 #define omeLoggerLog(int level, int line, const char *file, const char* func, const char *format, ...); // fuckin' variadics...
 */
 
-void omeLoggerLog(const char *format, ...) OME_CHK_FMT(1);
+void omeLoggerLog(const char *format, ...) OME_CHK_FMT_AND_ARGS(1);
 
 void omeLoggerStop(void);
 

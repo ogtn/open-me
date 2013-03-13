@@ -10,19 +10,17 @@
 
 
 #include "dstring.h"
-#include "utils.h"
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>
 #include <stdio.h>
 
 
-omeString *omeStringCreate(unsigned int needed)
+omeString *omeStringCreate(size_t needed)
 {
     omeString *s = calloc(1, sizeof (omeString));
 
-    s->length = needed;
-    omeStringRealloc(s, s->length + 1);
+    omeStringResize(s, needed + 1);
     s->str[0] = '\0';
 
     return s;
@@ -36,7 +34,7 @@ omeString *omeStringCopy(const omeString *s)
     if(s != NULL)
     {
         res->length = s->length;
-        omeStringRealloc(res, s->length + 1);
+        omeStringResize(res, s->length + 1);
         strcpy(res->str, s->str);
     }
 
@@ -53,7 +51,7 @@ omeString *omeStringCreateFromStr(const char *format, ...)
     s->length = countSprintf(format, list);
     va_end(list);
     
-    omeStringRealloc(s, s->length + 1);
+    omeStringResize(s, s->length + 1);
 
     va_start(list, format);
     vsnprintf(s->str, s->length + 1, format, list);
@@ -74,7 +72,7 @@ void omeStringDestroy(omeString **s)
 }
 
 
-void omeStringRealloc(omeString *s, unsigned int needed)
+void omeStringResize(omeString *s, unsigned int needed)
 {
     s->size = omeNextPowOfTwo(needed);
     s->str = realloc(s->str, s->size);
@@ -99,12 +97,15 @@ omeString *omeStringClear(omeString *s)
 
 omeString *omeStringAppend(omeString *s, const omeString *s2)
 {
+    size_t old_len = s->length;
+
     s->length += s2->length;
 
     if(s->length + 1 > s->size)
-        omeStringRealloc(s, s->length + 1);
+        omeStringResize(s, s->length + 1);
     
-    strcpy(&s->str[s->length], s2->str);
+    strcpy(&s->str[old_len], s2->str);
+    s->str[s->length] = '\0';
 
     return s;
 }
@@ -122,13 +123,19 @@ omeString *omeStringAppendStr(omeString *s, const char *format, ...)
     va_end(list);
 
     if(s->length + 1 > s->size)
-        omeStringRealloc(s, s->length + 1);
+        omeStringResize(s, s->length + 1);
 
     va_start(list, format);
     vsnprintf(end, s->length + 1, format, list);
     va_end(list);
 
     return s;
+}
+
+
+int omeStringCmp(omeString *s, omeString *s2)
+{
+    return strcmp(s->str, s2->str);
 }
 
 

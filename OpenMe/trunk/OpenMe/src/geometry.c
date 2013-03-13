@@ -54,7 +54,10 @@ static GLenum omePolygonTypeToGL(omePolygonType polygonType)
     case OME_TRIANGLE_STRIP_ADJACENCY: return GL_TRIANGLE_STRIP_ADJACENCY;
     case OME_TRIANGLES_ADJACENCY: return GL_TRIANGLES_ADJACENCY;
     case OME_PATCHES: return GL_PATCHES;
+
+    #ifdef DEBUG
     default: omeLoggerLog("Invalid polygon type");
+    #endif
     }
 
     return GL_POINTS;
