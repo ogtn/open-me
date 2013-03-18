@@ -32,34 +32,38 @@ typedef enum omeCameraType
 
 typedef struct omeCamera
 {
-    omeMatrix projection;
-    omeBool projectionUpToDate;
-    omeMatrix view;
-    omeBool viewUpToDate;
-    omeCameraType type;
-    float near;
-    float far;
+    // internal state
+    float near;                 // near clipping plane
+    float far;                  // far clipping plane
     
     union {
-        // camera ortho
+        // camera ortho, for 2D views
         struct
         {
-            float left;
-            float right;
-            float bottom;
-            float top;
+            float left;         // left clipping plane
+            float right;        // right clipping plane
+            float bottom;       // bottom clipping plane
+            float top;          // top clipping plane
         };
 
         // camera perspective
         struct
         {
-            omeVector pos;
-            omeVector target;
-            omeVector up;
-            float fov;
-            float ratio;
+            omeVector pos;      // position in space
+            omeVector target;   // direction of the view
+            omeVector up;       // up vector: where the fuck is the sky?
+            float fov;          // horizontal field of view
+            float ratio;        // horizontal/vertcal ratio
         };
     };
+
+    // thoses matrices are meant to be sent to the shaders on each frame
+    // they hold the above fields, which are more human readable
+    omeMatrix projection;       // projection matrix
+    omeBool projectionUpToDate; // state of the projection matrix
+    omeMatrix view;             // view matrix
+    omeBool viewUpToDate;       // state of the view matrix
+    omeCameraType type;         // type of the camera
 } omeCamera;
 
 

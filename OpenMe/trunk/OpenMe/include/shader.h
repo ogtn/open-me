@@ -33,16 +33,19 @@ typedef struct omeShader
     // keep in first position
     omeResource resource;
 
-    char *code;
-    omeShaderType type;
-    unsigned int id;
-    omeBool compiled;
+    char *code;				// Source code of the shader
+    omeShaderType type;		// Type of shader
+    unsigned int id;		// OpenGL id
+    omeBool compiled;		// Is the shader already compiled? TODO: use a status instead, to avoid multiple comoilation of a defect shader
 } omeShader;
 
 
+// Constructor and destructor
 omeShader *omeShaderCreate(omeShaderType type, char *code, const char *name);
 omeShader *omeShaderLoadFromFile(const char *fileName);
 void omeShaderDestroy(omeShader **s);
+
+// 
 omeStatus omeShaderCompile(omeShader *s);
 
 

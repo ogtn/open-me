@@ -17,10 +17,10 @@
 #include "camera.h"
 #include "mesh.h"
 #include "program.h"
+#include "opengl.h"
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
-#include <GL/glew.h>
 
 // gettimeofday() and equivalent...
 #ifdef _MSC_VER
@@ -107,17 +107,17 @@ int omeEngineStart(int width, int height)
     // clear everything in case of restart
     memset(&engine, 0, sizeof(omeEngine));
     omeLoggerStart();
-
+/*
     if(glewInit() != GLEW_OK)
     {
         omeLoggerLog("Failed to load glew, you're screwed\n\n");
         return OME_FAILURE;
     }
-
+*/
     //clear color and transparency
     glClearColor(0.8f, 0.8f, 0.8f, 1);
     //glEnable(GL_BGR_EXT); // doesn't seem supported on my laptop :/
-    glEnable(GL_ALPHA_TEST);
+    //glEnable(GL_ALPHA_TEST); // TODO: not GLES2 compliant
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     

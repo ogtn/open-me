@@ -16,7 +16,7 @@
 #include "camera.h"
 #include "texture.h"
 #include "light.h"
-#include <GL/glew.h>
+#include "opengl.h"
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>

@@ -16,7 +16,7 @@
 #include "program.h"
 #include "engine.h"
 #include "logger.h"
-#include <GL/glew.h>
+#include "opengl.h"
 #include <utlist.h>
 #include <stdlib.h>
 #include <string.h>
@@ -144,6 +144,7 @@ omeMesh *omeScenePick(omeScene *s, omeCamera *c, int x, int y)
         }
     }
 
+    // TODO: GL_ALPHA, GL_RGB, GL_RGBA are the only acceptable values with opengles2
     glReadPixels(x, y, 1, 1, GL_RED, GL_UNSIGNED_BYTE, &pixel);
 
     // nothing found

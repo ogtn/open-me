@@ -15,9 +15,9 @@
 #include "engine.h"
 #include "scene.h"
 #include "program.h"
+#include "opengl.h"
 #include <stdlib.h>
 #include <string.h>
-#include <GL/glew.h>
 #include <utlist.h>
 
 
@@ -46,14 +46,14 @@ static GLenum omePolygonTypeToGL(omePolygonType polygonType)
     case OME_LINE_STRIP: return GL_LINE_STRIP;
     case OME_LINE_LOOP: return GL_LINE_LOOP;
     case OME_LINES: return GL_LINES;
-    case OME_LINE_STRIP_ADJACENCY: return GL_LINE_STRIP_ADJACENCY;
-    case OME_LINES_ADJACENCY: return GL_LINES_ADJACENCY;
+    // case OME_LINE_STRIP_ADJACENCY: return GL_LINE_STRIP_ADJACENCY;
+    // case OME_LINES_ADJACENCY: return GL_LINES_ADJACENCY;
     case OME_TRIANGLE_STRIP: return GL_TRIANGLE_STRIP;
     case OME_TRIANGLE_FAN: return GL_TRIANGLE_FAN;
     case OME_TRIANGLES: return GL_TRIANGLES;
-    case OME_TRIANGLE_STRIP_ADJACENCY: return GL_TRIANGLE_STRIP_ADJACENCY;
-    case OME_TRIANGLES_ADJACENCY: return GL_TRIANGLES_ADJACENCY;
-    case OME_PATCHES: return GL_PATCHES;
+    // case OME_TRIANGLE_STRIP_ADJACENCY: return GL_TRIANGLE_STRIP_ADJACENCY;
+    // case OME_TRIANGLES_ADJACENCY: return GL_TRIANGLES_ADJACENCY;
+    // case OME_PATCHES: return GL_PATCHES;
 
     #ifdef DEBUG
     default: omeLoggerLog("Invalid polygon type");

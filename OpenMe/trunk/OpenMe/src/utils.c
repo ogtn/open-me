@@ -10,8 +10,8 @@
 
 
 #include "utils.h"
+#include "opengl.h"
 #include <IL/il.h>
-#include <GL/glew.h>
 #include <ctype.h>
 #include <string.h>
 
@@ -50,7 +50,7 @@ unsigned int omeTypeToGL(omeType type)
     case OME_INT:       return GL_INT;
     case OME_UINT:      return GL_UNSIGNED_INT;
     case OME_FLOAT:     return GL_FLOAT;
-    case OME_DOUBLE:    return GL_DOUBLE;
+    // case OME_DOUBLE:    return GL_DOUBLE;
 
     #ifdef DEBUG
     default:
@@ -71,8 +71,8 @@ const char *omeGetGLError(void)
         case GL_INVALID_ENUM: res = "GL_INVALID_ENUM"; break;
         case GL_INVALID_VALUE: res = "GL_INVALID_VALUE"; break;
         case GL_INVALID_OPERATION: res = "GL_INVALID_OPERATION"; break;
-        case GL_STACK_OVERFLOW: res = "GL_STACK_OVERFLOW"; break;
-        case GL_STACK_UNDERFLOW: res = "GL_STACK_UNDERFLOW"; break;
+        // case GL_STACK_OVERFLOW: res = "GL_STACK_OVERFLOW"; break;
+        // case GL_STACK_UNDERFLOW: res = "GL_STACK_UNDERFLOW"; break;
         case GL_OUT_OF_MEMORY: res = "GL_OUT_OF_MEMORY"; break;
         default: res = "unknown error"; break;
     }
