@@ -26,6 +26,7 @@ typedef struct omeMesh omeMesh;
 typedef struct omeMeshListElement omeMeshListElement, omeMeshList;
 typedef struct omeProgram omeProgram;
 
+// List of existing types of vertex attributes
 typedef enum omeAttribType
 {
     OME_ATTRIB_TYPE_POSITION,
@@ -44,6 +45,9 @@ typedef enum omeAttribType
 } omeAttribType;
 
 
+// Thoses types exactly match the OpenGL render modes
+// TODO: reduce this set in OpenGLES mode*
+// TODO: rename renderMode
 typedef enum omePolygonType
 {
     OME_POINTS,
@@ -62,42 +66,55 @@ typedef enum omePolygonType
 
 
 //TODO: should be private. Internal use only
+// Hold all the information related to a vertex attribute
 typedef struct omeVertexAttrib
 {
-    int nbElements;
-    int size;
-    void *data;
-    int updateHint;
-    omeType type;
-    omeAttribType geometryType;
-    omeBool actived;
-    omeBool enabled;
-    int loc;
-    const char *name;
-    const char *glslType;
+    // data & metadata
+    int nbElements;                 // Number of elements
+    int size;                       // Size on the device, in bytes
+    void *data;                     // Pointer to the data
+    omeType type;                   // Type of data elements
+    omeAttribType geometryType;     // What kind of attribute is this?
+    
+    // OpenGL stuff
+    int updateHint;                 // Hint used by OpenGL to optimize storage on device
+    int loc;                        // Location in the GLSL program
+    const char *name;               // Name in the GLSL program
+    const char *glslType;           // GLSL type
+    
+    // internal state    
+    omeBool actived;                // Is this attribute valid? TODO: rename this shit "valid"?
+    omeBool enabled;                // Is this attribut currently enabled from OpenGL's POV?
 } omeVertexAttrib;
 
 
+// A geometry is a renderabl set of vertices, which are made of a 
+// variable number of vertex attributes (see omeVertexAttrib and omeAttribType)
 typedef struct omeGeometry
 {
-    int nbVertices;
-    int nbAttributes;
-    int vertexSize;
-    int indexCpt;
-    int size;
-    omeVertexAttrib attributes[OME_ATTRIB_MAX];  //TODO: try dynamic solution instead?
-    omeVertexAttrib indices;
-    omeBool interleaved;
-    omeBool indexed;
-    omeBool padded;
-    omeBool finalized;
-    omePolygonType polygonType;
-    unsigned int VBO;
-    omeBool VBOReady;
+    int nbVertices;             // Number of vertices composing the geometry
+    int vertexSize;             // Size of each vertex on the device, in bytes
+    int nbAttributes;           // Number of attributes 
+    omeVertexAttrib attributes[OME_ATTRIB_MAX]; // all the vertex attributes TODO: try dynamic solution instead?
+    omeVertexAttrib indices;    // special attribute, use to store the indices of the vertices
+
+    int indexCpt;               // Internal counter TODO: remove this once the vertex attributes will be dynamically stored?
+    int size;                   // Total size needed on the the device to store the geometry data TODO: how about the indices??
+    
+    omeBool interleaved;        // If interleaved, all the attributes (except indices), are interleaved
+                                // In the VBO (ababab), instead of being  stored one after the other (aaabbb)
+    omeBool indexed;            // For geometry which reuse many times a lot of their vertices, indexing
+                                // them can be an interesting optimization
+    omeBool padded;             // Padding can improve performance by making vertices size being a
+                                // power of two, or an other performance friendly value
+    omeBool finalized;          // TODO: this is old stuff, is this still useful?
+    omePolygonType polygonType; // Type of polygon stored, triangles, quads... see omePolygonType
+    unsigned int VBO;           // OpenGL id of the VBO
+    omeBool VBOReady;           // is the VBO generated?
 
     // TODO: maybe those things should be in a reference struct, used in a "polymorphic" way...
-    omeMeshList *references;
-    int nbReferences;
+    omeMeshList *references;    // List of meshes using this geometry
+    int nbReferences;           // Number of meshes in the list
 } omeGeometry;
 
 

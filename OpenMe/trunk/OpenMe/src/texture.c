@@ -13,7 +13,7 @@
 #include "texture.h"
 
 #include "logger.h"
-#include <GL/glew.h>
+#include "opengl.h"
 #include <IL/il.h>
 #include <stdlib.h>
 #include <string.h>
@@ -50,18 +50,18 @@ omeTexture *omeTextureCreate(omeTextureType type, int width, int height, int dep
     switch(type)
     {
     case OME_TEXTURE_TYPE_1D:
-        glTexImage1D(GL_TEXTURE_1D, 0, GL_RGBA8, width, 0, format, GL_UNSIGNED_BYTE, data[0]);
+        glTexImage1D(GL_TEXTURE_1D, 0, GL_RGBA, width, 0, format, GL_UNSIGNED_BYTE, data[0]);
         break;
     case OME_TEXTURE_TYPE_2D:
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, width, height, 0, format, GL_UNSIGNED_BYTE, data[0]);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, format, GL_UNSIGNED_BYTE, data[0]);
         break;
     case OME_TEXTURE_TYPE_3D:
-        //glTexImage3D(GL_TEXTURE_3D, 0, GL_RGBA8, width, height, depth, 0, format, GL_UNSIGNED_BYTE, data[0]);
+        //glTexImage3D(GL_TEXTURE_3D, 0, GL_RGBA, width, height, depth, 0, format, GL_UNSIGNED_BYTE, data[0]);
         omeLoggerLog("texture 3D not supported yet\n");
         return NULL;
     case OME_TEXTURE_TYPE_CUBE:
         for(i = 0; i < 6; i++)
-            glTexImage2D(omeCubeMapFaces[i], 0, GL_RGBA8, width, height, 0, format, GL_UNSIGNED_BYTE, data[i]);
+            glTexImage2D(omeCubeMapFaces[i], 0, GL_RGBA, width, height, 0, format, GL_UNSIGNED_BYTE, data[i]);
         break;
 
     #ifdef DEBUG

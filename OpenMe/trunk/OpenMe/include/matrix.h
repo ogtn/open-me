@@ -33,8 +33,14 @@ typedef union omeMatrix
 
 
 void omeMatrixCopy(omeMatrix *dst, const omeMatrix *src);
+
+// produce an identiy matrix
 void omeMatrixMakeIdentity(omeMatrix *m);
+
+// produce a complete transformation matrix
 void omeMatrixMakeTransfo(omeMatrix *m, const omeVector *position, const omeVector *rotation, const omeVector *scaling);
+
+
 void omeMatrixMakeOrtho(omeMatrix *m, float left, float right, float bottom, float top, float zNear, float zFar);
 void omeMatrixMakePerspective(omeMatrix *m, float angle, float ratio, float near, float far);
 void omeMatrixMakeLookAt(omeMatrix *m, const omeVector *pos, const omeVector *target, const omeVector *up);

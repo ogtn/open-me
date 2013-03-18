@@ -11,11 +11,10 @@
 
 #include "logger.h"
 #include "camera.h"
+#include "opengl.h"
 #include "utils.h"
 #include <stdlib.h>
 #include <string.h>
-#include <GL/glew.h>
-
 
 
 static const omeVector defaultPosition =	{{1, 1, 1}};

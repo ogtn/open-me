@@ -14,9 +14,9 @@
 #include "logger.h"
 #include "color.h"
 #include "program.h"
+#include "opengl.h"
 #include <stdlib.h>
 #include <string.h>
-#include <GL/glew.h>
 
 
 omeMesh *omeMeshCreate(int nbBuffers)

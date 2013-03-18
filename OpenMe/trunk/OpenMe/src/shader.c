@@ -11,7 +11,7 @@
 
 #include "shader.h"
 #include "logger.h"
-#include <GL/glew.h>
+#include "opengl.h"
 #include <stdlib.h>
 #include <string.h>
 
@@ -126,6 +126,13 @@ omeStatus omeShaderCompile(omeShader *s)
 {
     GLint status;
     GLsizei size;
+
+    if(s->compiled == OME_TRUE)
+    {
+        
+
+        return OME_SUCCESS;
+    }
 
     // send source code
     glShaderSource(s->id, 1, (const char **)&s->code, NULL);

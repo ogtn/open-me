@@ -11,10 +11,10 @@
 
 #include "matrix.h"
 #include "utils.h"
+#include "opengl.h"
 #include <string.h>
 #include <math.h>
 #include <stdio.h>
-#include <GL/glew.h>
 
 
 static const float identity[16] = {

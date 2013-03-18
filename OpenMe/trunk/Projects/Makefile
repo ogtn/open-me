@@ -12,7 +12,7 @@
 
 CC=LC_ALL=en_US.UTF-8 colorgcc -Wunsafe-loop-optimizations
 #CC=gcc
-#CC=clang -Wno-typedef-redefinition -Wparentheses
+CC=clang -Wno-typedef-redefinition -Wparentheses
 
 # hardcore mode :)
 # http://blogs.gnome.org/otte/2008/12/22/warning-options/
@@ -24,7 +24,7 @@ CWARN=-Wall -Wextra -fno-common -Wdeclaration-after-statement \
 -Wmissing-format-attribute -Wmissing-noreturn -Wmissing-prototypes \
 -Wnested-externs -Wold-style-definition -Wredundant-decls \
 -Wsign-compare -Wstrict-aliasing=2 -Wstrict-prototypes -Wswitch-enum \
--Wundef -Wunreachable-code -Wwrite-strings \
+-Wundef -Wunreachable-code -Wwrite-strings -Werror=implicit-function-declaration\
 #-ansi #-pedantic #-pedantic-errors
 
 # easy version
@@ -43,6 +43,11 @@ endif
 # private access checking activated by default
 ifndef NOCHECK
 CFLAGS+=-DOME_CHECK_PRIVACY
+endif
+
+#switch between ogl or ogles2
+ifdef EMBEDDED
+CFLAGS+=-DOME_USE_GLES
 endif
 
 LDFLAGS=
@@ -78,12 +83,15 @@ runTests: $(OUTDIR)/test_string $(OUTDIR)/test_interp #$(OUTDIR)/test_file
 	@cd $(OUTDIR);  echo -n "Testing interpreter:..." && LD_LIBRARY_PATH=. ./test_interp && echo "\033[1;32mOK\033[0m"
 #@cd $(OUTDIR);  echo -n "Testing files:..." && LD_LIBRARY_PATH=. ./test_string && echo "\033[1;32mOK\033[0m"
 
-showTODOs:
+showtodos:
 	@grep -rin --color --include *.[hc] TODO ..
 	@echo "\n\033[1;31mThere are `grep -ri --include *.[hc] TODO .. | wc -l` TODOs in the source code: still a lot of work!\033[0m"
 
-showLines:
+showlines:
 	@find ../OpenMe/ -name "*.[hc]" | xargs wc -l | sort -n
+
+showglcalls:
+	@grep -rnE --include "*.[hc]" --color=none "gl[A-Z][[:alnum:]]*\(" .. | sed 's/.*\(gl[A-Z][[:alnum:]]*\).*/\1/' | sort -u | cat -n
 
 $(OUTDIR)/messyExample: ../Examples/messyExample.c $(OUTDIR)/libOpenMe.so
 	@echo "\033[1;32m===[building messyExample]===\033[0m"
@@ -100,7 +108,7 @@ clean:
 	@rm -rf ../Release/libOpenMe.so ../Release/messyExample ../Release/test_*
 	@echo "\033[1;32mClean complete\033[0m"
 
-.PHONY: all clean runTests showTODOs showLines runMessyExample runMemCheck
+.PHONY: all clean runTests showlines showtodos showglcalls runMessyExample runMemCheck
 
 # @echo "\033[1;32mThis text is green\033[0m"
 # @echo "\033[1;31mThat one is red\033[0m"
