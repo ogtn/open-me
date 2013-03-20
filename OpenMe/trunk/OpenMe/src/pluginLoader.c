@@ -88,6 +88,7 @@ void omePluginUnload(omePlugin **p)
 void *omePluginGetFunc(omePlugin *p, const char *funcName)
 {
     void *res;
+    const char *msg;
 
     if(!p->handle)
         return NULL;
@@ -95,11 +96,11 @@ void *omePluginGetFunc(omePlugin *p, const char *funcName)
 #ifdef __linux__
     dlerror(); // clear previous error
     res = dlsym(p->handle, funcName);
+    msg = dlerror();
 
-    if(res == NULL)
+    // proper way to detect errors, see man dlsym()
+    if(msg != NULL)
     {
-        const char *msg = dlerror();
-
         fprintf(stderr, "Error occured while loading symbol %s from library %s: %s\n", funcName, p->name, msg ? msg : "unknown error");
     }
 #elif defined(_WIN32)

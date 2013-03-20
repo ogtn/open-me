@@ -143,7 +143,7 @@ static void test_main(void)
 static void cb_quit(omeConsole *c, void *userData)
 {
 	*(int *)userData = 1;
-	printf("Bye, cruel world!\n");
+	// printf("Bye, cruel world!\n");
 }
 
 
@@ -221,7 +221,7 @@ static void cb_create(omeConsole *c, void *user_data)
 
 int main(void)
 {
-	char line[OME_CONSOLE_MAX_LINE_SIZE + 1] = {'\0'};
+	char line[OME_CONSOLE_MAX_LINE_SIZE + 1] = "    q    ";
 	omeConsole *console;
 	omeConsoleStatus status;
 	int stop = 0;
@@ -247,10 +247,10 @@ int main(void)
 
 	while(!stop)
 	{
-		printf("> ");
+		// printf("> ");
 		
-		if(fgets(line, OME_CONSOLE_MAX_LINE_SIZE, stdin) == NULL)
-			printf("Weird stuff happened\n");
+		// if(fgets(line, OME_CONSOLE_MAX_LINE_SIZE, stdin) == NULL)
+		// 	printf("Weird stuff happened\n");
 
 		status = omeConsoleProcess(console, line);
 

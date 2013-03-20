@@ -32,6 +32,7 @@ extern "C" {
 #include "renderTarget.h"
 #include "light.h"
 #include "dstring.h"
+#include "pluginLoader.h"
 
 
 //TODO: test *alloc() return in debug mode, through "overloading"?

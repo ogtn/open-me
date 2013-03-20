@@ -46,7 +46,7 @@ typedef enum omeAttribType
 
 
 // Thoses types exactly match the OpenGL render modes
-// TODO: reduce this set in OpenGLES mode*
+// TODO: reduce this set in OpenGLES mode
 // TODO: rename renderMode
 typedef enum omePolygonType
 {

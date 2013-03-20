@@ -18,32 +18,31 @@ extern "C" {
 #endif
 
 
-typedef enum omePluginType
-{
-    OME_PLUGIN_TYPE_MESH_LOADER     = 0x01,
-    OME_PLUGIN_TYPE_MESH_SAVER      = 0x02,
-    OME_PLUGIN_TYPE_MATERIAL_LOADER = 0x04,
-    OME_PLUGIN_TYPE_MATERIAL_SAVER  = 0x08,
-    OME_PLUGIN_TYPE_TEXTURE_LOADER  = 0x10,
-    OME_PLUGIN_TYPE_TEXTURE_SAVER   = 0x20,
-} omePluginType;
+#include "pluginInterface.h"
 
 
-// function types wich can be imported from plugins
-typedef omePluginType (*omePluginInitFunc)(void);
-typedef void (*omePluginQuitFunc)(void);
-
-
+// Handle to a loaded plugin
 typedef struct omePlugin
 {
-    char *name;
-    omePluginType type;
-    void *handle;
+    char *name;				// plugin name
+    void *handle;			// linux/windows plugin handle
+    omePluginType type;		// type of plugin, see pluginInterface for the
+    						// different values and the associated interfaces
 } omePlugin;
 
 
+// load a plugin from its name
+// TODO: use extension .omePlugin instead of .dll and .so?
+// TODO: only search into a plugins/ folder?
 omePlugin *omePluginLoad(const char *name);
+
+// unload the plugin
+// TODO: hide this from the user and let the engine deal with plugins
+// to avoid access to unloaded data/functions?
 void omePluginUnload(omePlugin **p);
+
+// retreive the function pointer associated with the given name
+// TODO: not only functions are accessible through this mechanism
 void *omePluginGetFunc(omePlugin *p, const char *funcName);
 
 
