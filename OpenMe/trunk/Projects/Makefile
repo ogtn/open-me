@@ -18,7 +18,7 @@ CC=clang -Wno-typedef-redefinition -Wparentheses
 # http://blogs.gnome.org/otte/2008/12/22/warning-options/
 # http://mces.blogspot.fr/2008/12/year-end-cleaning-ie-on-warning-options.html
 # http://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html
-CWARN=-Wall -Wextra -fno-common -Wdeclaration-after-statement \
+CWARN=-Wall -Wextra -fno-common -Wdeclaration-after-statement 
 -Wformat=2 -Winit-self -Winline -Wpacked -Wp,-D_FORTIFY_SOURCE=2 \
 -Wpointer-arith -Wlarger-than-65500 -Wmissing-declarations \
 -Wmissing-format-attribute -Wmissing-noreturn -Wmissing-prototypes \
@@ -55,7 +55,7 @@ LDFLAGS=
 OPENME_INCLUDE=../OpenMe/include
 UTHASH_INCLUDE=../uthash
 
-all: $(OUTDIR)/messyExample $(OUTDIR)/test_string $(OUTDIR)/test_interp
+all: $(OUTDIR)/messyExample $(OUTDIR)/test_string $(OUTDIR)/test_interp $(OUTDIR)/test_plugin
 	@echo "\033[1;32m======[build complete]=======\033[0m"
 
 runMessyExample: $(OUTDIR)/messyExample $(OUTDIR)/libOpenMe.so
@@ -74,12 +74,21 @@ $(OUTDIR)/test_interp: ../Examples/test_interp.c $(OUTDIR)/libOpenMe.so
 	@$(CC) $(CFLAGS) -o $(OUTDIR)/test_interp ../Examples/test_interp.c -lOpenMe -I$(UTHASH_INCLUDE) -I$(OPENME_INCLUDE) -L$(OUTDIR) -lglfw -lIL
 #@echo "\033[1;32m======[build complete]=======\033[0m"
 
+$(OUTDIR)/test_plugin: ../Examples/test_plugin.c $(OUTDIR)/libOpenMe.so $(OUTDIR)/plugin.so
+	@echo "\033[1;32m===[building test plugin]====\033[0m"
+	@$(CC) $(CFLAGS) -o $(OUTDIR)/test_plugin ../Examples/test_plugin.c -lOpenMe -I$(UTHASH_INCLUDE) -I$(OPENME_INCLUDE) -L$(OUTDIR) -lglfw -lIL
+
+$(OUTDIR)/plugin.so: ../Examples/plugin.c ../OpenMe/include/pluginInterface.h
+	@echo "\033[1;32m======[building plugin]======\033[0m"
+	@$(CC) $(CFLAGS) -o $(OUTDIR)/plugin.so -fPIC -shared -Wl,-soname,plugin.so ../Examples/plugin.c -I$(OPENME_INCLUDE)
+
 #$(OUTDIR)/test_file: ../Examples/test_file.c $(OUTDIR)/libOpenMe.so
 #	$(CC) $(CFLAGS) -o $(OUTDIR)/test_file ../Examples/test_file.c -lOpenMe -I$(UTHASH_INCLUDE) -I$(OPENME_INCLUDE) -L$(OUTDIR) -lglfw -lIL
 
-runTests: $(OUTDIR)/test_string $(OUTDIR)/test_interp #$(OUTDIR)/test_file
+runTests: $(OUTDIR)/test_string $(OUTDIR)/test_interp $(OUTDIR)/test_plugin #$(OUTDIR)/test_file
 	@echo "\033[1;32m=======[running tests]=======\033[0m"
 	@cd $(OUTDIR);  echo -n "Testing strings:..." && LD_LIBRARY_PATH=. ./test_string && echo "\033[1;32mOK\033[0m"
+	@cd $(OUTDIR);  echo -n "Testing plugins:..." && LD_LIBRARY_PATH=. ./test_plugin && echo "\033[1;32mOK\033[0m"
 	@cd $(OUTDIR);  echo -n "Testing interpreter:..." && LD_LIBRARY_PATH=. ./test_interp && echo "\033[1;32mOK\033[0m"
 #@cd $(OUTDIR);  echo -n "Testing files:..." && LD_LIBRARY_PATH=. ./test_string && echo "\033[1;32mOK\033[0m"
 
@@ -89,6 +98,9 @@ showtodos:
 
 showlines:
 	@find ../OpenMe/ -name "*.[hc]" | xargs wc -l | sort -n
+
+showfunctions: $(OUTDIR)/libOpenMe.so
+	@objdump -tT $(OUTDIR)/libOpenMe.so | grep ome[A-Z][[:alnum:]]* | sed 's/\(.*\)\(ome[A-Z][[:alnum:]]*\)\(.*\)/\2/' | sort -u | cat -n
 
 showglcalls:
 	@grep -rnE --include "*.[hc]" --color=none "gl[A-Z][[:alnum:]]*\(" .. | sed 's/.*\(gl[A-Z][[:alnum:]]*\).*/\1/' | sort -u | cat -n
@@ -104,8 +116,8 @@ $(OUTDIR)/libOpenMe.so: ../OpenMe/include/*.h ../OpenMe/src/*.c
 #@echo "\033[1;32m======[build complete]=======\033[0m"
 
 clean:
-	@rm -rf ../Debug/libOpenMe.so ../Debug/messyExample ../Debug/test_*
-	@rm -rf ../Release/libOpenMe.so ../Release/messyExample ../Release/test_*
+	@rm -rf ../Debug/*.so ../Debug/messyExample ../Debug/test_*
+	@rm -rf ../Release/*.so ../Release/messyExample ../Release/test_*
 	@echo "\033[1;32mClean complete\033[0m"
 
 .PHONY: all clean runTests showlines showtodos showglcalls runMessyExample runMemCheck
