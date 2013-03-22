@@ -29,6 +29,7 @@ extern "C" {
 
 
 // All status returned by the omeConsoleXXX() functions
+// Names should be sufficient to understand the meaning
 typedef enum omeConsoleStatus
 {
 	OME_CONSOLE_STATUS_NO_ERROR,
@@ -49,7 +50,7 @@ typedef enum omeConsoleStatus
 } omeConsoleStatus;
 
 
-// Types of variables accepted by the console environement
+// Types of variables accepted by the console environment
 typedef enum omeConsoleVarType
 {
 	OME_CONSOLE_VAR_TYPE_INT,

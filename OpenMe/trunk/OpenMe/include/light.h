@@ -24,11 +24,12 @@ extern "C" {
 
 typedef enum omeLightType
 {
-    OME_LIGTH_TYPE_OMNI,
+    OME_LIGTH_TYPE_OMNI,	// point light which emits in all directions
     OME_LIGHT_TYPE_MAX
 } omeLightType;
 
 
+// TODO: does it even make sense to have 3 types of colors for one light? => KISS
 typedef struct omeLight
 {
     // keep in first place

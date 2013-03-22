@@ -72,7 +72,7 @@ void omeStringDestroy(omeString **s)
 }
 
 
-void omeStringResize(omeString *s, unsigned int needed)
+void omeStringResize(omeString *s, size_t needed)
 {
     s->size = omeNextPowOfTwo(needed);
     s->str = realloc(s->str, s->size);
@@ -153,7 +153,7 @@ const char *omeStringGetExtension(const omeString *s)
 
 // TODO: find a better solution...
 // see http://stackoverflow.com/questions/5184459/msvc-linux-code-for-count-sprintf
-unsigned int countSprintf(const char *format, va_list ap)
+size_t countSprintf(const char *format, va_list ap)
 {
 #ifdef WIN32
 	return _vscprintf(format, ap);
