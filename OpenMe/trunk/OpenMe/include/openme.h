@@ -35,11 +35,38 @@ extern "C" {
 #include "pluginLoader.h"
 
 
-//TODO: test *alloc() return in debug mode, through "overloading"?
-//TODO: add an omeBool field in structures, so they can know if they are dynamic ok not and avoid calling free()??? Not sure if stupid....
-//TODO: make sure all static stuffs are const, to allow multithreading
-//TODO: use glewIsSupported() to adapt the render to the hardware's capabilities
+// TODO: test *alloc() return in debug mode, through "overloading"?
+// TODO: add an omeBool field in structures, so they can know if they are dynamic ok not and avoid calling free()??? Not sure if stupid....
+// TODO: make sure all static stuffs are const, to allow multithreading
+// TODO: use glewIsSupported() to adapt the render to the hardware's capabilities
 
+// TODO: get rid of the forward declarations:
+// omeCamera
+// omeGeometry
+// omeGeometryListElement
+// omeGeometryList
+// omeMesh
+// omeMeshListElement
+// omeMeshList
+// omeLight
+// omeTexture
+// omePolygonType
+// omeProgram
+// omeMaterial
+// omeScene
+// omeRenderTarget
+// omeVector
+// omeMatrix
+//
+// in files:
+// ../OpenMe/include/scene.h
+// ../OpenMe/include/renderTarget.h
+// ../OpenMe/include/openme.h
+// ../OpenMe/include/mesh.h
+// ../OpenMe/include/engine.h
+// ../OpenMe/include/OBJLoader.h
+// ../OpenMe/include/geometry.h
+// ../OpenMe/include/program.h
 
 #ifdef __cplusplus
 }
