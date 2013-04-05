@@ -53,7 +53,8 @@ omeConsoleStatus omeConsoleProcess(omeConsole *c, const char *cmdLine)
 	if(strlen(cmdLine) > OME_CONSOLE_MAX_LINE_SIZE)
 		return OME_CONSOLE_STATUS_LINE_OVERFLOW;
 
-	strcpy(c->cmdLine.str, cmdLine);
+	strncpy(c->cmdLine.str, cmdLine, OME_CONSOLE_MAX_LINE_SIZE);
+	c->cmdLine.str[OME_CONSOLE_MAX_LINE_SIZE - 1] = '\0';
 	omeCleanString(c->cmdLine.str);
 	status = omeConsoleParse(&c->cmdLine);
 
@@ -328,7 +329,8 @@ omeConsoleVar *omeConsoleVarCreate(const char *name, omeConsoleVarType type, voi
 {
 	omeConsoleVar *v = calloc(1, sizeof(omeConsoleVar));
 
-	strcpy(v->key, name);
+	strncpy(v->key, name, OME_CONSOLE_MAX_VAR_NAME);
+	v->key[OME_CONSOLE_MAX_VAR_NAME - 1] = '\0';
 	v->type = type;
 	v->value = value;
 

@@ -14,7 +14,6 @@
 #include "logger.h"
 #include <GL/glew.h>
 #include <stdlib.h>
-#include <string.h>
 
 
 // TODO: check for extension before using this...

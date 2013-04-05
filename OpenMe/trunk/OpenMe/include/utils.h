@@ -64,13 +64,14 @@ int omeSizeOf(omeType type);
 unsigned int omeTypeToGL(omeType type);
 const char *omeGetGLError(void);
 const char *omeGetILError(void);
-void omeCleanString(char *str);
-
+double omeGetTime(void);
 // TODO get rid of this header?
 #include <stdlib.h>
 void omeDbgClearMem(void *ptr, size_t size);
 omeBool omeIsBlank(char c);
 void omeSkipBlanks(char **str);
+void omeCleanString(char *str);
+
 
 // other stuff...
 #define OME_NAME_MAXLEN     256  

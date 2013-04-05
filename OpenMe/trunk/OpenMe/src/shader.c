@@ -13,7 +13,6 @@
 #include "logger.h"
 #include "opengl.h"
 #include <stdlib.h>
-#include <string.h>
 
 
 omeShader *omeShaderCreate(omeShaderType type, char *code, const char *name)

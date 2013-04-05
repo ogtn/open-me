@@ -77,7 +77,6 @@ int omeEngineStart(int width, int height);
 void omeEngineStop(void);
 
 // getters for performance counters
-double omeEngineGetTime(void);
 double omeEngineGetFPS(void);
 double omeEngineGetFrameDuration(void);
 

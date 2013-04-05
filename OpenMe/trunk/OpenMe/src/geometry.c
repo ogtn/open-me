@@ -17,7 +17,6 @@
 #include "program.h"
 #include "opengl.h"
 #include <stdlib.h>
-#include <string.h>
 #include <utlist.h>
 
 

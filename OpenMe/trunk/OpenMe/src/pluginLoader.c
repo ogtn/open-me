@@ -10,14 +10,15 @@
 
 
 #include "pluginLoader.h"
+#include "utils.h"
+#include <stdlib.h>
+#include <string.h>
+
 #ifdef __linux__
 #include <dlfcn.h>
 #elif defined(_WIN32)
 #include <windows.h>
 #endif
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
 
 
 omePlugin *omePluginLoad(const char *name)
@@ -39,7 +40,7 @@ omePlugin *omePluginLoad(const char *name)
     {
         const char *msg = dlerror();
 
-        fprintf(stderr, "Error occured while loading library %s: %s\n", name, msg ? msg : "unknown error");
+        omeLoggerLog("Error occured while loading library %s: %s\n", name, msg ? msg : "unknown error");
     }
 #elif defined(_WIN32)
     //TODO: wchar_t for windows ... or use LoadLibraryA() (bad idea)
@@ -73,7 +74,7 @@ void omePluginUnload(omePlugin **p)
     {
         const char *msg = dlerror();
 
-        fprintf(stderr, "Error occured while unloading library %s: %s\n", (*p)->name, msg ? msg : "unknown error");
+        omeLoggerLog("Error occured while unloading library %s: %s\n", (*p)->name, msg ? msg : "unknown error");
     }
 #elif defined(_WIN32)
     FreeLibrary((*p)->handle);
@@ -101,7 +102,7 @@ void *omePluginGetFunc(omePlugin *p, const char *funcName)
     // proper way to detect errors, see man dlsym()
     if(msg != NULL)
     {
-        fprintf(stderr, "Error occured while loading symbol %s from library %s: %s\n", funcName, p->name, msg ? msg : "unknown error");
+        omeLoggerLog("Error occured while loading symbol %s from library %s: %s\n", funcName, p->name, msg ? msg : "unknown error");
     }
 #elif defined(_WIN32)
     res = GetProcAddress(p->handle, funcName);

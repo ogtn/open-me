@@ -19,7 +19,6 @@
 #include "opengl.h"
 #include <utlist.h>
 #include <stdlib.h>
-#include <string.h>
 
 
 #include "light.h"

@@ -19,33 +19,10 @@
 #include "program.h"
 #include "opengl.h"
 #include <stdlib.h>
-#include <string.h>
-#include <stdio.h>
-
-// gettimeofday() and equivalent...
-#ifdef _MSC_VER
-#include <sys/timeb.h>
-#else
-#include <sys/time.h>
-#endif
 
 
 // TODO: how about multithreading???
 static omeEngine engine;
-
-
-double omeEngineGetTime(void)
-{
-#ifdef _MSC_VER
-    struct _timeb timebuffer;
-    _ftime64_s(&timebuffer);
-    return timebuffer.time + timebuffer.millitm * 1.0e-3;
-#else
-    struct timeval tv;
-    gettimeofday(&tv, NULL);
-    return tv.tv_sec + tv.tv_usec * 1.0e-6;
-#endif
-}
 
 
 double omeEngineGetFPS(void)
@@ -62,7 +39,7 @@ double omeEngineGetFrameDuration(void)
 
 void omeEngineUpdate(void)
 {
-    double now = omeEngineGetTime();
+    double now = omeGetTime();
 
     // performaces counters
     engine.totalFrames++;
@@ -126,8 +103,8 @@ int omeEngineStart(int width, int height)
     glDepthMask(GL_TRUE);
 
     // initialize the engine
-    engine.FPSUpdateTime = omeEngineGetTime();
-    engine.lastFrameStart = omeEngineGetTime();
+    engine.FPSUpdateTime = omeGetTime();
+    engine.lastFrameStart = omeGetTime();
     engine.state = OME_ENGINE_STATE_STARTED;
 
     // viewport

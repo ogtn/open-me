@@ -16,7 +16,6 @@
 #include "opengl.h"
 #include <IL/il.h>
 #include <stdlib.h>
-#include <string.h>
 
 
 static const GLenum omeCubeMapFaces[] = 
