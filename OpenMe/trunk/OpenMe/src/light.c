@@ -12,7 +12,6 @@
 #include "light.h"
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
 
 
 static const omeColor3 defaultAmbiant =  {{0.1f, 0.1f, 0.1f}};

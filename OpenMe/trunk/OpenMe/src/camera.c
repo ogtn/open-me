@@ -14,7 +14,6 @@
 #include "opengl.h"
 #include "utils.h"
 #include <stdlib.h>
-#include <string.h>
 
 
 static const omeVector defaultPosition =	{{1, 1, 1}};
@@ -160,8 +159,8 @@ void omeCameraUpdate(omeCamera *c)
             c->projectionUpToDate = OME_TRUE;
         }
         break;
-    /*default:
+    default:
         omeLoggerLog("Unknown type of camera");
-        return;*/
+        return;
     }
 }

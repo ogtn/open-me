@@ -18,8 +18,6 @@
 #include "light.h"
 #include "opengl.h"
 #include <stdlib.h>
-#include <stdio.h>
-#include <string.h>
 
 
 omeProgram *omeProgramCreate(void)
@@ -314,7 +312,7 @@ void omeProgramSendUniformMaterial(omeProgram *p, omeMaterial *m, const char *na
     }
 }
 
-#include <math.h>
+
 void omeProgramSendUniformEntity(omeProgram *p, void *object)
 {
     omeEntity *e = object;

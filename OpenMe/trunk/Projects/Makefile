@@ -93,7 +93,7 @@ runTests: $(OUTDIR)/test_string $(OUTDIR)/test_interp $(OUTDIR)/test_plugin #$(O
 #@cd $(OUTDIR);  echo -n "Testing files:..." && LD_LIBRARY_PATH=. ./test_string && echo "\033[1;32mOK\033[0m"
 
 showtodos:
-	@grep -rin --color --include *.[hc] TODO .. | sed 's/.*\(TODO.*\)/\1/' | cat -n | grep --color TODO
+	@grep -rin --color --include *.[hc] TODO .. | sed 's/.*\/\([[:alnum:]]*\.[hc]:[[:digit:]]*\).*\(TODO.*\)/\1 => \2/' | sort | cat -n | grep --color TODO
 	@echo "\n\033[1;31mThere are `grep -ri --include *.[hc] TODO .. | wc -l` TODOs in the source code: still a lot of work!\033[0m"
 
 showlines:

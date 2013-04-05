@@ -20,7 +20,7 @@ omeString *omeStringCreate(size_t needed)
 {
     omeString *s = calloc(1, sizeof (omeString));
 
-    omeStringResize(s, needed + 1);
+    omeStringResize(s, needed);
     s->str[0] = '\0';
 
     return s;
@@ -34,7 +34,7 @@ omeString *omeStringCopy(const omeString *s)
     if(s != NULL)
     {
         res->length = s->length;
-        omeStringResize(res, s->length + 1);
+        omeStringResize(res, s->length);
         strcpy(res->str, s->str);
     }
 
@@ -51,7 +51,7 @@ omeString *omeStringCreateFromStr(const char *format, ...)
     s->length = countSprintf(format, list);
     va_end(list);
     
-    omeStringResize(s, s->length + 1);
+    omeStringResize(s, s->length);
 
     va_start(list, format);
     vsnprintf(s->str, s->length + 1, format, list);
@@ -74,7 +74,7 @@ void omeStringDestroy(omeString **s)
 
 void omeStringResize(omeString *s, size_t needed)
 {
-    s->size = omeNextPowOfTwo(needed);
+    s->size = omeNextPowOfTwo(needed + 1);
     s->str = realloc(s->str, s->size);
 }
 
@@ -102,7 +102,7 @@ omeString *omeStringAppend(omeString *s, const omeString *s2)
     s->length += s2->length;
 
     if(s->length + 1 > s->size)
-        omeStringResize(s, s->length + 1);
+        omeStringResize(s, s->length);
     
     strcpy(&s->str[old_len], s2->str);
     s->str[s->length] = '\0';
@@ -123,7 +123,7 @@ omeString *omeStringAppendStr(omeString *s, const char *format, ...)
     va_end(list);
 
     if(s->length + 1 > s->size)
-        omeStringResize(s, s->length + 1);
+        omeStringResize(s, s->length);
 
     va_start(list, format);
     vsnprintf(end, s->length + 1, format, list);

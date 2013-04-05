@@ -15,6 +15,13 @@
 #include <ctype.h>
 #include <string.h>
 
+// gettimeofday() and equivalent...
+#ifdef _MSC_VER
+#include <sys/timeb.h>
+#else
+#include <sys/time.h>
+#endif
+
 
 int omeSizeOf(omeType type)
 {
@@ -190,3 +197,17 @@ void omeDbgClearMem(void *ptr, size_t size)
 }
 
 #pragma GCC diagnostic pop
+
+
+double omeGetTime(void)
+{
+#ifdef _MSC_VER
+    struct _timeb timebuffer;
+    _ftime64_s(&timebuffer);
+    return timebuffer.time + timebuffer.millitm * 1.0e-3;
+#else
+    struct timeval tv;
+    gettimeofday(&tv, NULL);
+    return tv.tv_sec + tv.tv_usec * 1.0e-6;
+#endif
+}
