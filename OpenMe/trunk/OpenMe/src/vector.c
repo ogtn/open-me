@@ -100,10 +100,10 @@ float omeVectorDot(const omeVector *v, const omeVector *v2)
 
 void omeVectorCross(const omeVector *v, const omeVector *v2, omeVector *res)
 {
-    #ifdef DEBUG
+#ifdef _DEBUG
     if(v == res || v2 == res)
         omeLoggerLog("Bad use of omeVectorCross()");
-    #endif
+#endif
 
     res->x = v->y * v2->z - v->z * v2->y;
     res->y = v->z * v2->x - v->x * v2->z;

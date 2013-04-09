@@ -24,7 +24,8 @@ omeProgram *omeProgramCreate(void)
 {
     omeProgram *sp;
 
-    sp = calloc(1, sizeof(omeProgram));
+    size_t sz = sizeof(omeProgram);
+    sp = calloc(1, sz);
     sp->id = glCreateProgram();
     sp->linked = OME_FALSE;
     sp->status = OME_PROGRAM_STATUS_NOT_READY;
@@ -124,12 +125,9 @@ omeStatus omeProgramLink(omeProgram *sp)
         break;
     case OME_PROGRAM_STATUS_BROKEN:
         return OME_FAILURE;
-
-    #ifdef DEBUG
     default:
         omeLoggerLog("Invalid status in shader program\n");
         return OME_FAILURE;
-    #endif
     }
 
     // linking
@@ -254,12 +252,9 @@ omeLocation *omeLocationCreate(omeProgram *sp, const char *name, omeLocationType
     case OME_LOCATION_TYPE_ATTRIB:
         loc->location = glGetAttribLocation(sp->id, name);
         break;
-
-    #ifdef DEBUG
     default:
         omeLoggerLog("You shouldn't be here\n");
         return NULL;
-    #endif
     }
 
     //TODO: this function sucks, not garanted to be null terminated and can't be sure that the whole string was copied...

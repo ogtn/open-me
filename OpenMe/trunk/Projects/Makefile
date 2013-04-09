@@ -36,7 +36,7 @@ CFLAGS=$(CWARN) -O3
 OUTDIR=../Release
 NOCHECK=1
 else
-CFLAGS=$(CWARN) -g -DDEBUG
+CFLAGS=$(CWARN) -g -D_DEBUG
 OUTDIR=../Debug
 endif
 

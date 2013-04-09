@@ -53,10 +53,7 @@ static GLenum omePolygonTypeToGL(omePolygonType polygonType)
     // case OME_TRIANGLE_STRIP_ADJACENCY: return GL_TRIANGLE_STRIP_ADJACENCY;
     // case OME_TRIANGLES_ADJACENCY: return GL_TRIANGLES_ADJACENCY;
     // case OME_PATCHES: return GL_PATCHES;
-
-    #ifdef DEBUG
     default: omeLoggerLog("Invalid polygon type");
-    #endif
     }
 
     return GL_POINTS;
@@ -102,7 +99,7 @@ int omeGeometryAddAttrib(omeGeometry *g, int nbElements, omeType type, int updat
         return -1;
     }
 
-    if(g->attributes[geometryType].actived)
+    if(g->attributes[geometryType].valid)
     {
         omeLoggerLog("This type of attribute has already been added\n");
         return -1;
@@ -115,7 +112,7 @@ int omeGeometryAddAttrib(omeGeometry *g, int nbElements, omeType type, int updat
     attr->geometryType = geometryType;
     attr->data = data;
     attr->size = g->nbVertices * nbElements * omeSizeOf(type);
-    attr->actived = OME_TRUE;
+    attr->valid = OME_TRUE;
     attr->name = omeAttribNames[geometryType];
     
     switch(type)
@@ -226,7 +223,7 @@ void omeGeometryBuildVBO(omeGeometry *g)
         {
             attr = &g->attributes[i];
 
-            if(attr->actived)
+            if(attr->valid)
             {
                 glBufferSubData(GL_ARRAY_BUFFER, offset, attr->size, attr->data);         
                 offset += attr->size;
@@ -248,13 +245,19 @@ void omeGeometryEnableAttributes(omeGeometry *g, omeProgram *p)
     {
         omeVertexAttrib *attr = &g->attributes[i];
 
-        if(attr->actived)
+        if(attr->valid)
         {
             attr->loc = omeProgramLocateAttribute(p, attr->name);
-            glEnableVertexAttribArray(attr->loc);
-            attr->enabled = OME_TRUE;
+
+            if(attr->loc != -1)
+            {
+                glEnableVertexAttribArray(attr->loc);
+                attr->enabled = OME_TRUE;
+                continue;
+            }
         }
-        else if(attr->enabled)
+        
+        if(attr->enabled)
         {
             glDisableVertexAttribArray(attr->loc);
             attr->enabled = OME_FALSE;
@@ -279,7 +282,7 @@ void omeGeometrySendAttributes(omeGeometry *g)
     {
         attr = &g->attributes[i];
 
-        if(attr->actived)
+        if(attr->enabled)
         {
             switch(attr->type)
             {

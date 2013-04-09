@@ -126,7 +126,7 @@ void omeMeshSave(const char *fileName, omeMesh *m)
             fwrite(attr, sizeof *attr, 1, file);
 
             // attribute data
-            if(attr->actived)
+            if(attr->valid)
                 fwrite(attr->data, omeSizeOf(attr->type) * attr->nbElements, geometry->nbVertices, file);
         }
     }
@@ -208,7 +208,7 @@ omeMesh *omeMeshLoad(const char *fileName)
             }
 
             // attribute data
-            if(attr.actived)
+            if(attr.valid)
             {
                 data = malloc(omeSizeOf(attr.type) * attr.nbElements * nbVertices);
                 

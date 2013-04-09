@@ -62,12 +62,9 @@ omeTexture *omeTextureCreate(omeTextureType type, int width, int height, int dep
         for(i = 0; i < 6; i++)
             glTexImage2D(omeCubeMapFaces[i], 0, GL_RGBA, width, height, 0, format, GL_UNSIGNED_BYTE, data[i]);
         break;
-
-    #ifdef DEBUG
     default:
         omeLoggerLog("omeTextureCreate(): invalid type of texture\n");
         return NULL;
-    #endif
     }
 
     // set minifying and magnifying filters
@@ -129,10 +126,7 @@ unsigned int omeTextureGetGLType(omeTextureType type)
     case OME_TEXTURE_TYPE_2D:   return GL_TEXTURE_2D;
     case OME_TEXTURE_TYPE_3D:   return GL_TEXTURE_3D;
     case OME_TEXTURE_TYPE_CUBE: return GL_TEXTURE_CUBE_MAP;
-
-    #ifdef DEBUG
     default:                    return 0;
-    #endif
     }
 }
 

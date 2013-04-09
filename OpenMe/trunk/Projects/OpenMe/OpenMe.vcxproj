@@ -15,9 +15,14 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\OpenMe\src\camera.c" />
+    <ClCompile Include="..\..\OpenMe\src\console.c">
+      <PreprocessToFile Condition="'$(Configuration)|$(Platform)'=='Static Debug|Win32'">false</PreprocessToFile>
+      <PreprocessKeepComments Condition="'$(Configuration)|$(Platform)'=='Static Debug|Win32'">false</PreprocessKeepComments>
+    </ClCompile>
     <ClCompile Include="..\..\OpenMe\src\dstring.c" />
     <ClCompile Include="..\..\OpenMe\src\engine.c" />
     <ClCompile Include="..\..\OpenMe\src\entity.c" />
+    <ClCompile Include="..\..\OpenMe\src\file.c" />
     <ClCompile Include="..\..\OpenMe\src\geometry.c" />
     <ClCompile Include="..\..\OpenMe\src\light.c" />
     <ClCompile Include="..\..\OpenMe\src\logger.c" />
@@ -25,6 +30,7 @@
     <ClCompile Include="..\..\OpenMe\src\matrix.c" />
     <ClCompile Include="..\..\OpenMe\src\mesh.c" />
     <ClCompile Include="..\..\OpenMe\src\OBJLoader.c" />
+    <ClCompile Include="..\..\OpenMe\src\opengl.c" />
     <ClCompile Include="..\..\OpenMe\src\pluginLoader.c" />
     <ClCompile Include="..\..\OpenMe\src\program.c" />
     <ClCompile Include="..\..\OpenMe\src\renderTarget.c" />
@@ -38,9 +44,11 @@
   <ItemGroup>
     <ClInclude Include="..\..\OpenMe\include\camera.h" />
     <ClInclude Include="..\..\OpenMe\include\color.h" />
+    <ClInclude Include="..\..\OpenMe\include\console.h" />
     <ClInclude Include="..\..\OpenMe\include\dstring.h" />
     <ClInclude Include="..\..\OpenMe\include\engine.h" />
     <ClInclude Include="..\..\OpenMe\include\entity.h" />
+    <ClInclude Include="..\..\OpenMe\include\file.h" />
     <ClInclude Include="..\..\OpenMe\include\geometry.h" />
     <ClInclude Include="..\..\OpenMe\include\light.h" />
     <ClInclude Include="..\..\OpenMe\include\logger.h" />
@@ -48,8 +56,11 @@
     <ClInclude Include="..\..\OpenMe\include\matrix.h" />
     <ClInclude Include="..\..\OpenMe\include\mesh.h" />
     <ClInclude Include="..\..\OpenMe\include\OBJLoader.h" />
+    <ClInclude Include="..\..\OpenMe\include\opengl.h" />
     <ClInclude Include="..\..\OpenMe\include\openme.h" />
+    <ClInclude Include="..\..\OpenMe\include\pluginInterface.h" />
     <ClInclude Include="..\..\OpenMe\include\pluginLoader.h" />
+    <ClInclude Include="..\..\OpenMe\include\private_access_checking.h" />
     <ClInclude Include="..\..\OpenMe\include\program.h" />
     <ClInclude Include="..\..\OpenMe\include\renderTarget.h" />
     <ClInclude Include="..\..\OpenMe\include\resourceManager.h" />
@@ -115,6 +126,7 @@
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <DisableSpecificWarnings>4201;4996;%(DisableSpecificWarnings)</DisableSpecificWarnings>
       <CompileAs>CompileAsC</CompileAs>
+      <MinimalRebuild>false</MinimalRebuild>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>

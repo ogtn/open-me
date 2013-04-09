@@ -83,7 +83,7 @@ typedef struct omeVertexAttrib
     const char *glslType;           // GLSL type
     
     // internal state    
-    omeBool actived;                // Is this attribute valid? TODO: rename this shit "valid"?
+    omeBool valid;                  // Is this attribute valid?
     omeBool enabled;                // Is this attribut currently enabled from OpenGL's POV?
 } omeVertexAttrib;
 
@@ -101,12 +101,9 @@ typedef struct omeGeometry
     int indexCpt;               // Internal counter TODO: remove this once the vertex attributes will be dynamically stored?
     int size;                   // Total size needed on the the device to store the geometry data TODO: how about the indices??
     
-    omeBool interleaved;        // If interleaved, all the attributes (except indices), are interleaved
-                                // In the VBO (ababab), instead of being  stored one after the other (aaabbb)
-    omeBool indexed;            // For geometry which reuse many times a lot of their vertices, indexing
-                                // them can be an interesting optimization
-    omeBool padded;             // Padding can improve performance by making vertices size being a
-                                // power of two, or an other performance friendly value
+    omeBool interleaved;        // If interleaved, all the attributes (except indices), are interleaved in the VBO (ababab), instead of being  stored one after the other (aaabbb)
+    omeBool indexed;            // For geometry which reuse many times a lot of their vertices, indexing them can be an interesting optimization
+    omeBool padded;             // Padding can improve performance by making vertices size being a power of two, or an other performance friendly value
     omeBool finalized;          // TODO: this is old stuff, is this still useful?
     omePolygonType polygonType; // Type of polygon stored, triangles, quads... see omePolygonType
     unsigned int VBO;           // OpenGL id of the VBO
