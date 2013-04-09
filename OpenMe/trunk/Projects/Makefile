@@ -59,6 +59,7 @@ all: $(OUTDIR)/messyExample $(OUTDIR)/test_string $(OUTDIR)/test_interp $(OUTDIR
 	@echo "\033[1;32m======[build complete]=======\033[0m"
 
 runMessyExample: $(OUTDIR)/messyExample $(OUTDIR)/libOpenMe.so
+	@echo "\033[1;32m===[running messyExample]====\033[0m"
 	@cd $(OUTDIR); LD_LIBRARY_PATH=. ./messyExample
 
 runMemCheck: $(OUTDIR)/messyExample $(OUTDIR)/libOpenMe.so
@@ -104,6 +105,9 @@ showfunctions: $(OUTDIR)/libOpenMe.so
 
 showglcalls:
 	@grep -rnE --include "*.[hc]" --color=none "gl[A-Z][[:alnum:]]*\(" .. | sed 's/.*\(gl[A-Z][[:alnum:]]*\).*/\1/' | sort -u | cat -n
+
+showstructs:
+	@grep -rn --color=none "struct ome[A-Z][[:alnum:]]" ../OpenMe/include/ | sed 's/.*\(ome[A-Z][[:alnum:]]*\).*/\1/' | sort -u | cat -n
 
 $(OUTDIR)/messyExample: ../Examples/messyExample.c $(OUTDIR)/libOpenMe.so
 	@echo "\033[1;32m===[building messyExample]===\033[0m"
