@@ -128,8 +128,10 @@ struct omeGeometryListElement
 };
 
 
+// Constructor and destructor of a geometry
 omeGeometry *omeGeometryCreate(int nbVertices, int nbAttributes, omePolygonType polygonType);
 void omeGeometryDestroy(omeGeometry **g);
+
 int omeGeometryAddAttrib(omeGeometry *g, int nbElements, omeType type, int updateHint, omeAttribType geometryType, void *data);
 int omeGeometryAddIndices(omeGeometry *g, omeType type, int updateHint, void *data);
 void omeGeometryFinalize(omeGeometry *g);

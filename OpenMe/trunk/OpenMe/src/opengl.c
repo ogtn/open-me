@@ -9,30 +9,18 @@
 //  http://sam.zoy.org/projects/COPYING.WTFPL for more details.
 
 
-#ifndef OME_OPENGL_H
-#define OME_OPENGL_H
+#include "opengl.h"
 
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+omeStatus omeOpenGLInit(void)
+{
+	#ifdef OME_USE_GLES
+	if(glewInit() != GLEW_OK)
+    {
+        omeLoggerLog("Failed to load glew, you're screwed\n\n");
+        return OME_FAILURE;
+    }
+    #endif
 
-#include "utils.h"
-
-#ifdef OME_USE_GLES
-#include <GLES2/gl2.h>
-#include <GLES2/gl2ext.h>
-#else
-#include <GL/glew.h>
-#endif
-
-
-omeStatus omeOpenGLInit(void);
-
-
-#ifdef __cplusplus
+    return OME_SUCCESS;
 }
-#endif
-
-
-#endif // OME_OPENGL_H

@@ -38,7 +38,7 @@ typedef struct omeMesh
     int geometryCpt;
     int nbFinalizedBuffers;
     omeGeometry **geometries;
-    omeBool finalized;  //TODO: is this still usefull to keep thaht one? If it is, use this variable somewhere...
+    omeBool finalized;  //TODO: is this still usefull to keep that one? If it is, use this variable somewhere...
     omeProgram *program;
     omeMaterial *material;
 } omeMesh;

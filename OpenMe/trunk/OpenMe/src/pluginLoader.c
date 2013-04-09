@@ -11,6 +11,7 @@
 
 #include "pluginLoader.h"
 #include "utils.h"
+#include "logger.h"
 #include <stdlib.h>
 #include <string.h>
 

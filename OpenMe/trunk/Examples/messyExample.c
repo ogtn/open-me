@@ -67,6 +67,10 @@ int main(void)
     if(!glfwInit())
         return EXIT_FAILURE;
 
+    printf("size mesh: %d\n", sizeof(omeMesh));
+    printf("size geometry: %d\n", sizeof(omeGeometry));
+    printf("size vertex attrib: %d\n", sizeof(omeVertexAttrib));
+
     glfwOpenWindowHint(GLFW_FSAA_SAMPLES, 0);
 
     if(!glfwOpenWindow(width, height, 8, 8, 8, 8, 32, 0, GLFW_WINDOW))
@@ -125,6 +129,8 @@ int main(void)
     mesh2->material->diffuseTexture = omeTextureCubeMapLoadFromFile("data/cloudy.omeCubeMap");
     mesh->entity.position.z += 10;
     // testString(mesh);
+
+    return 0;
 
     while(glfwGetWindowParam(GLFW_OPENED) && !glfwGetKey(GLFW_KEY_ESC) && maxFrameCpt-- > 0)
     {
