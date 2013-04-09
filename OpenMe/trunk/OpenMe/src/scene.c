@@ -99,7 +99,6 @@ void omeSceneRender(omeScene *s, omeCamera *c)
             omeProgramSendUniformLight(p, s->lights[0], "light0");
 
             omeGeometryRender(g);
-
             //omeGeometryDisableAttributes(g);
         }
 

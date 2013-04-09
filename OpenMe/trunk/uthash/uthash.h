@@ -33,10 +33,10 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
    when compiling c++ source) this code uses whatever method is needed
    or, for VS2008 where neither is available, uses casting workarounds. */
 #ifdef _MSC_VER         /* MS compiler */
-#define MULTI_LINE_MACRO_BEGIN do { 
+#define MULTI_LINE_MACRO_BEGIN      __pragma(warning(push))         \
+                                    __pragma(warning(disable:4127)) \
+                                    do { 
 #define MULTI_LINE_MACRO_END        \
-    __pragma(warning(push))         \
-    __pragma(warning(disable:4127)) \
     } while(0)                      \
     __pragma(warning(pop))
 #if _MSC_VER >= 1600 && defined(__cplusplus)  /* VS2010 or newer in C++ mode */

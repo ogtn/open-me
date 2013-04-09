@@ -30,7 +30,7 @@ static void testString(omeMesh *m)
         g = m->geometries[i];
 
         for(j = 0; j < OME_ATTRIB_MAX; j++)
-            if(g->attributes[j].actived)
+            if(g->attributes[j].valid)
                 omeStringAppendStr(str, "attribute %s %s;\n", g->attributes[j].glslType, g->attributes[j].name);
     }
 
@@ -43,12 +43,39 @@ static void testString(omeMesh *m)
 }
 
 
+omeStatus createContext(int width, int height)
+{
+    GLFWvidmode videoMode;
+
+    // get OpenGL context
+    if(!glfwInit())
+        return OME_FAILURE;
+
+#ifdef _DEBUG
+    glfwOpenWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GL_TRUE);
+#endif
+
+    glfwOpenWindowHint(GLFW_FSAA_SAMPLES, 0);
+
+    if(!glfwOpenWindow(width, height, 8, 8, 8, 8, 32, 0, GLFW_WINDOW))
+        return OME_FAILURE;
+
+    glfwGetDesktopMode(&videoMode);
+    glfwSetWindowPos((videoMode.Width - width) / 2, (videoMode.Height - height) / 2);
+    glfwSetMouseWheel(0);
+    glfwSetWindowSizeCallback(omeEngineResize);
+
+    return OME_SUCCESS;
+}
+
+
 int main(void)
 {
     omeCamera *camera;
     omeVector pos;
     omeVector target = 	{{0.f, 0.f, 0.f}};
-    omeMesh *mesh, *mesh2;
+    omeMesh *mesh = NULL;
+    omeMesh *mesh2 = NULL;
     omeMesh *pickedMesh = NULL;
     int width = 640;
     int height = 480;
@@ -63,21 +90,9 @@ int main(void)
     omeBool picked = OME_FALSE;
     int maxFrameCpt = 0;
 
-    // get OpenGL context
-    if(!glfwInit())
+    if(createContext(width, height) == OME_FAILURE)
         return EXIT_FAILURE;
 
-    printf("size mesh: %d\n", sizeof(omeMesh));
-    printf("size geometry: %d\n", sizeof(omeGeometry));
-    printf("size vertex attrib: %d\n", sizeof(omeVertexAttrib));
-
-    glfwOpenWindowHint(GLFW_FSAA_SAMPLES, 0);
-
-    if(!glfwOpenWindow(width, height, 8, 8, 8, 8, 32, 0, GLFW_WINDOW))
-        return EXIT_FAILURE;
-
-    glfwSetMouseWheel(0);
-    glfwSetWindowSizeCallback(omeEngineResize);
     omeEngineStart(width, height);
 
     // camera settings
@@ -86,19 +101,25 @@ int main(void)
     omeCameraSetTarget(camera, &target);
     omeEngineSetActiveCamera(camera);
 
+    /*
     // obj loading test
     mesh = omeLoadOBJFromFile("data/bunny69k.obj", OME_TRUE);
     omeMeshSave("data/mesh1.omeMesh", mesh);
+    omeMeshDestroy(&mesh);
+
     mesh = omeMeshLoad("data/mesh1.omeMesh");
     mesh2 = omeMeshLoad("data/mesh1.omeMesh");
 
     omeMeshDestroy(&mesh);
     omeMeshDestroy(&mesh2);
+    */
     
     // primitives test
+    omePrimitiveGrid(16, 4);
+
+    /*
     mesh = omePrimitiveSphere(10, 4);
     mesh2 = omePrimitiveSphere(8, 16);
-    omePrimitiveGrid(16, 4);
 
     // shader test
     shaderProgram = omeProgramCreate();
@@ -127,12 +148,10 @@ int main(void)
     // texture test
     mesh->material->diffuseTexture = omeTextureLoadFromFile("data/lena.jpg");//renderTarget->colorBuffer;
     mesh2->material->diffuseTexture = omeTextureCubeMapLoadFromFile("data/cloudy.omeCubeMap");
-    mesh->entity.position.z += 10;
+    mesh->entity.position.z += 10;*/
     // testString(mesh);
 
-    return 0;
-
-    while(glfwGetWindowParam(GLFW_OPENED) && !glfwGetKey(GLFW_KEY_ESC) && maxFrameCpt-- > 0)
+    while(glfwGetWindowParam(GLFW_OPENED) && !glfwGetKey(GLFW_KEY_ESC))
     {
         // move camera
         angleStep = 3 * (float)omeEngineGetFrameDuration();

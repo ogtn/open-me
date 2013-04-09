@@ -36,7 +36,6 @@ omePlugin *omePluginLoad(const char *name)
     // RTLD_GLOBAL: symbols loaded will be available even from libraries loaded after
     p->handle = dlopen(name, RTLD_NOW | RTLD_GLOBAL);
 
-
     if(p->handle == NULL)
     {
         const char *msg = dlerror();
