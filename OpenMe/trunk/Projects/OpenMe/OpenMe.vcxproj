@@ -33,11 +33,13 @@
     <ClCompile Include="..\..\OpenMe\src\opengl.c" />
     <ClCompile Include="..\..\OpenMe\src\pluginLoader.c" />
     <ClCompile Include="..\..\OpenMe\src\program.c" />
+    <ClCompile Include="..\..\OpenMe\src\queue.c" />
     <ClCompile Include="..\..\OpenMe\src\renderTarget.c" />
     <ClCompile Include="..\..\OpenMe\src\resourceManager.c" />
     <ClCompile Include="..\..\OpenMe\src\scene.c" />
     <ClCompile Include="..\..\OpenMe\src\shader.c" />
     <ClCompile Include="..\..\OpenMe\src\texture.c" />
+    <ClCompile Include="..\..\OpenMe\src\threadPool.c" />
     <ClCompile Include="..\..\OpenMe\src\utils.c" />
     <ClCompile Include="..\..\OpenMe\src\vector.c" />
   </ItemGroup>
@@ -62,11 +64,13 @@
     <ClInclude Include="..\..\OpenMe\include\pluginLoader.h" />
     <ClInclude Include="..\..\OpenMe\include\private_access_checking.h" />
     <ClInclude Include="..\..\OpenMe\include\program.h" />
+    <ClInclude Include="..\..\OpenMe\include\queue.h" />
     <ClInclude Include="..\..\OpenMe\include\renderTarget.h" />
     <ClInclude Include="..\..\OpenMe\include\resourceManager.h" />
     <ClInclude Include="..\..\OpenMe\include\scene.h" />
     <ClInclude Include="..\..\OpenMe\include\shader.h" />
     <ClInclude Include="..\..\OpenMe\include\texture.h" />
+    <ClInclude Include="..\..\OpenMe\include\threadPool.h" />
     <ClInclude Include="..\..\OpenMe\include\utils.h" />
     <ClInclude Include="..\..\OpenMe\include\vector.h" />
     <ClInclude Include="..\..\uthash\utarray.h" />
@@ -134,7 +138,7 @@
     </Link>
     <Lib />
     <Lib>
-      <AdditionalDependencies>devil.lib;glew32.lib;opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>devil.lib;glew32.lib;opengl32.lib;pthreadVC2.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Static Release|Win32'">
@@ -156,6 +160,9 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
     </Link>
+    <Lib>
+      <AdditionalDependencies>devil.lib;glew32.lib;opengl32.lib;pthreadVC2.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Lib>
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -39,7 +39,7 @@ typedef struct omeTask
 {
     omeThreadPoolProcessTask func;
     void *arg;
-    int *taskId;
+    int taskId;
 } omeTask;
 
 
@@ -59,7 +59,7 @@ typedef struct omeThreadPool
 } omeThreadPool;
 
 
-omeTask *omeTaskCreate(omeThreadPoolProcessTask func, void *arg, int *taskId);
+omeTask *omeTaskCreate(omeThreadPoolProcessTask func, void *arg, int taskId);
 void omeTaskDestroy(omeTask **t);
 
 omeThreadPool *omeThreadPoolCreate(int maxThreads, int maxTasks, void *context);
