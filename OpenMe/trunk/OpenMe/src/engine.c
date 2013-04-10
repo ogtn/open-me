@@ -77,29 +77,29 @@ void GLAPIENTRY omeDebugCallback(GLenum source, GLenum type, GLuint id, GLenum s
 
     switch(source)
     {
-    case GL_DEBUG_SOURCE_API:               str_source = "API"; break;
-    case GL_DEBUG_SOURCE_WINDOW_SYSTEM:     str_source = "Window system"; break;
-    case GL_DEBUG_SOURCE_SHADER_COMPILER:   str_source = "Shader Compiler"; break;
-    case GL_DEBUG_SOURCE_THIRD_PARTY:       str_source = "Third party"; break;
-    case GL_DEBUG_SOURCE_APPLICATION:       str_source = "Application"; break;
-    case GL_DEBUG_SOURCE_OTHER: default:    str_source = "Unkown source"; break;
+    case GL_DEBUG_SOURCE_API_ARB:               str_source = "API"; break;
+    case GL_DEBUG_SOURCE_WINDOW_SYSTEM_ARB:     str_source = "Window system"; break;
+    case GL_DEBUG_SOURCE_SHADER_COMPILER_ARB:   str_source = "Shader Compiler"; break;
+    case GL_DEBUG_SOURCE_THIRD_PARTY_ARB:       str_source = "Third party"; break;
+    case GL_DEBUG_SOURCE_APPLICATION_ARB:       str_source = "Application"; break;
+    case GL_DEBUG_SOURCE_OTHER_ARB: default:    str_source = "Unkown source"; break;
     }
 
     switch (type)
     {
-    case GL_DEBUG_TYPE_ERROR:               str_type = "error"; break;
-    case GL_DEBUG_TYPE_DEPRECATED_BEHAVIOR: str_type = "deprecated behavior"; break;
-    case GL_DEBUG_TYPE_UNDEFINED_BEHAVIOR:  str_type = "undefined behavior"; break;
-    case GL_DEBUG_TYPE_PORTABILITY:         str_type = "portability"; break;
-    case GL_DEBUG_TYPE_PERFORMANCE:         str_type = "performance"; break;
-    case GL_DEBUG_TYPE_OTHER: default:      str_type = "unknown type"; break;
+    case GL_DEBUG_TYPE_ERROR_ARB:               str_type = "error"; break;
+    case GL_DEBUG_TYPE_DEPRECATED_BEHAVIOR_ARB: str_type = "deprecated behavior"; break;
+    case GL_DEBUG_TYPE_UNDEFINED_BEHAVIOR_ARB:  str_type = "undefined behavior"; break;
+    case GL_DEBUG_TYPE_PORTABILITY_ARB:         str_type = "portability"; break;
+    case GL_DEBUG_TYPE_PERFORMANCE_ARB:         str_type = "performance"; break;
+    case GL_DEBUG_TYPE_OTHER_ARB: default:      str_type = "unknown type"; break;
     }
 
     switch(severity)
     {
-    case GL_DEBUG_SEVERITY_HIGH:    str_severity = "high"; break;
-    case GL_DEBUG_SEVERITY_MEDIUM:  str_severity = "medium"; break;
-    case GL_DEBUG_SEVERITY_LOW:     str_severity = "low"; break;
+    case GL_DEBUG_SEVERITY_HIGH_ARB:    str_severity = "high"; break;
+    case GL_DEBUG_SEVERITY_MEDIUM_ARB:  str_severity = "medium"; break;
+    case GL_DEBUG_SEVERITY_LOW_ARB:     str_severity = "low"; break;
     }
 
     omeLoggerLog("omeDebugCallback: %s", message);
