@@ -55,7 +55,7 @@ LDFLAGS=
 OPENME_INCLUDE=../OpenMe/include
 UTHASH_INCLUDE=../uthash
 
-all: $(OUTDIR)/messyExample $(OUTDIR)/test_string $(OUTDIR)/test_interp $(OUTDIR)/test_plugin
+all: $(OUTDIR)/messyExample $(OUTDIR)/test_string $(OUTDIR)/test_interp $(OUTDIR)/test_plugin $(OUTDIR)/test_queue
 	@echo "\033[1;32m======[build complete]=======\033[0m"
 
 runMessyExample: $(OUTDIR)/messyExample $(OUTDIR)/libOpenMe.so
@@ -68,12 +68,10 @@ runMemCheck: $(OUTDIR)/messyExample $(OUTDIR)/libOpenMe.so
 $(OUTDIR)/test_string: ../Examples/test_string.c $(OUTDIR)/libOpenMe.so
 	@echo "\033[1;32m===[building test_string]====\033[0m"
 	@$(CC) $(CFLAGS) -o $(OUTDIR)/test_string ../Examples/test_string.c -lOpenMe -I$(UTHASH_INCLUDE) -I$(OPENME_INCLUDE) -L$(OUTDIR) -lglfw -lIL
-#@echo "\033[1;32m======[build complete]=======\033[0m"
 
 $(OUTDIR)/test_interp: ../Examples/test_interp.c $(OUTDIR)/libOpenMe.so
 	@echo "\033[1;32m===[building test interp]====\033[0m"
 	@$(CC) $(CFLAGS) -o $(OUTDIR)/test_interp ../Examples/test_interp.c -lOpenMe -I$(UTHASH_INCLUDE) -I$(OPENME_INCLUDE) -L$(OUTDIR) -lglfw -lIL
-#@echo "\033[1;32m======[build complete]=======\033[0m"
 
 $(OUTDIR)/test_plugin: ../Examples/test_plugin.c $(OUTDIR)/libOpenMe.so $(OUTDIR)/plugin.so
 	@echo "\033[1;32m===[building test plugin]====\033[0m"
@@ -83,15 +81,20 @@ $(OUTDIR)/plugin.so: ../Examples/plugin.c ../OpenMe/include/pluginInterface.h
 	@echo "\033[1;32m======[building plugin]======\033[0m"
 	@$(CC) $(CFLAGS) -o $(OUTDIR)/plugin.so -fPIC -shared -Wl,-soname,plugin.so ../Examples/plugin.c -I$(OPENME_INCLUDE)
 
+$(OUTDIR)/test_queue: ../Examples/test_queue.c $(OUTDIR)/libOpenMe.so
+	@echo "\033[1;32m===[building test queue]=====\033[0m"
+	@$(CC) $(CFLAGS) -o $(OUTDIR)/test_queue ../Examples/test_queue.c -lOpenMe -I$(UTHASH_INCLUDE) -I$(OPENME_INCLUDE) -L$(OUTDIR) -lglfw -lIL
+
 #$(OUTDIR)/test_file: ../Examples/test_file.c $(OUTDIR)/libOpenMe.so
 #	$(CC) $(CFLAGS) -o $(OUTDIR)/test_file ../Examples/test_file.c -lOpenMe -I$(UTHASH_INCLUDE) -I$(OPENME_INCLUDE) -L$(OUTDIR) -lglfw -lIL
 
-runTests: $(OUTDIR)/test_string $(OUTDIR)/test_interp $(OUTDIR)/test_plugin #$(OUTDIR)/test_file
+runTests: $(OUTDIR)/test_string $(OUTDIR)/test_interp $(OUTDIR)/test_plugin $(OUTDIR)/test_queue #$(OUTDIR)/test_file
 	@echo "\033[1;32m=======[running tests]=======\033[0m"
 	@cd $(OUTDIR);  echo -n "Testing strings:..." && LD_LIBRARY_PATH=. ./test_string && echo "\033[1;32mOK\033[0m"
 	@cd $(OUTDIR);  echo -n "Testing plugins:..." && LD_LIBRARY_PATH=. ./test_plugin && echo "\033[1;32mOK\033[0m"
 	@cd $(OUTDIR);  echo -n "Testing interpreter:..." && LD_LIBRARY_PATH=. ./test_interp && echo "\033[1;32mOK\033[0m"
-#@cd $(OUTDIR);  echo -n "Testing files:..." && LD_LIBRARY_PATH=. ./test_string && echo "\033[1;32mOK\033[0m"
+	@cd $(OUTDIR);  echo -n "Testing queues:..." && LD_LIBRARY_PATH=. ./test_queue && echo "\033[1;32mOK\033[0m"
+#@cd $(OUTDIR);  echo -n "Testing files:..." && LD_LIBRARY_PATH=. ./test_file && echo "\033[1;32mOK\033[0m"
 
 showtodos:
 	@grep -rin --color --include *.[hc] TODO .. | sed 's/.*\/\([[:alnum:]]*\.[hc]:[[:digit:]]*\).*\(TODO.*\)/\1 => \2/' | sort | cat -n | grep --color TODO

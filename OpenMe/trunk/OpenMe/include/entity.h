@@ -25,6 +25,7 @@ extern "C" {
 #define OME_ENTITY_MAGIC        0x66666666
 
     // TODO: disable this in release?
+#ifdef _MSC_VER
 #define OME_ENTITY_CHECK(ptr)   do                                                                  \
                                 {                                                                   \
                                     if(((omeEntity*)(ptr))->magic != OME_ENTITY_MAGIC)              \
@@ -34,7 +35,14 @@ extern "C" {
                                     __pragma(warning(disable:4127))                                 \
                                 } while(0)                                                          \
                                 __pragma(warning(pop));
-
+#else
+#define OME_ENTITY_CHECK(ptr)   do                                                                  \
+                                {                                                                   \
+                                    if(((omeEntity*)(ptr))->magic != OME_ENTITY_MAGIC)              \
+                                        omeLoggerLog("Polymorphism panic: dynamic cast failed!\n"); \
+                                    return;                                                         \
+                                } while(0)
+#endif
 
 typedef enum omeEntityType
 {
