@@ -39,7 +39,7 @@ typedef struct omeTask
 {
     omeThreadPoolProcessTask func;
     void *arg;
-    int taskId;
+    int id;
 } omeTask;
 
 
@@ -56,16 +56,17 @@ typedef struct omeThreadPool
     int lastStarted;
     int lastId;
     int *running;
+    omeBool terminated;
 } omeThreadPool;
 
 
-omeTask *omeTaskCreate(omeThreadPoolProcessTask func, void *arg, int taskId);
+omeTask *omeTaskCreate(omeThreadPoolProcessTask func, void *arg, int id);
 void omeTaskDestroy(omeTask **t);
 
 omeThreadPool *omeThreadPoolCreate(int maxThreads, int maxTasks, void *context);
 void omeThreadPoolDestroy(omeThreadPool **tp);
 // TODO: provide a callback to notify the caller of the task status
-omeStatus omeThreadPoolAddTask(omeThreadPool *tp, omeThreadPoolProcessTask func, void *arg, int *taskId);
+omeStatus omeThreadPoolAddTask(omeThreadPool *tp, omeThreadPoolProcessTask func, void *arg, int *id);
 omeTaskStatus omeThreadPoolGetTaskStatus(omeThreadPool *tp, int taskId);
 void *omeThreadPoolMain(void *threadPool);
 

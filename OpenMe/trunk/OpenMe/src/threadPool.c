@@ -12,13 +12,13 @@
 #include "threadPool.h"
 
 
-omeTask *omeTaskCreate(omeThreadPoolProcessTask func, void *arg, int taskId)
+omeTask *omeTaskCreate(omeThreadPoolProcessTask func, void *arg, int id)
 {
     omeTask *t = calloc(1, sizeof(omeTask));
 
     t->func = func;
     t->arg = arg;
-    t->taskId = taskId;
+    t->id = id;
 
     return t;
 }
@@ -47,6 +47,7 @@ omeThreadPool *omeThreadPoolCreate(int maxThreads, int maxTasks, void *context)
     tp->lastId = -1;
     tp->lastStarted = -1;
     tp->waitingTasks = omeQueueCreate(maxTasks);
+    tp->terminated = OME_FAILURE;
 
     // running threads
     tp->running = calloc(maxThreads, sizeof(int));
@@ -123,12 +124,11 @@ omeStatus omeThreadPoolAddTask(omeThreadPool *tp, omeThreadPoolProcessTask func,
     return status;	
 }
 
-
+/*
 omeTaskStatus omeThreadPoolGetTaskStatus(omeThreadPool *tp, int taskId)
 {
     // TODO: need to check the content of tp->running and tp->waitingTasks, is this even usefull?
 
-    /*
     omeTaskStatus status;
 
     pthread_mutex_lock(&tp->mutex);
@@ -142,35 +142,42 @@ omeTaskStatus omeThreadPoolGetTaskStatus(omeThreadPool *tp, int taskId)
     pthread_mutex_unlock(&tp->mutex);
 
     return status;
-    */
-
-    return OME_FAILURE;
 }
-
+*/
 
 void *omeThreadPoolMain(void *threadPool)
 {
     omeThreadPool *tp = threadPool;
-    omeStatus status;
     omeTask *t;
+    void *task;
+    int i;
 
-    for(;;)
+    while(tp->terminated == OME_FALSE)
     {
         pthread_mutex_lock(&tp->mutex);
-        status = omeQueuePop(tp->waitingTasks, &t);
+
+        while(omeQueueIsEmpty(tp->waitingTasks) == OME_TRUE)
+        	pthread_cond_wait(&tp->cond, &tp->mutex);
+
+        omeQueuePop(tp->waitingTasks, &task);
+        t = task;
+
+        // register to running tasks
+        for(i = 0; i < tp->maxThreads; i++)
+        	if(tp->running[i] == -1)
+        		tp->running[i] = t->id;
+
         pthread_mutex_unlock(&tp->mutex);
-
-        // no task available, wait
-        if(status == OME_FAILURE)
-        {
-            // pthread_cond_wait(&tp->cond, &tp->mutex); // wtf with the mutex???
-            continue;
-        }
-
-        // TODO: add to running
         t->func(tp->context, t->arg);
-        // TODO: remove from runnin
+        pthread_mutex_lock(&tp->mutex);
+
+        // unregister from running tasks
+        for(i = 0; i < tp->maxThreads; i++)
+        	if(tp->running[i] == t->id)
+        		tp->running[i] = -1;
+
+        pthread_mutex_unlock(&tp->mutex);
     }
 
-    pthread_exit(NULL);
+    return NULL;
 }
