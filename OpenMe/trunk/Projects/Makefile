@@ -23,8 +23,9 @@ CWARN=-Wall -Wextra -fno-common -Wdeclaration-after-statement
 -Wpointer-arith -Wlarger-than-65500 -Wmissing-declarations \
 -Wmissing-format-attribute -Wmissing-noreturn -Wmissing-prototypes \
 -Wnested-externs -Wold-style-definition -Wredundant-decls \
--Wsign-compare -Wstrict-aliasing=2 -Wstrict-prototypes -Wswitch-enum \
--Wundef -Wunreachable-code -Wwrite-strings -Werror=implicit-function-declaration\
+-Wsign-compare -Wstrict-aliasing=2 -Wstrict-prototypes -Wswitch \
+-Wundef -Wunreachable-code -Wwrite-strings -Wconversion \
+-Werror=implicit-function-declaration -Wenum-compare \
 #-ansi #-pedantic #-pedantic-errors
 
 # easy version
