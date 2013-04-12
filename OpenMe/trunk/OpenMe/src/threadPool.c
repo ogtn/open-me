@@ -47,7 +47,8 @@ omeThreadPool *omeThreadPoolCreate(int maxThreads, int maxTasks, void *context)
     tp->lastId = -1;
     tp->lastStarted = -1;
     tp->waitingTasks = omeQueueCreate(maxTasks);
-    tp->terminated = OME_FAILURE;
+    tp->terminated = OME_FALSE;
+    tp->threads = calloc(maxThreads, sizeof(pthread_t));
 
     // running threads
     tp->running = calloc(maxThreads, sizeof(int));
@@ -84,9 +85,13 @@ void omeThreadPoolDestroy(omeThreadPool **tp)
     int i;
     void *retVal;
 
+    (*tp)->terminated = OME_TRUE;
+    pthread_cond_broadcast(&(*tp)->cond);
+
     for(i = 0; i < (*tp)->maxThreads; i++)
     {
         pthread_cancel((*tp)->threads[i]);
+        printf("cancel [%u]\n", (*tp)->threads[i]);
         pthread_join((*tp)->threads[i], &retVal);
     }
 
@@ -115,6 +120,7 @@ omeStatus omeThreadPoolAddTask(omeThreadPool *tp, omeThreadPoolProcessTask func,
     {
         tp->lastId++;
         *taskId = tp->lastId;
+        pthread_cond_signal(&tp->cond);
     }
     else
         omeTaskDestroy(&t);
@@ -151,13 +157,25 @@ void *omeThreadPoolMain(void *threadPool)
     omeTask *t;
     void *task;
     int i;
+    pthread_t tid;
+
+    pthread_setcanceltype(PTHREAD_CANCEL_DEFERRED, NULL);
+    tid = pthread_self();
+
+    printf("[%u] start\n", tid);
 
     while(tp->terminated == OME_FALSE)
     {
         pthread_mutex_lock(&tp->mutex);
 
         while(omeQueueIsEmpty(tp->waitingTasks) == OME_TRUE)
+        {
+            printf("[%d] wait for tasks...\n", tid);
         	pthread_cond_wait(&tp->cond, &tp->mutex);
+        }
+
+        if(tp->terminated == OME_TRUE)
+            break;
 
         omeQueuePop(tp->waitingTasks, &task);
         t = task;
@@ -168,7 +186,9 @@ void *omeThreadPoolMain(void *threadPool)
         		tp->running[i] = t->id;
 
         pthread_mutex_unlock(&tp->mutex);
+        printf("[%d] run task %d\n", tid, t->id);
         t->func(tp->context, t->arg);
+        printf("[%d] completed task %d\n", tid, t->id);
         pthread_mutex_lock(&tp->mutex);
 
         // unregister from running tasks
@@ -178,6 +198,8 @@ void *omeThreadPoolMain(void *threadPool)
 
         pthread_mutex_unlock(&tp->mutex);
     }
+
+    printf("[%d] quit\n", tid);
 
     return NULL;
 }
