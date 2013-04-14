@@ -10,11 +10,12 @@
 
 
 #include "opengl.h"
+#include "logger.h"
 
 
 omeStatus omeOpenGLInit(void)
 {
-	#ifdef OME_USE_GLES
+	#ifndef OME_USE_GLES
 	if(glewInit() != GLEW_OK)
     {
         omeLoggerLog("Failed to load glew, you're screwed\n\n");
