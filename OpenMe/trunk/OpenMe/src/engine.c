@@ -106,7 +106,7 @@ void GLAPIENTRY omeDebugCallback(GLenum source, GLenum type, GLuint id, GLenum s
 }
 
 
-int omeEngineStart(int width, int height)
+omeStatus omeEngineStart(int width, int height)
 {
     int value;
     omeViewport *v = &engine.viewport;
@@ -125,6 +125,7 @@ int omeEngineStart(int width, int height)
     if(omeOpenGLInit() == OME_FAILURE)
         return OME_FAILURE;
 
+    // TODO: add a hint to the omeEngineStartParameter to ask for debug, or provide a function to toggle it afterwards
     if(glDebugMessageCallbackARB)
     {
         glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS_ARB);
@@ -153,16 +154,17 @@ int omeEngineStart(int width, int height)
     v->height = height;
     v->upToDate = OME_FALSE;
 
+    // print info about OpenGL context
+    omeLoggerLog("OpenGL %s\n", glGetString(GL_VERSION));
+    omeLoggerLog("GLSL %s\n", glGetString(GL_SHADING_LANGUAGE_VERSION));
+    glGetIntegerv(GL_MAX_VERTEX_ATTRIBS, &value);
+    omeLoggerLog("Max vertex attributes availables: %d\n", value);
+
     // picking program
     engine.pickingProgram = omeProgramCreate();
     omeProgramAddShader(engine.pickingProgram, omeShaderLoadFromFile("data/picking.vs"));
     omeProgramAddShader(engine.pickingProgram, omeShaderLoadFromFile("data/picking.ps"));
     omeProgramLink(engine.pickingProgram);
-
-    omeLoggerLog("OpenGL %s\n", glGetString(GL_VERSION));
-    omeLoggerLog("GLSL %s\n", glGetString(GL_SHADING_LANGUAGE_VERSION));
-    glGetIntegerv(GL_MAX_VERTEX_ATTRIBS, &value);
-    omeLoggerLog("Max vertex attributes availables: %d\n", value);
 
     engine.scene = omeSceneCreate();
 

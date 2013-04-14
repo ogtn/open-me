@@ -73,7 +73,7 @@ typedef struct omeEngine
 //////////////////////// [Public interface] ////////////////////////
 
 // initializes and stop the engine
-int omeEngineStart(int width, int height);
+omeStatus omeEngineStart(int width, int height);
 void omeEngineStop(void);
 
 // getters for performance counters

@@ -47,19 +47,30 @@ omeStatus createContext(int width, int height)
 {
     GLFWvidmode videoMode;
 
-    // get OpenGL context
     if(!glfwInit())
+    {
+        fprintf(stderr, "Holy fuckin' shit, glfwInit() failed\n");
         return OME_FAILURE;
+    }
 
-#ifdef _DEBUG
-    glfwOpenWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GL_TRUE);
-#endif
-
+    // configure context
     glfwOpenWindowHint(GLFW_FSAA_SAMPLES, 0);
+    glfwOpenWindowHint(GLFW_OPENGL_VERSION_MAJOR, 4);
+    glfwOpenWindowHint(GLFW_OPENGL_VERSION_MINOR, 0);
+    glfwOpenWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_FALSE);
+    //glfwOpenWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
+    glfwOpenWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_COMPAT_PROFILE);
+    //glfwOpenWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+    glfwOpenWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GL_TRUE);
 
+    // create window and OpenGL context
     if(!glfwOpenWindow(width, height, 8, 8, 8, 8, 32, 0, GLFW_WINDOW))
+    {
+        fprintf(stderr, "Holy fuckin' shit, glfwOpenWindow() failed\n");
         return OME_FAILURE;
+    }
 
+    // center the window
     glfwGetDesktopMode(&videoMode);
     glfwSetWindowPos((videoMode.Width - width) / 2, (videoMode.Height - height) / 2);
     glfwSetMouseWheel(0);
