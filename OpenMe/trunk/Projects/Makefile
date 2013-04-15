@@ -61,10 +61,10 @@ all: $(OUTDIR)/messyExample $(OUTDIR)/test_string $(OUTDIR)/test_interp $(OUTDIR
 
 runMessyExample: $(OUTDIR)/messyExample $(OUTDIR)/libOpenMe.so
 	@echo "\033[1;32m===[running messyExample]====\033[0m"
-	@cd $(OUTDIR); LD_LIBRARY_PATH=. ./messyExample
+	@cd $(OUTDIR); LD_LIBRARY_PATH=.:/usr/local/lib/ ./messyExample
 
 runMemCheck: $(OUTDIR)/messyExample $(OUTDIR)/libOpenMe.so
-	@cd $(OUTDIR); LD_LIBRARY_PATH=. valgrind --tool=memcheck --leak-check=yes --track-origins=yes ./messyExample
+	@cd $(OUTDIR); LD_LIBRARY_PATH=.:/usr/local/lib/ valgrind --tool=memcheck --leak-check=yes --track-origins=yes ./messyExample
 
 $(OUTDIR)/test_string: ../Examples/test_string.c $(OUTDIR)/libOpenMe.so
 	@echo "\033[1;32m===[building test_string]====\033[0m"
@@ -95,11 +95,11 @@ $(OUTDIR)/test_thread_pool: ../Examples/test_thread_pool.c $(OUTDIR)/libOpenMe.s
 
 runTests: $(OUTDIR)/test_string $(OUTDIR)/test_interp $(OUTDIR)/test_plugin $(OUTDIR)/test_queue $(OUTDIR)/test_thread_pool #$(OUTDIR)/test_file
 	@echo "\033[1;32m=======[running tests]=======\033[0m"
-	@cd $(OUTDIR);  echo -n "Testing strings:..." && LD_LIBRARY_PATH=. ./test_string && echo "\033[1;32mOK\033[0m"
-	@cd $(OUTDIR);  echo -n "Testing plugins:..." && LD_LIBRARY_PATH=. ./test_plugin && echo "\033[1;32mOK\033[0m"
-	@cd $(OUTDIR);  echo -n "Testing interpreter:..." && LD_LIBRARY_PATH=. ./test_interp && echo "\033[1;32mOK\033[0m"
-	@cd $(OUTDIR);  echo -n "Testing queues:..." && LD_LIBRARY_PATH=. ./test_queue && echo "\033[1;32mOK\033[0m"
-	@cd $(OUTDIR);  echo -n "Testing thread pools:..." && LD_LIBRARY_PATH=. ./test_thread_pool && echo "\033[1;32mOK\033[0m"
+	@cd $(OUTDIR);  echo -n "Testing strings:..." && LD_LIBRARY_PATH=.:/usr/local/lib/ ./test_string && echo "\033[1;32mOK\033[0m"
+	@cd $(OUTDIR);  echo -n "Testing plugins:..." && LD_LIBRARY_PATH=.:/usr/local/lib/ ./test_plugin && echo "\033[1;32mOK\033[0m"
+	@cd $(OUTDIR);  echo -n "Testing interpreter:..." && LD_LIBRARY_PATH=.:/usr/local/lib/ ./test_interp && echo "\033[1;32mOK\033[0m"
+	@cd $(OUTDIR);  echo -n "Testing queues:..." && LD_LIBRARY_PATH=.:/usr/local/lib/ ./test_queue && echo "\033[1;32mOK\033[0m"
+	@cd $(OUTDIR);  echo -n "Testing thread pools:..." && LD_LIBRARY_PATH=.:/usr/local/lib/ ./test_thread_pool && echo "\033[1;32mOK\033[0m"
 #@cd $(OUTDIR);  echo -n "Testing files:..." && LD_LIBRARY_PATH=. ./test_file && echo "\033[1;32mOK\033[0m"
 
 showtodos:
@@ -120,7 +120,7 @@ showstructs:
 
 $(OUTDIR)/messyExample: ../Examples/messyExample.c $(OUTDIR)/libOpenMe.so
 	@echo "\033[1;32m===[building messyExample]===\033[0m"
-	@$(CC) $(CFLAGS) -o $(OUTDIR)/messyExample ../Examples/messyExample.c -lOpenMe -I$(UTHASH_INCLUDE) -I$(OPENME_INCLUDE) -L$(OUTDIR) -lglfw -lIL
+	@$(CC) $(CFLAGS) -o $(OUTDIR)/messyExample ../Examples/messyExample.c -lOpenMe -I$(UTHASH_INCLUDE) -I$(OPENME_INCLUDE) -L$(OUTDIR) -lglfw -lIL -lm
 #@echo "\033[1;32m======[build complete]=======\033[0m"
 
 $(OUTDIR)/libOpenMe.so: ../OpenMe/include/*.h ../OpenMe/src/*.c

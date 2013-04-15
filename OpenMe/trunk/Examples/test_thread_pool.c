@@ -11,10 +11,11 @@
 
 #include "threadPool.h"
 #include <assert.h>
+#include <unistd.h>
 
 
-#define NB_THREADS		10
-#define NB_TASKS		4
+#define NB_THREADS		16
+#define NB_TASKS		4096
 
 
 void task1(void *context, void *arg)
@@ -23,30 +24,43 @@ void task1(void *context, void *arg)
 	int *results = context;
 
 	results[*id] = *id + 100;
-
-	sleep(1);
 }
 
 
 int main(void)
 {
 	int i, id;
-	omeThreadPool *pool;
+	omeThreadPool *pool = NULL;
 	int args[NB_TASKS];
 	int results[NB_TASKS];
-
+	
+	pool = omeThreadPoolCreate(NB_THREADS, NB_TASKS, results);
+	assert(pool != NULL);
+	assert(omeThreadPoolGetRunningTheads(pool) == 0);
+	assert(omeThreadPoolGetRemainingTasks(pool) == 0);
+	
 	for(i = 0; i < NB_TASKS; i++)
 	{
 		args[i] = i;
 		results[i] = 0;
+		assert(omeThreadPoolAddTask(pool, task1, &args[i], &id) == OME_SUCCESS);
 	}
 
-	pool = omeThreadPoolCreate(NB_THREADS, NB_TASKS, results);
-
+	omeThreadPoolWaitForCompletion(pool);
+	assert(omeThreadPoolGetRunningTheads(pool) == 0);
+	assert(omeThreadPoolGetRemainingTasks(pool) == 0);
+/*
 	for(i = 0; i < NB_TASKS; i++)
+	{
+		args[i] = i;
+		results[i] = 0;
 		assert(omeThreadPoolAddTask(pool, task1, &args[i], &id) == OME_SUCCESS);
+	}
 
-	sleep(3);
+	omeThreadPoolWaitForCompletion(pool);
+	assert(omeThreadPoolGetRunningTheads(pool) == 0);
+	assert(omeThreadPoolGetRemainingTasks(pool) == 0);
+*/
 	omeThreadPoolDestroy(&pool);
 	assert(pool == NULL);
 

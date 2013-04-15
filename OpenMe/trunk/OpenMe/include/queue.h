@@ -37,6 +37,7 @@ omeBool omeQueueIsEmpty(omeQueue *q);
 omeBool omeQueueIsFull(omeQueue *q);
 omeStatus omeQueuePush(omeQueue *q, void *element);
 omeStatus omeQueuePop(omeQueue *q, void **res);
+int omeQueueGetNbElements(omeQueue *q);
 
 
 #ifdef __cplusplus
