@@ -20,6 +20,7 @@ extern "C" {
 
 #include "utils.h"
 #include "queue.h"
+#include "dstring.h"
 #include <pthread.h>
 
 
@@ -49,13 +50,16 @@ typedef struct omeThreadPool
     pthread_t *threads;
     int maxTasks;
     omeQueue *waitingTasks;
+    omeTask **runningTasks;
+    int nbRunningTasks;
     void **tasksData;
     void *context;
-    pthread_cond_t cond;
+    pthread_cond_t condEmpty;
+    pthread_cond_t condNotEmpty;
     pthread_mutex_t mutex;
+    pthread_barrier_t barrier;
     int lastStarted;
     int lastId;
-    int *running;
     omeBool terminated;
 } omeThreadPool;
 
@@ -68,6 +72,9 @@ void omeThreadPoolDestroy(omeThreadPool **tp);
 // TODO: provide a callback to notify the caller of the task status
 omeStatus omeThreadPoolAddTask(omeThreadPool *tp, omeThreadPoolProcessTask func, void *arg, int *id);
 omeTaskStatus omeThreadPoolGetTaskStatus(omeThreadPool *tp, int taskId);
+int omeThreadPoolGetRemainingTasks(omeThreadPool *tp);
+int omeThreadPoolGetRunningTheads(omeThreadPool *tp);
+void omeThreadPoolWaitForCompletion(omeThreadPool *tp);
 void *omeThreadPoolMain(void *threadPool);
 
 

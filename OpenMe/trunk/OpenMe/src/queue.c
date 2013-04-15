@@ -63,7 +63,10 @@ omeStatus omeQueuePush(omeQueue *q, void *element)
 omeStatus omeQueuePop(omeQueue *q, void **res)
 {
 	if(omeQueueIsEmpty(q))
+	{
+		*res = NULL;
 		return OME_FAILURE;
+	}
 
 	q->nbElements--;
 	*res = q->elements[q->head];
@@ -71,4 +74,10 @@ omeStatus omeQueuePop(omeQueue *q, void **res)
 	q->head = (q->head + q->size + 1) % q->size;
 
 	return OME_SUCCESS;
+}
+
+
+int omeQueueGetNbElements(omeQueue *q)
+{
+	return q->nbElements;
 }
