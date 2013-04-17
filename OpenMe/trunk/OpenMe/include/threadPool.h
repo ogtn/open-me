@@ -31,7 +31,7 @@ typedef enum omeTaskStatus
     OME_TASK_STATUS_INVALID_TASK,
     OME_TASK_STATUS_WAITING,
     OME_TASK_STATUS_RUNNING,
-    OME_TASK_STATUS_FINISHED
+    OME_TASK_STATUS_COMPLETED
 } omeTaskStatus;
 
 
@@ -77,10 +77,6 @@ typedef struct omeThreadPool
     pthread_barrier_t barrier;      // used to start threads once the thread pool is fully created
 } omeThreadPool;
 
-
-// Constructor and destructor of a task TODO: private???
-omeTask *omeTaskCreate(omeThreadPoolProcessTask func, void *arg, int id);
-void omeTaskDestroy(omeTask **t);
 
 // Constructor and destructor of a thread pool
 omeThreadPool *omeThreadPoolCreate(int nbThreads, int maxTasks, void *context);
