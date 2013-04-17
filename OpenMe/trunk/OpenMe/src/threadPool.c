@@ -13,7 +13,16 @@
 #include "logger.h"
 
 
+// Constructor and destructor of a task
+static omeTask *omeTaskCreate(omeThreadPoolProcessTask func, void *arg, int id);
+static void omeTaskDestroy(omeTask **t);
+
+// main of each thread, try to dequeue and process tasks when possible
+// (threads pool unpaused, tasks in waiting queue)
+// quits when the threads pool is destroyed and the queue empty
 static void *omeThreadPoolMain(void *threadPool);
+
+// add and remove a task from the running array
 static void omeThreadPoolAddToRunning(omeThreadPool *tp, omeTask *t);
 static void omeThreadPoolRemoveFromRunning(omeThreadPool *tp, omeTask *t);
 
@@ -135,11 +144,11 @@ omeStatus omeThreadPoolAddTask(omeThreadPool *tp, omeThreadPoolProcessTask func,
     return status;  
 }
 
-// TODO: implement this...
-/*
+
 omeTaskStatus omeThreadPoolGetTaskStatus(omeThreadPool *tp, int taskId)
 {
     omeTaskStatus status;
+    omeTask *t;
     int i;
 
     pthread_mutex_lock(&tp->mutex);
@@ -154,7 +163,7 @@ omeTaskStatus omeThreadPoolGetTaskStatus(omeThreadPool *tp, int taskId)
     // task is running
     for(i = 0; i < tp->nbThreads; i++)
     {
-        if(tp->runningTasks[i].id == taskId)
+        if(tp->runningTasks[i] && tp->runningTasks[i]->id == taskId)
         {
             pthread_mutex_unlock(&tp->mutex);
             return OME_TASK_STATUS_RUNNING;
@@ -162,16 +171,19 @@ omeTaskStatus omeThreadPoolGetTaskStatus(omeThreadPool *tp, int taskId)
     }
 
     // task is waiting
-    if(???)
+    omeQueueForEach(tp->waitingTasks, i, t)
     {
-        pthread_mutex_unlock(&tp->mutex);
-        return OME_TASK_STATUS_WAITING;
+        if(t->id == taskId)
+        {
+            pthread_mutex_unlock(&tp->mutex);
+            return OME_TASK_STATUS_WAITING;
+        }
     }
 
     pthread_mutex_unlock(&tp->mutex);
     return OME_TASK_STATUS_COMPLETED;
 }
-*/
+
 
 int omeThreadPoolGetRemainingTasks(omeThreadPool *tp)
 {

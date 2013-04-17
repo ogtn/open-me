@@ -23,7 +23,7 @@ int tough_work(int n)
 {
 	int i;
 
-	for(i = 0; i < 500000; i++)
+	for(i = 0; i < 100000; i++)
 		n *= n * n;
 
 	return n;
@@ -43,15 +43,19 @@ void task1(void *context, void *arg)
 int main(void)
 {
 	int i, id;
-	omeThreadPool *pool = NULL;
 	int args[NB_TASKS];
 	int results[NB_TASKS + 1];
+	omeThreadPool *pool = NULL;
 	
+	// check if the freshly created pool is clean
 	pool = omeThreadPoolCreate(NB_THREADS, NB_TASKS, results);
 	assert(pool != NULL);
 	assert(omeThreadPoolGetRunningTheads(pool) == 0);
 	assert(omeThreadPoolGetRemainingTasks(pool) == 0);
 	assert(omeThreadPoolPause(pool) == OME_SUCCESS);
+	assert(omeThreadPoolGetTaskStatus(pool, -12) == OME_TASK_STATUS_INVALID_TASK);
+	assert(omeThreadPoolGetTaskStatus(pool, 42) == OME_TASK_STATUS_INVALID_TASK);
+	assert(omeThreadPoolGetTaskStatus(pool, 0) == OME_TASK_STATUS_INVALID_TASK);
 
 	for(i = 0; i < NB_TASKS; i++)
 	{
@@ -61,14 +65,20 @@ int main(void)
 	}
 
 	assert(omeThreadPoolGetRemainingTasks(pool) == NB_TASKS);
-	sleep(1);
+	sleep(1);	
 	assert(omeThreadPoolFlush(pool) == OME_FAILURE);
 	assert(omeThreadPoolGetRemainingTasks(pool) == NB_TASKS);
-	assert(omeThreadPoolUnPause(pool) == OME_SUCCESS);
 
+	for(i = 0; i < NB_TASKS; i++)
+		assert(omeThreadPoolGetTaskStatus(pool, i) == OME_TASK_STATUS_WAITING);
+
+	assert(omeThreadPoolUnPause(pool) == OME_SUCCESS);
 	assert(omeThreadPoolFlush(pool) == OME_SUCCESS);
 	assert(omeThreadPoolGetRunningTheads(pool) == 0);
 	assert(omeThreadPoolGetRemainingTasks(pool) == 0);
+
+	for(i = 0; i < NB_TASKS; i++)
+		assert(omeThreadPoolGetTaskStatus(pool, i) == OME_TASK_STATUS_COMPLETED);
 
 	for(i = 0; i < NB_TASKS; i++)
 	{

@@ -17,11 +17,11 @@ omeQueue *omeQueueCreate(int size)
 {
 	omeQueue *q = calloc(1, sizeof(omeQueue));
 
-	q->size = size;
+	q->size = size + 1;
 	q->head = 0;
-	q->tail = size - 1;
+	q->tail = 0;
 	q->nbElements = 0;
-	q->elements = calloc(size, sizeof(void *));
+	q->elements = calloc(q->size, sizeof(void *));
 
 	return q;
 }
@@ -43,7 +43,7 @@ omeBool omeQueueIsEmpty(omeQueue *q)
 
 omeBool omeQueueIsFull(omeQueue *q)
 {
-	return q->nbElements < q->size ? OME_FALSE : OME_TRUE;
+	return q->nbElements < (q->size - 1) ? OME_FALSE : OME_TRUE;
 }
 
 
@@ -53,8 +53,8 @@ omeStatus omeQueuePush(omeQueue *q, void *element)
 		return OME_FAILURE;
 
 	q->nbElements++;
-	q->tail = (q->tail + q->size + 1) % q->size;
 	q->elements[q->tail] = element;
+	q->tail = (q->tail + q->size + 1) % q->size;
 
 	return OME_SUCCESS;
 }

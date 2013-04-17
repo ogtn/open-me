@@ -16,12 +16,15 @@
 
 int main(void)
 {
-	void *res;
-	int i;
 	int values[10];
-	omeQueue *q = omeQueueCreate(10);
+	int cpt = 0;
+	omeQueue *q;
+	void *res;
+	int *elt;
+	int i;
 
 	// check if new queue is really clean
+	q = omeQueueCreate(10);
 	assert(omeQueueIsEmpty(q) == OME_TRUE);
 	assert(omeQueueIsFull(q) == OME_FALSE);
 	assert(omeQueuePop(q, &res) == OME_FAILURE);
@@ -36,6 +39,13 @@ int main(void)
 	// check if it is really full
 	assert(omeQueueIsFull(q) == OME_TRUE);
 	assert(omeQueueIsEmpty(q) == OME_FALSE);
+
+	// iterate through elements
+	omeQueueForEach(q, i, elt)
+	{
+		assert(*elt == cpt);
+		cpt++;
+	}
 
 	// check if the content is ok
 	for(i = 0; i < 10; i++)

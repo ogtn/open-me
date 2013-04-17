@@ -26,6 +26,7 @@ typedef struct omeQueue
     int size;
     int head;
     int tail;
+    int current;
     int nbElements;
     void **elements;
 } omeQueue;
@@ -38,6 +39,12 @@ omeBool omeQueueIsFull(omeQueue *q);
 omeStatus omeQueuePush(omeQueue *q, void *element);
 omeStatus omeQueuePop(omeQueue *q, void **res);
 int omeQueueGetNbElements(omeQueue *q);
+
+// iterate over queue elements, take an omeQueue *, an int, and a 
+#define omeQueueForEach(q, itr, elt) 									\
+	for((itr) = (q)->head, (elt) = (q)->elements[(q)->head];			\
+		(itr) != (q)->tail;												\
+		(itr) = ((itr) + 1) % (q)->size, (elt) = (q)->elements[(itr)])
 
 
 #ifdef __cplusplus
