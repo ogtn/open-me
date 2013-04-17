@@ -10,6 +10,12 @@
 
 
 #include "threadPool.h"
+#include "logger.h"
+
+
+static void *omeThreadPoolMain(void *threadPool);
+static void omeThreadPoolAddToRunning(omeThreadPool *tp, omeTask *t);
+static void omeThreadPoolRemoveFromRunning(omeThreadPool *tp, omeTask *t);
 
 
 omeTask *omeTaskCreate(omeThreadPoolProcessTask func, void *arg, int id)
@@ -31,46 +37,36 @@ void omeTaskDestroy(omeTask **t)
 }
 
 
-omeThreadPool *omeThreadPoolCreate(int maxThreads, int maxTasks, void *context)
+omeThreadPool *omeThreadPoolCreate(int nbThreads, int maxTasks, void *context)
 {
     int i;
     omeThreadPool *tp;
     pthread_attr_t thread_attr;
-    pthread_condattr_t cond_attr;
-    pthread_mutexattr_t mutex_attr;
-     
-    // thread pool
+
+    // thread pool and tasks
     tp = calloc(1, sizeof(omeThreadPool));
-    tp->maxThreads = maxThreads;
-    tp->maxTasks = maxTasks;
+    tp->nbThreads = nbThreads;
     tp->context = context;
     tp->lastId = -1;
     tp->lastStarted = -1;
     tp->waitingTasks = omeQueueCreate(maxTasks);
-    tp->terminated = OME_FALSE;
-    tp->threads = calloc(maxThreads, sizeof(pthread_t));
-    tp->runningTasks = calloc(maxThreads, sizeof(omeTask*));
+    tp->status = OME_THREAD_POOL_STATUS_RUNNING;
+    tp->threads = calloc(nbThreads, sizeof(pthread_t));
+    tp->runningTasks = calloc(nbThreads, sizeof(omeTask*));
 
-    // mutex
-    pthread_mutexattr_init(&mutex_attr);
-    pthread_mutex_init(&tp->mutex, &mutex_attr);
-    pthread_mutexattr_destroy(&mutex_attr);
-
-    // condition
-    pthread_condattr_init(&cond_attr);
-    pthread_condattr_setpshared(&cond_attr, PTHREAD_PROCESS_SHARED);
-    pthread_cond_init(&tp->condEmpty, &cond_attr);
-    pthread_cond_init(&tp->condNotEmpty, &cond_attr);
-    pthread_condattr_destroy(&cond_attr);
-
-    // barrier
-    pthread_barrier_init(&tp->barrier, NULL, maxThreads + 1);
+    // sync
+    pthread_mutex_init(&tp->mutex, NULL);
+    pthread_cond_init(&tp->condEmpty, NULL);
+    pthread_cond_init(&tp->condNotEmpty, NULL);
+    pthread_cond_init(&tp->condNotFull, NULL);
+    pthread_cond_init(&tp->condPause, NULL);
+    pthread_barrier_init(&tp->barrier, NULL, nbThreads + 1);
 
     // threads
     pthread_attr_init(&thread_attr);
     pthread_attr_setdetachstate(&thread_attr, PTHREAD_CREATE_JOINABLE);
 
-    for(i = 0; i < maxThreads; i++)
+    for(i = 0; i < nbThreads; i++)
         pthread_create(&tp->threads[i], &thread_attr, omeThreadPoolMain, tp);
 
     pthread_attr_destroy(&thread_attr);
@@ -79,22 +75,31 @@ omeThreadPool *omeThreadPoolCreate(int maxThreads, int maxTasks, void *context)
     return tp;
 }
 
-
 void omeThreadPoolDestroy(omeThreadPool **tp)
 {
     int i;
     void *retVal;
 
-    (*tp)->terminated = OME_TRUE;
+    pthread_mutex_lock(&(*tp)->mutex);
+    (*tp)->status = OME_THREAD_POOL_STATUS_TERMINATING;
+    pthread_mutex_unlock(&(*tp)->mutex);
+
+    // wake up all possibly waiting threads
+    pthread_cond_broadcast(&(*tp)->condPause);
     pthread_cond_broadcast(&(*tp)->condEmpty);
 
-    for(i = 0; i < (*tp)->maxThreads; i++)
+    for(i = 0; i < (*tp)->nbThreads; i++)
         pthread_join((*tp)->threads[i], &retVal);
+
+    pthread_mutex_destroy(&(*tp)->mutex);
 
     pthread_cond_destroy(&(*tp)->condEmpty);
     pthread_cond_destroy(&(*tp)->condNotEmpty);
-    pthread_mutex_destroy(&(*tp)->mutex);
+    pthread_cond_destroy(&(*tp)->condNotFull);
+    pthread_cond_destroy(&(*tp)->condPause);
+
     omeQueueDestroy(&(*tp)->waitingTasks);
+
     free((*tp)->runningTasks);
     free(*tp);
     *tp = NULL;
@@ -107,6 +112,9 @@ omeStatus omeThreadPoolAddTask(omeThreadPool *tp, omeThreadPoolProcessTask func,
     omeStatus status;
 
     *taskId = -1;
+
+    if(func == NULL)
+        return OME_FAILURE;
 
     pthread_mutex_lock(&tp->mutex);
 
@@ -124,9 +132,10 @@ omeStatus omeThreadPoolAddTask(omeThreadPool *tp, omeThreadPoolProcessTask func,
 
     pthread_mutex_unlock(&tp->mutex);
 
-    return status;	
+    return status;  
 }
 
+// TODO: implement this...
 /*
 omeTaskStatus omeThreadPoolGetTaskStatus(omeThreadPool *tp, int taskId)
 {
@@ -143,7 +152,7 @@ omeTaskStatus omeThreadPoolGetTaskStatus(omeThreadPool *tp, int taskId)
     }
 
     // task is running
-    for(i = 0; i < tp->maxThreads; i++)
+    for(i = 0; i < tp->nbThreads; i++)
     {
         if(tp->runningTasks[i].id == taskId)
         {
@@ -176,109 +185,150 @@ int omeThreadPoolGetRunningTheads(omeThreadPool *tp)
 }
 
 
-void omeThreadPoolWaitForCompletion(omeThreadPool *tp)
+omeStatus omeThreadPoolFlush(omeThreadPool *tp)
 {
     pthread_mutex_lock(&tp->mutex);
-    tp->terminated = OME_TRUE;
+
+    if(tp->status != OME_THREAD_POOL_STATUS_RUNNING)
+    {
+        pthread_mutex_unlock(&tp->mutex);
+        return OME_FAILURE;
+    }
+
+    tp->status = OME_THREAD_POOL_STATUS_FLUSHING;
 
     while(tp->nbRunningTasks > 0 || !omeQueueIsEmpty(tp->waitingTasks))
     {
-        // omeStringAppendStr(tp->str, "%d tasks remaining, %d running\n", omeQueueGetNbElements(tp->waitingTasks), tp->nbRunningTasks);
         pthread_cond_wait(&tp->condNotEmpty, &tp->mutex);
-        // omeStringAppendStr(tp->str, "woken up!:%d tasks remaining, %d running\n", omeQueueGetNbElements(tp->waitingTasks), tp->nbRunningTasks);
+
+        if(tp->status != OME_THREAD_POOL_STATUS_FLUSHING)
+        {
+            pthread_mutex_unlock(&tp->mutex);
+            return OME_FAILURE;            
+        }
     }
 
+    tp->status = OME_THREAD_POOL_STATUS_RUNNING;
     pthread_mutex_unlock(&tp->mutex);
+
+    return OME_SUCCESS;
 }
 
 
+omeStatus omeThreadPoolPause(omeThreadPool *tp)
+{
+    omeStatus res = OME_FAILURE;
+
+    pthread_mutex_lock(&tp->mutex);
+
+    if(tp->status != OME_THREAD_POOL_STATUS_TERMINATING)
+    {
+        res = OME_SUCCESS;
+        tp->status = OME_THREAD_POOL_STATUS_PAUSED;
+    }
+
+    pthread_mutex_unlock(&tp->mutex);
+
+    return res;
+}
 
 
+omeStatus omeThreadPoolUnPause(omeThreadPool *tp)
+{
+    omeStatus res = OME_FAILURE;
 
+    pthread_mutex_lock(&tp->mutex);
 
-#include <stdio.h>
+    if(tp->status == OME_THREAD_POOL_STATUS_PAUSED)
+    {
+        res = OME_SUCCESS;
+        tp->status = OME_THREAD_POOL_STATUS_RUNNING;
+        pthread_cond_broadcast(&tp->condPause);
+    }
+
+    pthread_mutex_unlock(&tp->mutex);
+
+    return res;
+}
+
 
 void *omeThreadPoolMain(void *threadPool)
 {
     omeThreadPool *tp = threadPool;
     omeTask *t;
-    int i;
-    pthread_t tid;
 
-    tid = pthread_self();
     pthread_setcancelstate(PTHREAD_CANCEL_DISABLE, NULL);
     pthread_barrier_wait(&tp->barrier);
-
     pthread_mutex_lock(&tp->mutex);
-    // omeStringAppendStr(tp->str, "[%ld] start\n", tid);
 
     while(1)
     {
-        while(omeQueueIsEmpty(tp->waitingTasks) == OME_TRUE)
+        while(omeQueueIsEmpty(tp->waitingTasks) || tp->status == OME_THREAD_POOL_STATUS_PAUSED)
         {
-            if(tp->terminated == OME_TRUE)
+            switch(tp->status)
             {
-                // omeStringAppendStr(tp->str, "[%ld] stop\n", tid);
-                pthread_mutex_unlock(&tp->mutex);
-                return NULL;
+                case OME_THREAD_POOL_STATUS_TERMINATING:
+                    pthread_mutex_unlock(&tp->mutex);
+                    return NULL;
+                case OME_THREAD_POOL_STATUS_PAUSED:
+                    pthread_cond_wait(&tp->condPause, &tp->mutex);
+                    break;
+                case OME_THREAD_POOL_STATUS_RUNNING:
+                case OME_THREAD_POOL_STATUS_FLUSHING:
+                	pthread_cond_wait(&tp->condEmpty, &tp->mutex);
             }
-
-            // omeStringAppendStr(tp->str, "[%ld] wait for tasks...\n", tid);
-        	pthread_cond_wait(&tp->condEmpty, &tp->mutex);
-        	// omeStringAppendStr(tp->str, "[%ld] awake!\n", tid);
         }
 
         omeQueuePop(tp->waitingTasks, (void**)&t);
-
-        // register to running tasks
-        for(i = 0; i < tp->maxThreads; i++)
-        {
-            if(tp->runningTasks[i] == NULL)
-            {
-                tp->runningTasks[i] = t;
-                tp->nbRunningTasks++;
-                break;
-            }
-        }
-
-        if(i == tp->maxThreads)
-        {
-            fprintf(stderr, "$$$$$$$$$$$$$$ shit happened \n");
-            pthread_mutex_unlock(&tp->mutex);
-            return NULL;
-        }
-
-        // omeStringAppendStr(tp->str, "[%ld] run task %d\n", tid, t->id);
+        omeThreadPoolAddToRunning(tp, t);
         pthread_mutex_unlock(&tp->mutex);
         t->func(tp->context, t->arg);
         pthread_mutex_lock(&tp->mutex);
-
-        // unregister from running tasks
-        for(i = 0; i < tp->maxThreads; i++)
-        {
-            if(tp->runningTasks[i] == t)
-            {
-                omeTaskDestroy(&tp->runningTasks[i]);
-                tp->nbRunningTasks--;
-
-                // if this is the last task, notify potentially waiting processes
-                // if(tp->nbRunningTasks == 0 && omeQueueIsEmpty(tp->waitingTasks))
-                    pthread_cond_broadcast(&tp->condNotEmpty);
-
-                break;
-            }
-        }
-
-        if(i == tp->maxThreads)
-        {
-            fprintf(stderr, "$$$$$$$$$$$$$$ shit happened \n");
-            pthread_mutex_unlock(&tp->mutex);
-            return NULL;
-        }
-
-        // omeStringAppendStr(tp->str, "[%ld] completed task %d\n", tid, t->id);
+        omeThreadPoolRemoveFromRunning(tp, t);
     }
 
-    // omeStringAppendStr(tp->str, "[%ld] $$$$$$$$$$$$$WTF$$$$$$$$$$$$$$$$\n", tid);
+    omeLoggerLog("Something went wrong in omeThreadPoolMain()\n");
+
     return NULL;
+}
+
+
+static void omeThreadPoolAddToRunning(omeThreadPool *tp, omeTask *t)
+{
+    int i;
+
+    for(i = 0; i < tp->nbThreads; i++)
+    {
+        if(tp->runningTasks[i] == NULL)
+        {
+            tp->runningTasks[i] = t;
+            tp->nbRunningTasks++;
+            return;
+        }
+    }
+
+    omeLoggerLog("Something went wrong in omeThreadPoolAddToRunning()\n");
+}
+
+
+static void omeThreadPoolRemoveFromRunning(omeThreadPool *tp, omeTask *t)
+{
+    int i;
+
+    for(i = 0; i < tp->nbThreads; i++)
+    {
+        if(tp->runningTasks[i] == t)
+        {
+            omeTaskDestroy(&tp->runningTasks[i]);
+            tp->nbRunningTasks--;
+
+            // if this was the last running task, notify potentially waiting processes
+            if(tp->nbRunningTasks == 0 && omeQueueIsEmpty(tp->waitingTasks))
+                pthread_cond_broadcast(&tp->condNotEmpty);
+
+            return;
+        }
+    }
+
+    omeLoggerLog("Something went wrong in omeThreadPoolRemoveFromRunning()\n");
 }

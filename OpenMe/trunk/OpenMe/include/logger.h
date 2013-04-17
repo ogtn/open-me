@@ -30,12 +30,25 @@ typedef enum omeLoggerState
 } omeLoggerState;
 
 
+// TODO: use this combined to log levels
+// see http://stackoverflow.com/questions/3585846/color-text-in-terminal-aplications-in-unix
+#define OME_LOGGER_NRM  "\x1B[0m"
+#define OME_LOGGER_RED  "\x1B[31m"
+#define OME_LOGGER_GRN  "\x1B[32m"
+#define OME_LOGGER_YEL  "\x1B[33m"
+#define OME_LOGGER_BLU  "\x1B[34m"
+#define OME_LOGGER_MAG  "\x1B[35m"
+#define OME_LOGGER_CYN  "\x1B[36m"
+#define OME_LOGGER_WHT  "\x1B[37m"
+
+
 typedef struct omeLogger
 {
     FILE *log;
     int event;
     omeLoggerState state;
 } omeLogger;
+
 
 
 void omeLoggerStart(void);
