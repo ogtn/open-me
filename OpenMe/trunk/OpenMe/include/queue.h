@@ -21,26 +21,34 @@ extern "C" {
 #include "utils.h"
 
 
-typedef struct omeQueue
+// FIFO queue, with fixed size
+typedef struct omeQueue 
 {
-    int size;
-    int head;
-    int tail;
-    int current;
-    int nbElements;
-    void **elements;
+    int size;			//
+    int head;			// head index
+    int tail;			// tail index
+    int current;		// index of current element (omeQueueForEach)
+    int nbElements;		// number of elements
+    void **elements;	// element array (always contains at least one empty space)
 } omeQueue;
 
 
+// Constructor and destructor of a queue. Size is the max number of elements that will be stored
 omeQueue *omeQueueCreate(int size);
 void omeQueueDestroy(omeQueue **q);
+
+// Check if the queue is full or empty
 omeBool omeQueueIsEmpty(omeQueue *q);
 omeBool omeQueueIsFull(omeQueue *q);
+
+// add and remove an element, return OME_SUCCESS if it succeed
 omeStatus omeQueuePush(omeQueue *q, void *element);
 omeStatus omeQueuePop(omeQueue *q, void **res);
+
+// return the number of elements currently stored
 int omeQueueGetNbElements(omeQueue *q);
 
-// iterate over queue elements, take an omeQueue *, an int, and a 
+// iterate over queue elements, take an omeQueue *, an int, and a pointer to an element
 #define omeQueueForEach(q, itr, elt) 									\
 	for((itr) = (q)->head, (elt) = (q)->elements[(q)->head];			\
 		(itr) != (q)->tail;												\

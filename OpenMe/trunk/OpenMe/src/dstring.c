@@ -16,6 +16,21 @@
 #include <stdio.h>
 
 
+typedef struct omeString
+{
+    char *str;      // content of the string
+    size_t size;    // allocated size
+    size_t length;  // length of the string currently stored
+} omeString;
+
+
+// Realloc the string with a power of two size
+static void omeStringResize(omeString *s, size_t needed);
+
+// Compute the size need for holding the result of a vprintf call
+static size_t countSprintf(const char *format, va_list ap) OME_CHK_FMT(1);
+
+
 omeString *omeStringCreate(size_t needed)
 {
     omeString *s = calloc(1, sizeof (omeString));
@@ -133,9 +148,27 @@ omeString *omeStringAppendStr(omeString *s, const char *format, ...)
 }
 
 
-int omeStringCmp(omeString *s, omeString *s2)
+int omeStringCmp(const omeString *s, const omeString *s2)
 {
     return strcmp(s->str, s2->str);
+}
+
+
+int omeStringCmpStr(const omeString *s, const char *str)
+{
+    return strcmp(s->str, str);
+}
+
+
+const char *omeStringGetStr(const omeString *s)
+{
+    return s->str;
+}
+
+
+size_t omeStringGetLen(const omeString *s)
+{
+    return s->length;
 }
 
 
