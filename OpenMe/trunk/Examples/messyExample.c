@@ -37,7 +37,7 @@ static void testString(omeMesh *m)
     omeStringAppendStr(str, "void main(void)\n{\n");
     omeStringAppendStr(str, "}\n");
     
-    puts(str->str);
+    puts(omeStringGetStr(str));
 
     omeStringDestroy(&str);
 }
