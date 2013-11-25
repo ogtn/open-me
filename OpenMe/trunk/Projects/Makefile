@@ -25,8 +25,8 @@ CWARN=-Wall -Wextra -fno-common -Wdeclaration-after-statement
 -Wnested-externs -Wold-style-definition -Wredundant-decls \
 -Wsign-compare -Wstrict-aliasing=2 -Wstrict-prototypes -Wswitch \
 -Wundef -Wunreachable-code -Wwrite-strings -Wconversion \
--Werror=implicit-function-declaration -Wenum-compare \
-#-ansi #-pedantic #-pedantic-errors
+-Werror=implicit-function-declaration -Wenum-compare -Wpadded \
+-ansi #-pedantic #-pedantic-errors
 
 # easy version
 #CWARN=-Wall -Wextra
@@ -138,3 +138,4 @@ clean:
 # @echo "\033[1;32mThis text is green\033[0m"
 # @echo "\033[1;31mThat one is red\033[0m"
 # interesting for Visual Studio's compiler compatibiliy: -Wdeclaration-after-statement -Werror=deqwqclaration-after-statement
+

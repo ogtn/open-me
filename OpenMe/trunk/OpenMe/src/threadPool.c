@@ -17,8 +17,8 @@
 static omeTask *omeTaskCreate(omeThreadPoolProcessTask func, void *arg, int id);
 static void omeTaskDestroy(omeTask **t);
 
-// main of each thread, try to dequeue and process tasks when possible
-// (threads pool unpaused, tasks in waiting queue)
+// entry point of each thread, try to dequeue and process tasks when possible
+// (ie when threads pool is unpaused, and there are tasks in the waiting queue)
 // quits when the threads pool is destroyed and the queue empty
 static void *omeThreadPoolMain(void *threadPool);
 

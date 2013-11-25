@@ -31,3 +31,4 @@ int func_double(int n)
 {
 	return n * 2;
 }
+

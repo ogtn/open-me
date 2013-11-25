@@ -25,13 +25,13 @@ omeConsole *omeConsoleCreate(void)
 
 void omeConsoleDestroy(omeConsole **c)
 {
-    omeConsoleVar *v, *v_temp;
+    omeConsoleVar *var, *var_temp;
     omeConsoleCmd *cmd, *cmd_temp;
 
-    HASH_ITER(hh, (*c)->variables, v, v_temp)
+    HASH_ITER(hh, (*c)->variables, var, var_temp)
     {
-        HASH_DEL((*c)->variables, v);
-        omeConsoleVarDestroy(&v);
+        HASH_DEL((*c)->variables, var);
+        omeConsoleVarDestroy(&var);
     }
 
     HASH_ITER(hh, (*c)->commands, cmd, cmd_temp)
@@ -139,6 +139,11 @@ omeConsoleStatus omeConsoleInterpret(omeConsole *c)
 
     if(v != NULL)
     {
+        // assignment
+        if(cmdLine->argsNb == 2 && strcmp(cmdLine->args[0], "=") == 0)
+            return omeConsoleSetString(c, cmdLine->cmd, cmdLine->args[1]);
+        
+        // print
         omeConsoleVarPrint(c, v);
 
         return OME_CONSOLE_STATUS_NO_ERROR;
@@ -148,39 +153,39 @@ omeConsoleStatus omeConsoleInterpret(omeConsole *c)
 }
 
 
-omeConsoleStatus omeConsoleRegisterInt(omeConsole *c, const char *name, int *value)
+omeConsoleStatus omeConsoleRegisterInt(omeConsole *c, const char *name, int value)
 {
-    return omeConsoleRegisterVar(c, name, OME_CONSOLE_VAR_TYPE_INT, value);
+    return omeConsoleRegisterVar(c, name, OME_CONSOLE_VAR_TYPE_INT, &value);
 }
 
 
-omeConsoleStatus omeConsoleRegisterFloat(omeConsole *c, const char *name, float *value)
+omeConsoleStatus omeConsoleRegisterFloat(omeConsole *c, const char *name, float value)
 {
-    return omeConsoleRegisterVar(c, name, OME_CONSOLE_VAR_TYPE_FLOAT, value);
+    return omeConsoleRegisterVar(c, name, OME_CONSOLE_VAR_TYPE_FLOAT, &value);
 }
 
 
-omeConsoleStatus omeConsoleRegisterString(omeConsole *c, const char *name, char *value)
+omeConsoleStatus omeConsoleRegisterString(omeConsole *c, const char *name, const char *value)
 {
     return omeConsoleRegisterVar(c, name, OME_CONSOLE_VAR_TYPE_STRING, value);
 }
 
 
-omeConsoleStatus omeConsoleRegisterVar(omeConsole *c, const char *name, omeConsoleVarType type, void *value)
+omeConsoleStatus omeConsoleRegisterVar(omeConsole *c, const char *name, omeConsoleVarType type, const void *value)
 {
-    omeConsoleVar *v;
+    omeConsoleVar *var;
     size_t size = strlen(name);
 
     if(size == 0 || size > OME_CONSOLE_MAX_VAR_NAME)
         return OME_CONSOLE_STATUS_INVALID_NAME;
 
-    HASH_FIND_STR(c->variables, name, v);
+    HASH_FIND_STR(c->variables, name, var);
 
-    if(v != NULL)
+    if(var != NULL)
         return OME_CONSOLE_STATUS_DUPLICATED_VARIABLE;
 
-    v = omeConsoleVarCreate(name, type, value);
-    HASH_ADD_STR(c->variables, key, v);
+    var = omeConsoleVarCreate(name, type, value);
+    HASH_ADD_STR(c->variables, key, var);
 
     return OME_CONSOLE_STATUS_NO_ERROR;
 }
@@ -188,40 +193,64 @@ omeConsoleStatus omeConsoleRegisterVar(omeConsole *c, const char *name, omeConso
 
 omeConsoleStatus omeConsoleGetInt(omeConsole *c, const char *name, int *value)
 {
-    return omeConsoleGetVar(c, name, OME_CONSOLE_VAR_TYPE_INT, value);
+    omeConsoleVar *var;
+
+    var = omeConsoleGetVar(c, name);
+
+    if(var == NULL)
+        return OME_CONSOLE_STATUS_NOT_FOUND;
+
+    if(var->type != OME_CONSOLE_VAR_TYPE_INT)
+        return OME_CONSOLE_STATUS_BAD_TYPE;
+
+    *value = var->value.intVal;
+
+    return OME_CONSOLE_STATUS_NO_ERROR;
 }
 
 
 omeConsoleStatus omeConsoleGetFloat(omeConsole *c, const char *name, float *value)
 {
-    return omeConsoleGetVar(c, name, OME_CONSOLE_VAR_TYPE_FLOAT, value);
-}
+    omeConsoleVar *var;
 
+    var = omeConsoleGetVar(c, name);
 
-omeConsoleStatus omeConsoleGetString(omeConsole *c, const char *name, char *value)
-{
-    return omeConsoleGetVar(c, name, OME_CONSOLE_VAR_TYPE_STRING, value);
-}
-
-
-omeConsoleStatus omeConsoleGetVar(omeConsole *c, const char *name, omeConsoleVarType type, void *value)
-{
-    omeConsoleVar *v;
-
-    HASH_FIND_STR(c->variables, name, v);
-
-    if(v == NULL)
+    if(var == NULL)
         return OME_CONSOLE_STATUS_NOT_FOUND;
 
-    if(v->type != type)
+    if(var->type != OME_CONSOLE_VAR_TYPE_FLOAT)
         return OME_CONSOLE_STATUS_BAD_TYPE;
 
-    if(type == OME_CONSOLE_VAR_TYPE_STRING)
-        strncpy(value, v->value, OME_CONSOLE_MAX_LINE_SIZE);
-    else
-        memcpy(value, v->value, sizeof(int));	// TODO: works for ints and floats, but pretty crappy, get rid of this
+    *value = var->value.floatVal;
 
     return OME_CONSOLE_STATUS_NO_ERROR;
+}
+
+
+omeConsoleStatus omeConsoleGetString(omeConsole *c, const char *name, const char **value)
+{
+    omeConsoleVar *var;
+
+    var = omeConsoleGetVar(c, name);
+
+    if(var == NULL)
+        return OME_CONSOLE_STATUS_NOT_FOUND;
+
+    if(var->type != OME_CONSOLE_VAR_TYPE_STRING)
+        return OME_CONSOLE_STATUS_BAD_TYPE;
+
+    *value = var->value.strVal;
+
+    return OME_CONSOLE_STATUS_NO_ERROR;
+}
+
+
+omeConsoleVar *omeConsoleGetVar(omeConsole *c, const char *name)
+{
+    omeConsoleVar *var;
+
+    HASH_FIND_STR(c->variables, name, var);
+    return var;
 }
 
 
@@ -237,13 +266,13 @@ omeConsoleStatus omeConsoleSetFloat(omeConsole *c, const char *name, float value
 }
 
 
-omeConsoleStatus omeConsoleSetString(omeConsole *c, const char *name, char *value)
+omeConsoleStatus omeConsoleSetString(omeConsole *c, const char *name, const char *value)
 {
     return omeConsoleSetVar(c, name, OME_CONSOLE_VAR_TYPE_STRING, value);
 }
 
 
-omeConsoleStatus omeConsoleSetVar(omeConsole *c, const char *name, omeConsoleVarType type, void *value)
+omeConsoleStatus omeConsoleSetVar(omeConsole *c, const char *name, omeConsoleVarType type, const void *value)
 {
     omeConsoleVar *v;
 
@@ -255,10 +284,19 @@ omeConsoleStatus omeConsoleSetVar(omeConsole *c, const char *name, omeConsoleVar
     if(v->type != type)
         return OME_CONSOLE_STATUS_BAD_TYPE;
 
-    if(type == OME_CONSOLE_VAR_TYPE_STRING)
-        strncpy(v->value, value, OME_CONSOLE_MAX_LINE_SIZE);
-    else
-        memcpy(v->value, value, sizeof(int));	// TODO: works for ints and floats, but pretty crappy, get rid of this
+    switch(type)
+    {
+        case OME_CONSOLE_VAR_TYPE_INT:
+        case OME_CONSOLE_VAR_TYPE_BOOL:
+        case OME_CONSOLE_VAR_TYPE_FLOAT:
+            // TODO: works but ugly, get rid of this
+            memcpy(&v->value, value, sizeof(int));
+            break;
+        case OME_CONSOLE_VAR_TYPE_STRING:
+            strncpy(v->value.strVal, value, OME_CONSOLE_MAX_LINE_SIZE);
+            v->value.strVal[OME_CONSOLE_MAX_LINE_SIZE - 1] = '\0';
+            break;
+    }
 
     return OME_CONSOLE_STATUS_NO_ERROR;
 }
@@ -300,8 +338,8 @@ omeConsoleStatus omeConsoleRegisterPrintCallback(omeConsole *c, omeConsolePrintF
 
 const char *omeConsoleErr2Str(omeConsoleStatus status)
 {
-
-    static const char *errMsgs[OME_MAX_CONSOLE_STATUS + 1] = {
+    static const char *errMsgs[OME_MAX_CONSOLE_STATUS + 1] =
+    {
         "No error",
         "Bad type",
         "Environment full",
@@ -312,7 +350,7 @@ const char *omeConsoleErr2Str(omeConsoleStatus status)
         "Variable already exists",
         "Invalid command",
         "Line too long",
-        "Unable to convert the value",
+        "Unable to convert value",
         "Invalid identifier",
 
         "Unknown error"
@@ -325,16 +363,26 @@ const char *omeConsoleErr2Str(omeConsoleStatus status)
 }
 
 
-omeConsoleVar *omeConsoleVarCreate(const char *name, omeConsoleVarType type, void *value)
+omeConsoleVar *omeConsoleVarCreate(const char *name, omeConsoleVarType type, const void *value)
 {
-    omeConsoleVar *v = calloc(1, sizeof(omeConsoleVar));
+    omeConsoleVar *var = calloc(1, sizeof(omeConsoleVar));
 
-    strncpy(v->key, name, OME_CONSOLE_MAX_VAR_NAME);
-    v->key[OME_CONSOLE_MAX_VAR_NAME - 1] = '\0';
-    v->type = type;
-    v->value = value;
+    strncpy(var->key, name, OME_CONSOLE_MAX_VAR_NAME);
+    var->key[OME_CONSOLE_MAX_VAR_NAME - 1] = '\0';
+    var->type = type;
 
-    return v;
+    switch(type)
+    {
+        case OME_CONSOLE_VAR_TYPE_INT: var->value.intVal = *(int *)value; break;
+        case OME_CONSOLE_VAR_TYPE_BOOL: var->value.boolVal = *(int *)value; break;
+        case OME_CONSOLE_VAR_TYPE_FLOAT: var->value.floatVal = *(float *)value; break;
+        case OME_CONSOLE_VAR_TYPE_STRING:
+            strncpy(var->value.strVal, value, OME_CONSOLE_MAX_LINE_SIZE);
+            var->value.strVal[OME_CONSOLE_MAX_LINE_SIZE - 1] = '\0';
+            break;
+    }
+
+    return var;
 }
 
 
@@ -351,13 +399,13 @@ omeConsoleStatus omeConsoleVarPrint(const omeConsole *c, const omeConsoleVar *v)
     switch(v->type)
     {
     case OME_CONSOLE_VAR_TYPE_INT:
-        c->printCb("int %s = %d\n", v->key, *(int *)v->value);
+        c->printCb("int %s = %d\n", v->key, v->value.intVal);
         break;
     case OME_CONSOLE_VAR_TYPE_FLOAT:
-        c->printCb("float %s = %f\n", v->key, *(float *)v->value);
+        c->printCb("float %s = %f\n", v->key, v->value.floatVal);
         break;
     case OME_CONSOLE_VAR_TYPE_STRING:
-        c->printCb("string %s = \"%s\"\n", v->key, (char *)v->value);
+        c->printCb("string %s = \"%s\"\n", v->key, v->value.strVal);
         break;
     default:
         return OME_CONSOLE_STATUS_BAD_TYPE;

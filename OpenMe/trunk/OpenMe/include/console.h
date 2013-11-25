@@ -54,10 +54,21 @@ typedef enum omeConsoleStatus
 typedef enum omeConsoleVarType
 {
 	OME_CONSOLE_VAR_TYPE_INT,
+	OME_CONSOLE_VAR_TYPE_BOOL,
 	OME_CONSOLE_VAR_TYPE_FLOAT,
 	OME_CONSOLE_VAR_TYPE_STRING
 	// TODO: add OME_CONSOLE_VAR_TYPE_USER ???
 } omeConsoleVarType;
+
+
+// value held by a variable
+typedef union omeConsoleVarValue
+{
+	int intVal;
+	int boolVal;
+	float floatVal;
+	char strVal[OME_CONSOLE_MAX_LINE_SIZE];
+} omeConsoleVarValue;
 
 
 // Variables, meant to be stored in a hashmap in the environment
@@ -65,8 +76,8 @@ typedef struct omeConsoleVar
 {
 	UT_hash_handle hh;					// needed by uthash
 	char key[OME_CONSOLE_MAX_VAR_NAME];	// key used by the hashmap
-	void *value;						// pointer to the actual variable
-	omeConsoleVarType type;				// type of the variable pointed
+	omeConsoleVarType type;				// type of the variable
+	omeConsoleVarValue value;			// value held
 } omeConsoleVar, omeConsoleVarHashTable;
 
 
@@ -118,19 +129,19 @@ void omeConsoleDestroy(omeConsole **c);
 omeConsoleStatus omeConsoleProcess(omeConsole *c, const char *cmdLine);
 
 // This set of functions allow the caller to add variables to the console environement
-omeConsoleStatus omeConsoleRegisterInt(omeConsole *c, const char *name, int *value);
-omeConsoleStatus omeConsoleRegisterFloat(omeConsole *c, const char *name, float *value);
-omeConsoleStatus omeConsoleRegisterString(omeConsole *c, const char *name, char *value);
+omeConsoleStatus omeConsoleRegisterInt(omeConsole *c, const char *name, int value);
+omeConsoleStatus omeConsoleRegisterFloat(omeConsole *c, const char *name, float value);
+omeConsoleStatus omeConsoleRegisterString(omeConsole *c, const char *name, const char *value);
 
 // This set of functions allow the caller to get the value associated with the given variable name
 omeConsoleStatus omeConsoleGetInt(omeConsole *c, const char *name, int *value);
 omeConsoleStatus omeConsoleGetFloat(omeConsole *c, const char *name, float *value);
-omeConsoleStatus omeConsoleGetString(omeConsole *c, const char *name, char *value);
+omeConsoleStatus omeConsoleGetString(omeConsole *c, const char *name, const char **value);
 
 // This set of functions allow the caller to set the value associated with the given variable name
 omeConsoleStatus omeConsoleSetInt(omeConsole *c, const char *name, int value);
 omeConsoleStatus omeConsoleSetFloat(omeConsole *c, const char *name, float value);
-omeConsoleStatus omeConsoleSetString(omeConsole *c, const char *name, char *value);
+omeConsoleStatus omeConsoleSetString(omeConsole *c, const char *name, const char *value);
 
 // Print the environment
 omeConsoleStatus omeConsolePrint(const omeConsole *c);
@@ -156,9 +167,9 @@ const char *omeConsoleErr2Str(omeConsoleStatus status);
 //////////////////////// [Private functions] ////////////////////////
 
 // Generic function to add variable to the environment
-omeConsoleStatus omeConsoleRegisterVar(omeConsole *c, const char *name, omeConsoleVarType type, void *value);
-omeConsoleStatus omeConsoleGetVar(omeConsole *c, const char *name, omeConsoleVarType type, void *value);
-omeConsoleStatus omeConsoleSetVar(omeConsole *c, const char *name, omeConsoleVarType type, void *value);
+omeConsoleStatus omeConsoleRegisterVar(omeConsole *c, const char *name, omeConsoleVarType type, const void *value);
+omeConsoleVar *omeConsoleGetVar(omeConsole *c, const char *name);
+omeConsoleStatus omeConsoleSetVar(omeConsole *c, const char *name, omeConsoleVarType type, const void *value);
 
 // Parse a command line into command and arguments
 omeConsoleStatus omeConsoleParse(omeConsoleCmdLine *cmdLine);
@@ -167,7 +178,7 @@ omeConsoleStatus omeConsoleParse(omeConsoleCmdLine *cmdLine);
 omeConsoleStatus omeConsoleInterpret(omeConsole *c);
 
 // Constructor and destructor of a console variable
-omeConsoleVar *omeConsoleVarCreate(const char *name, omeConsoleVarType type, void *value);
+omeConsoleVar *omeConsoleVarCreate(const char *name, omeConsoleVarType type, const void *value);
 void omeConsoleVarDestroy(omeConsoleVar **v);
 
 // Constructor and destructor of a console command
