@@ -179,7 +179,7 @@ void omeSkipBlanks(char **str)
 // TODO: maybe replace this thing by a macro which would stand for: 
 // omeDbgClearMem(ptr, size), free(ptr) and *ptr = NULL
 // In a non debug context, only the free could be kept
-// However, the impact on performances is probably negligeable
+// However, the impact on performances is probably negligible
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wunused-parameter"
 

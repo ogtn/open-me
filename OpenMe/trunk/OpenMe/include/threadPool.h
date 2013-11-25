@@ -87,7 +87,7 @@ void omeThreadPoolDestroy(omeThreadPool **tp);
 // return a task id
 omeStatus omeThreadPoolAddTask(omeThreadPool *tp, omeThreadPoolProcessTask func, void *arg, int *id);
 
-// require the status of a task associated with an id, see omeTaskStatus
+// request the status of a task associated with an id, see omeTaskStatus
 omeTaskStatus omeThreadPoolGetTaskStatus(omeThreadPool *tp, int taskId);
 
 // wait for the completion of all waiting tasks then returns
