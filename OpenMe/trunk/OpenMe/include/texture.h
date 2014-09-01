@@ -30,8 +30,6 @@ typedef enum omeTextureType
 } omeTextureType;
 
 
-#include "private_access_checking.h"
-
 // Encapsulate an OpenGL texture
 // Data only stored in OpenGL context for the moment
 typedef struct omeTexture
@@ -39,14 +37,12 @@ typedef struct omeTexture
     // keep in first position
     omeResource resource;
 
-    private unsigned int type;  // OpenGL type of texture
-    private int width;          // texture width
-    private int height;         // texture height 
-    private int depth;          // texture depth
-    private unsigned int id;
+    unsigned int type;  // OpenGL type of texture
+    int width;          // texture width
+    int height;         // texture height 
+    int depth;          // texture depth
+    unsigned int id;
 } omeTexture;
-
-#include "private_access_checking.h"
 
 
 // generic function to create a texture
