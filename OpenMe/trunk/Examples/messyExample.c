@@ -12,9 +12,9 @@
 #include <openme.h>
 #include <stdlib.h>
 #include <stdio.h>
-#include <GL/glfw.h>
+#include <GLFW/glfw3.h>
 #include <math.h>
-
+#include <unistd.h>
 
 static void testString(omeMesh *m)
 {
@@ -42,46 +42,75 @@ static void testString(omeMesh *m)
     omeStringDestroy(&str);
 }
 
-
-omeStatus createContext(int width, int height)
+void scrollCallback(GLFWwindow *window, double x, double y)
 {
-    GLFWvidmode videoMode;
+	float *zoom = glfwGetWindowUserPointer(window);
+
+    *zoom += x;
+}
+
+void resizeCallback(GLFWwindow *window, int x, int y)
+{
+   omeEngineResize(x, y);
+}
+
+void errorCallback(int error, const char* description)
+{
+	fprintf(stderr, "Error occured : %s\n", description);
+}
+
+GLFWwindow *createContext(int width, int height)
+{
+	GLFWwindow *window;
+    const GLFWvidmode *videoMode;
 
     if(!glfwInit())
     {
         fprintf(stderr, "Holy fuckin' shit, glfwInit() failed\n");
-        return OME_FAILURE;
+        return NULL;
     }
 
+    glfwSetErrorCallback(errorCallback);
+
     // configure context
-    glfwOpenWindowHint(GLFW_FSAA_SAMPLES, 0);
-    glfwOpenWindowHint(GLFW_OPENGL_VERSION_MAJOR, 4);
-    glfwOpenWindowHint(GLFW_OPENGL_VERSION_MINOR, 0);
-    glfwOpenWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_FALSE);
+    glfwWindowHint(GLFW_SAMPLES, 0);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
+    glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_FALSE);
     //glfwOpenWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
-    glfwOpenWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_COMPAT_PROFILE);
+    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_COMPAT_PROFILE);
     //glfwOpenWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-    glfwOpenWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GL_TRUE);
+    glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GL_TRUE);
+
+    glfwWindowHint(GLFW_RED_BITS, 8);
+    glfwWindowHint(GLFW_GREEN_BITS, 8);
+    glfwWindowHint(GLFW_BLUE_BITS, 8);
+    glfwWindowHint(GLFW_ALPHA_BITS, 8);
+    glfwWindowHint(GLFW_DEPTH_BITS, 32);
+    glfwWindowHint(GLFW_STENCIL_BITS, 0);
+
+    window = glfwCreateWindow(width, height, "Hello world", NULL, NULL);
 
     // create window and OpenGL context
-    if(!glfwOpenWindow(width, height, 8, 8, 8, 8, 32, 0, GLFW_WINDOW))
+    if(!window)
     {
-        fprintf(stderr, "Holy fuckin' shit, glfwOpenWindow() failed\n");
-        return OME_FAILURE;
+        fprintf(stderr, "Holy fuckin' shit, glfwCreateWindow() failed\n");
+        return NULL;
     }
 
     // center the window
-    glfwGetDesktopMode(&videoMode);
-    glfwSetWindowPos((videoMode.Width - width) / 2, (videoMode.Height - height) / 2);
-    glfwSetMouseWheel(0);
-    glfwSetWindowSizeCallback(omeEngineResize);
+    videoMode = glfwGetVideoMode(NULL);
+    glfwSetWindowPos(window, (videoMode->width - width) / 2, (videoMode->height - height) / 2);
+    glfwSetWindowSizeCallback(window, resizeCallback);
+    glfwSetScrollCallback(window, scrollCallback);
 
-    return OME_SUCCESS;
+    return window;
 }
 
 
 int main(void)
 {
+	GLFWwindow *window;
     omeCamera *camera;
     omeVector pos;
     omeVector target = 	{{0.f, 0.f, 0.f}};
@@ -101,9 +130,13 @@ int main(void)
     omeBool picked = OME_FALSE;
     int maxFrameCpt = 0;
 
-    if(createContext(width, height) == OME_FAILURE)
+
+    window = createContext(width, height);
+
+    if(window == NULL)
         return EXIT_FAILURE;
 
+    glfwSetWindowUserPointer(window, &zoom);
     omeEngineStart(width, height);
 
     // camera settings
@@ -162,7 +195,7 @@ int main(void)
     mesh->entity.position.z += 10;*/
     // testString(mesh);
 
-    while(glfwGetWindowParam(GLFW_OPENED) && !glfwGetKey(GLFW_KEY_ESC))
+    while(!glfwWindowShouldClose(window) && !glfwGetKey(window, GLFW_KEY_ESCAPE))
     {
         // move camera
         angleStep = 3 * (float)omeEngineGetFrameDuration();
@@ -173,35 +206,35 @@ int main(void)
             float step = (float)omeEngineGetFrameDuration() * 10;
             omeVector *v = &pickedMesh->entity.position;
 
-            if(glfwGetKey(GLFW_KEY_UP))
+            if(glfwGetKey(window, GLFW_KEY_UP))
                 v->y += step;
-            else if(glfwGetKey(GLFW_KEY_DOWN))
+            else if(glfwGetKey(window, GLFW_KEY_DOWN))
                 v->y -= step;
-            if(glfwGetKey(GLFW_KEY_LEFT))
+            if(glfwGetKey(window, GLFW_KEY_LEFT))
                 v->x -= step;
-            else if(glfwGetKey(GLFW_KEY_RIGHT))
+            else if(glfwGetKey(window, GLFW_KEY_RIGHT))
                 v->x += step;
 
             v = &pickedMesh->entity.rotation;
 
-            if(glfwGetKey('A'))
+            if(glfwGetKey(window, 'A'))
                 v->x += step * 5;
-            if(glfwGetKey('Z'))
+            if(glfwGetKey(window, 'Z'))
                 v->y += step * 5;
-            if(glfwGetKey('E'))
+            if(glfwGetKey(window, 'E'))
                 v->z += step * 5;
 
             v = &pickedMesh->entity.scaling;
 
-            if(glfwGetKey('Q'))
+            if(glfwGetKey(window, 'Q'))
                 v->x += step * 0.1F;
-            if(glfwGetKey('S'))
+            if(glfwGetKey(window, 'S'))
                 v->y += step * 0.1F;
-            if(glfwGetKey('D'))
+            if(glfwGetKey(window, 'D'))
                 v->z += step * 0.1F;
 
             // reset mesh
-            if(glfwGetKey(GLFW_KEY_SPACE))
+            if(glfwGetKey(window, GLFW_KEY_SPACE))
             {
                 v = &pickedMesh->entity.position;
                 v->x = v->y = v->z = 0;
@@ -215,12 +248,12 @@ int main(void)
         }
 
         // angle update using mouse
-        if(glfwGetMouseButton(GLFW_MOUSE_BUTTON_LEFT))
+        if(glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT))
         {
-            int x, y;
-            static int lastX, lastY;
+            double x, y;
+            static double lastX, lastY;
 
-            glfwGetMousePos(&x, &y);
+            glfwGetCursorPos(window, &x, &y);
 
             if(!drag)
                 drag = OME_TRUE;
@@ -243,10 +276,6 @@ int main(void)
         if(phi < (-OME_PIF / 2.f + 0.01f))
             phi = -OME_PIF / 2.f + 0.01f;
 
-        // zoom update
-        zoom -= glfwGetMouseWheel();
-        glfwSetMouseWheel(0);
-
         // avoid negative zoom
         if(zoom < 0.1f)
             zoom = 0.1f;
@@ -258,15 +287,18 @@ int main(void)
         omeCameraSetPosition(camera, &pos);
 
         // picking test
-        if(glfwGetMouseButton(GLFW_MOUSE_BUTTON_RIGHT))
+        if(glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_RIGHT))
         {
             if(!picked)
             {
+            	double xd, yd;
                 int x, y;
 
                 picked = OME_TRUE;
-                glfwGetMousePos(&x, &y);
-                glfwGetWindowSize(&width, &height);
+                glfwGetCursorPos(window, &xd, &yd);
+                x = floor(xd);
+                y = floor(yd);
+                glfwGetWindowSize(window, &width, &height);
 
                 pickedMesh = omeEnginePick(x, height - y);
                 
@@ -284,8 +316,8 @@ int main(void)
         //omeEngineRender(renderTarget);
         omeEngineRender(NULL);
 
-        glfwSleep(0.002);
-        glfwSwapBuffers();
+        usleep(2000);
+        glfwSwapBuffers(window);
     }
 
     // free all the memory!!!

@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Static Debug|Win32">
       <Configuration>Static Debug</Configuration>
@@ -78,25 +78,24 @@
     <ClInclude Include="..\..\uthash\utlist.h" />
     <ClInclude Include="..\..\uthash\utstring.h" />
   </ItemGroup>
-  <PropertyGroup Label="Globals">
-    <VCTargetsPath Condition="'$(VCTargetsPath11)' != '' and '$(VSVersion)' == '' and '$(VisualStudioVersion)' == ''">$(VCTargetsPath11)</VCTargetsPath>
-  </PropertyGroup>
+  <PropertyGroup Label="Globals" />
   <PropertyGroup Label="Globals">
     <ProjectGuid>{932B1045-2DC0-497E-916D-3AF1F8C040AC}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>OpenMe</RootNamespace>
+    <WindowsTargetPlatformVersion>10.0.17763.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Static Debug|Win32'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v110</PlatformToolset>
+    <PlatformToolset>v141</PlatformToolset>
     <CharacterSet>NotSet</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Static Release|Win32'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v110</PlatformToolset>
+    <PlatformToolset>v141</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>NotSet</CharacterSet>
   </PropertyGroup>
@@ -111,9 +110,10 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Static Debug|Win32'">
-    <IncludePath>C:\Users\MouleMan\Documents\Visual Studio 2012\Projects\OpenMe\uthash;$(VCInstallDir)include\uah;C:\Users\MouleMan\Documents\Visual Studio 2012\Projects\OpenMe\OpenMe\include;$(IncludePath)</IncludePath>
+    <IncludePath>D:\open-me\OpenMe\trunk\uthash;D:\open-me\OpenMe\trunk\OpenMe\include;$(IncludePath)</IncludePath>
     <TargetName>$(ProjectName)_dbg</TargetName>
     <OutDir>$(SolutionDir)\lib\</OutDir>
+    <SourcePath>D:\open-me\OpenMe\trunk\OpenMe\src;$(SourcePath)</SourcePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Static Release|Win32'">
     <IncludePath>$(VCInstallDir)include\uah;C:\Users\MouleMan\Documents\Visual Studio 2012\Projects\OpenMe\OpenMe\include;$(IncludePath)</IncludePath>
