@@ -107,6 +107,7 @@ omeMesh *omeLoadOBJFromFile(const char *fileName, omeBool swapYZ)
                 &tmpPositions[currentPosition].y,
                 &tmpPositions[currentPosition].z);
 
+			omeVectorMultScal(&tmpPositions[currentPosition], 0.1, &tmpPositions[currentPosition]);
             currentPosition++;
         }
 

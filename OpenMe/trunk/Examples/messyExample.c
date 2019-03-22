@@ -14,7 +14,14 @@
 #include <stdio.h>
 #include <GLFW/glfw3.h>
 #include <math.h>
+
+#ifdef _MSC_VER
+#include <windows.h>
+void usleep(__int64 usec);
+#else
 #include <unistd.h>
+#endif
+
 
 static void testString(omeMesh *m)
 {
@@ -46,7 +53,7 @@ void scrollCallback(GLFWwindow *window, double x, double y)
 {
 	float *zoom = glfwGetWindowUserPointer(window);
 
-    *zoom += x;
+    *zoom -= y;
 }
 
 void resizeCallback(GLFWwindow *window, int x, int y)
@@ -63,6 +70,7 @@ GLFWwindow *createContext(int width, int height)
 {
 	GLFWwindow *window;
     const GLFWvidmode *videoMode;
+	GLFWmonitor *monitor;
 
     if(!glfwInit())
     {
@@ -77,7 +85,6 @@ GLFWwindow *createContext(int width, int height)
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
     glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_FALSE);
-    //glfwOpenWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_COMPAT_PROFILE);
     //glfwOpenWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
     glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GL_TRUE);
@@ -99,10 +106,12 @@ GLFWwindow *createContext(int width, int height)
     }
 
     // center the window
-    videoMode = glfwGetVideoMode(NULL);
+	monitor = glfwGetPrimaryMonitor();
+    videoMode = glfwGetVideoMode(monitor);
     glfwSetWindowPos(window, (videoMode->width - width) / 2, (videoMode->height - height) / 2);
     glfwSetWindowSizeCallback(window, resizeCallback);
     glfwSetScrollCallback(window, scrollCallback);
+	glfwMakeContextCurrent(window);
 
     return window;
 }
@@ -111,11 +120,10 @@ GLFWwindow *createContext(int width, int height)
 int main(void)
 {
 	GLFWwindow *window;
-    omeCamera *camera;
+    omeCamera *camera = NULL;
     omeVector pos;
     omeVector target = 	{{0.f, 0.f, 0.f}};
-    omeMesh *mesh = NULL;
-    omeMesh *mesh2 = NULL;
+	omeMesh *grid = NULL, *sphere = NULL, *cube = NULL, *bunny = NULL;
     omeMesh *pickedMesh = NULL;
     int width = 640;
     int height = 480;
@@ -124,9 +132,9 @@ int main(void)
     float angleStep;
     float zoom = 15;
     omeBool drag = OME_FALSE;
-    omeProgram *shaderProgram;
-    omeMaterial *mat;
-    omeRenderTarget *renderTarget;
+	omeProgram *gridProgram = NULL, *cubeMapProgram = NULL, *textureProgram = NULL;
+    omeMaterial *textureMat = NULL, *cubeMat = NULL;
+    omeRenderTarget *renderTarget = NULL;
     omeBool picked = OME_FALSE;
     int maxFrameCpt = 0;
 
@@ -137,7 +145,9 @@ int main(void)
         return EXIT_FAILURE;
 
     glfwSetWindowUserPointer(window, &zoom);
-    omeEngineStart(width, height);
+    
+	if (omeEngineStart(width, height) != OME_SUCCESS)
+		return EXIT_FAILURE;
 
     // camera settings
     camera = omeCameraCreate(OME_CAMERA_TYPE_PERPECTIVE);
@@ -145,55 +155,44 @@ int main(void)
     omeCameraSetTarget(camera, &target);
     omeEngineSetActiveCamera(camera);
 
-    /*
-    // obj loading test
-    mesh = omeLoadOBJFromFile("data/bunny69k.obj", OME_TRUE);
-    omeMeshSave("data/mesh1.omeMesh", mesh);
-    omeMeshDestroy(&mesh);
+	// shader test
+	textureProgram = omeProgramCreate();
+	omeProgramAddShader(textureProgram, omeShaderLoadFromFile("data/basic.vs"));
+	omeProgramAddShader(textureProgram, omeShaderLoadFromFile("data/basic.ps"));
+	omeProgramLink(textureProgram);
+	
+	cubeMapProgram = omeProgramCreate();
+	omeProgramAddShader(cubeMapProgram, omeShaderLoadFromFile("data/cubemap.vs"));
+	omeProgramAddShader(cubeMapProgram, omeShaderLoadFromFile("data/cubemap.ps"));
+	omeProgramLink(cubeMapProgram);
+	
+	// material tests
+	textureMat = omeMaterialCreate();
+	textureMat->ambiantColor.r = 0.f;
+	textureMat->diffuseTexture = omeTextureLoadFromFile("data/testing.png");
 
-    mesh = omeMeshLoad("data/mesh1.omeMesh");
-    mesh2 = omeMeshLoad("data/mesh1.omeMesh");
+	cubeMat = omeMaterialCreate();
+	cubeMat->ambiantColor.r = 0.f;
+	cubeMat->diffuseTexture = omeTextureCubeMapLoadFromFile("data/cloudy.omeCubeMap");
 
-    omeMeshDestroy(&mesh);
-    omeMeshDestroy(&mesh2);
-    */
+	// primitives tests
+	grid = omePrimitiveGrid(16, 4);
+
+	//sphere = omePrimitiveSphere(10, 4);
+	//sphere->program = cubeMapProgram;
+	//sphere->material = cubeMat;
+
+	//cube = omePrimitiveCube(5, 4);
+	//cube->program = cubeMapProgram;
+	//cube->material = cubeMat;
     
-    // primitives test
-    omePrimitiveGrid(16, 4);
-
-    /*
-    mesh = omePrimitiveSphere(10, 4);
-    mesh2 = omePrimitiveSphere(8, 16);
-
-    // shader test
-    shaderProgram = omeProgramCreate();
-    omeProgramAddShader(shaderProgram, omeShaderLoadFromFile("data/basic.vs"));
-    omeProgramAddShader(shaderProgram, omeShaderLoadFromFile("data/basic.ps"));
-    omeProgramLink(shaderProgram);
-    mesh->program = shaderProgram;
-
-    shaderProgram = omeProgramCreate();
-    omeProgramAddShader(shaderProgram, omeShaderLoadFromFile("data/cubemap.vs"));
-    omeProgramAddShader(shaderProgram, omeShaderLoadFromFile("data/cubemap.ps"));
-    omeProgramLink(shaderProgram);
-    mesh2->program = shaderProgram;
-
-    // material test
-    mat = omeMaterialCreate();
-    mat->ambiantColor.r = 0.f;
-    mesh->material = mat;
-    mat = omeMaterialCreate();
-    mat->ambiantColor.b = 1.f;
-    mesh2->material = mat;
-
-    // render target test
-    renderTarget = omeRenderTargetCreate(128, 128);
-
-    // texture test
-    mesh->material->diffuseTexture = omeTextureLoadFromFile("data/lena.jpg");//renderTarget->colorBuffer;
-    mesh2->material->diffuseTexture = omeTextureCubeMapLoadFromFile("data/cloudy.omeCubeMap");
-    mesh->entity.position.z += 10;*/
-    // testString(mesh);
+    // obj loading test
+    bunny = omeLoadOBJFromFile("data/bunny69k.obj", OME_TRUE);
+    //omeMeshSave("data/mesh1.omeMesh", bunny);
+    //omeMeshDestroy(&bunny);
+    //bunny = omeMeshLoad("data/mesh1.omeMesh");
+	bunny->program = cubeMapProgram;
+	bunny->material = cubeMat;
 
     while(!glfwWindowShouldClose(window) && !glfwGetKey(window, GLFW_KEY_ESCAPE))
     {
@@ -318,15 +317,27 @@ int main(void)
 
         usleep(2000);
         glfwSwapBuffers(window);
+		glfwWaitEvents();
     }
 
     // free all the memory!!!
-    omeMeshDestroy(&mesh);
-    omeMeshDestroy(&mesh2);
-    omeCameraDestroy(&camera);
-    omeProgramDestroy(&shaderProgram);
     omeEngineStop();
 
     return EXIT_SUCCESS;
 }
 
+#ifdef _MSC_VER
+// https://www.c-plusplus.net/forum/topic/109539/usleep-unter-windows
+void usleep(__int64 usec)
+{
+	HANDLE timer;
+	LARGE_INTEGER ft;
+
+	ft.QuadPart = -(10 * usec); // Convert to 100 nanosecond interval, negative value indicates relative time
+
+	timer = CreateWaitableTimer(NULL, TRUE, NULL);
+	SetWaitableTimer(timer, &ft, 0, NULL, NULL, 0);
+	WaitForSingleObject(timer, INFINITE);
+	CloseHandle(timer);
+}
+#endif

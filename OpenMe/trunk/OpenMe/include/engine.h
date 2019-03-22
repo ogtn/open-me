@@ -109,6 +109,9 @@ omeScene *omeEngineGetActiveScene(void);
 // return the picking program
 omeProgram *omeEngineGetPickingProgram(void);
 
+// print GL informations
+void omeEngineGLInfo(void);
+
 
 #ifdef __cplusplus
 }

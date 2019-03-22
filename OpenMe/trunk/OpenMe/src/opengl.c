@@ -16,9 +16,12 @@
 omeStatus omeOpenGLInit(void)
 {
 	#ifndef OME_USE_GLES
-	if(glewInit() != GLEW_OK)
+
+	GLenum glewError = glewInit();
+
+	if(glewError != GLEW_OK)
     {
-        omeLoggerLog("Failed to load glew, you're screwed\n\n");
+        omeLoggerLog("Failed to load glew : %s", glewGetErrorString(glewError));
         return OME_FAILURE;
     }
     #endif

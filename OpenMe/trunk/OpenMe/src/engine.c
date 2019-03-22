@@ -102,13 +102,12 @@ void GLAPIENTRY omeDebugCallback(GLenum source, GLenum type, GLuint id, GLenum s
     case GL_DEBUG_SEVERITY_LOW_ARB:     str_severity = "low"; break;
     }
 
-    omeLoggerLog("omeDebugCallback: %s", message);
+    omeLoggerLog("omeDebugCallback: %s\n", message);
 }
 
 
 omeStatus omeEngineStart(int width, int height)
 {
-    int value;
     omeViewport *v = &engine.viewport;
 
     // avoid double start
@@ -155,10 +154,7 @@ omeStatus omeEngineStart(int width, int height)
     v->upToDate = OME_FALSE;
 
     // print info about OpenGL context
-    omeLoggerLog("OpenGL %s\n", glGetString(GL_VERSION));
-    omeLoggerLog("GLSL %s\n", glGetString(GL_SHADING_LANGUAGE_VERSION));
-    glGetIntegerv(GL_MAX_VERTEX_ATTRIBS, &value);
-    omeLoggerLog("Max vertex attributes availables: %d\n", value);
+	omeEngineGLInfo();
 
     // picking program
     engine.pickingProgram = omeProgramCreate();
@@ -171,6 +167,20 @@ omeStatus omeEngineStart(int width, int height)
     return OME_SUCCESS;
 }
 
+
+void omeEngineGLInfo(void)
+{
+	GLint int_value;
+	
+	omeLoggerLog("OpenGL %s\n", glGetString(GL_VERSION));
+	omeLoggerLog("GLSL %s\n", glGetString(GL_SHADING_LANGUAGE_VERSION));
+
+	glGetIntegerv(GL_MAX_VERTEX_ATTRIBS, &int_value);
+	omeLoggerLog("Max vertex attributes availables: %d\n", int_value);
+
+	glGetIntegerv(GL_MAX_TEXTURE_IMAGE_UNITS, &int_value);
+	omeLoggerLog("Max texture units : %d\n", int_value);
+}
 
 void omeEngineStop(void)
 {

@@ -43,8 +43,8 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>$(VCInstallDir)include\uah;$(SolutionDir)\OpenMe\include\;C:\Users\MouleMan\Documents\Visual Studio 2012\Projects\OpenMe\uthash;$(IncludePath)</IncludePath>
-    <LibraryPath>$(SolutionDir)\lib\;$(WindowsSdkDir)\lib\;$(LibraryPath)</LibraryPath>
+    <IncludePath>D:\open-me\OpenMe\trunk\OpenMe\include;D:\open-me\OpenMe\trunk\inc;D:\open-me\OpenMe\trunk\uthash;$(IncludePath)</IncludePath>
+    <LibraryPath>$(SolutionDir)\lib\;D:\open-me\OpenMe\trunk\lib;$(WindowsSdkDir)\lib\;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
@@ -64,7 +64,8 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>OpenMe_dbg.lib;GLFW.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>OpenMe_dbg.lib;glfw3.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <TargetMachine>MachineX86</TargetMachine>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">

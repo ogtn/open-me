@@ -110,10 +110,11 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Static Debug|Win32'">
-    <IncludePath>D:\open-me\OpenMe\trunk\uthash;D:\open-me\OpenMe\trunk\OpenMe\include;$(IncludePath)</IncludePath>
+    <IncludePath>D:\open-me\OpenMe\trunk\inc;D:\open-me\OpenMe\trunk\uthash;D:\open-me\OpenMe\trunk\OpenMe\include;$(IncludePath)</IncludePath>
     <TargetName>$(ProjectName)_dbg</TargetName>
     <OutDir>$(SolutionDir)\lib\</OutDir>
     <SourcePath>D:\open-me\OpenMe\trunk\OpenMe\src;$(SourcePath)</SourcePath>
+    <LibraryPath>D:\open-me\OpenMe\trunk\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Static Release|Win32'">
     <IncludePath>$(VCInstallDir)include\uah;C:\Users\MouleMan\Documents\Visual Studio 2012\Projects\OpenMe\OpenMe\include;$(IncludePath)</IncludePath>
@@ -139,6 +140,7 @@
     <Lib />
     <Lib>
       <AdditionalDependencies>devil.lib;glew32.lib;opengl32.lib;pthreadVC2.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <TargetMachine>MachineX86</TargetMachine>
     </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Static Release|Win32'">
